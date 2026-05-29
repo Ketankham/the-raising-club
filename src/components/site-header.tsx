@@ -18,7 +18,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-black/5 bg-cream/85 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-black/5 bg-white/85 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
         <Link href="/" aria-label="The Raising Club home">
           <Logo />
@@ -65,7 +65,7 @@ export function SiteHeader() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="border-t border-black/5 bg-cream px-5 pb-6 pt-2 lg:hidden">
+        <div className="border-t border-black/5 bg-white px-5 pb-6 pt-2 lg:hidden">
           <div className="flex flex-col gap-1">
             {NAV.map((item) => (
               <Link
