@@ -5,7 +5,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { AboutHero } from "@/components/about/about-hero";
 import { Founder } from "@/components/about/founder";
 import { Values } from "@/components/about/values";
-import { Manifesto } from "@/components/about/manifesto";
 import { AboutCta } from "@/components/about/about-cta";
 
 export const metadata: Metadata = {
@@ -40,7 +39,6 @@ export default function AboutUsPage() {
         </section>
 
         <Values />
-        <Manifesto />
         <AboutCta />
       </main>
       <SiteFooter />

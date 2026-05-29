@@ -20,7 +20,7 @@ export function AboutCta() {
               Join the Club
             </Link>
             <Link
-              href="#manifesto"
+              href="/manifesto"
               className="rounded-full border border-ink/15 bg-white/60 px-7 py-3 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
             >
               Read Our Manifesto
