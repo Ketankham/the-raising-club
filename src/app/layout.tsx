@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Playfair_Display, Albert_Sans } from "next/font/google";
 import "./globals.css";
+import { FeedbackWidget } from "@/components/feedback/feedback-widget";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
         {children}
+        <FeedbackWidget />
       </body>
     </html>
   );
