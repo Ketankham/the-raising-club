@@ -1,9 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
+import { Check } from "lucide-react";
 
 type Audience = {
   title: string;
   tagline: string;
-  accent: string;
+  image: string;
+  cardBg: string;
   cta: { label: string; href: string };
   points: { heading: string; body: string }[];
 };
@@ -13,7 +16,8 @@ const AUDIENCES: Audience[] = [
     title: "For Parents",
     tagline:
       "Find caregivers and other families who feel like part of your parenting team—so you’re supported in raising your child, not juggling it all alone.",
-    accent: "bg-purple/20",
+    image: "/images/for-parents.png",
+    cardBg: "bg-lavender/60",
     cta: { label: "Get Started As A Family", href: "/get-started?role=family" },
     points: [
       {
@@ -38,7 +42,8 @@ const AUDIENCES: Audience[] = [
     title: "For Caregivers",
     tagline:
       "Raise children with purpose, and build a real career in early childhood while you do it.",
-    accent: "bg-olive/20",
+    image: "/images/for-caregivers.png",
+    cardBg: "bg-olive/20",
     cta: {
       label: "Become A TRC Caregiver",
       href: "/get-started?role=caregiver",
@@ -66,7 +71,8 @@ const AUDIENCES: Audience[] = [
     title: "For Centers & Programs",
     tagline:
       "Solve staffing and training for your daycare, preschool, and after-school programs in one place.",
-    accent: "bg-primary-soft/20",
+    image: "/images/for-centers.png",
+    cardBg: "bg-primary-soft/20",
     cta: {
       label: "Hire & Train Educators",
       href: "/get-started?role=organization",
@@ -94,7 +100,7 @@ const AUDIENCES: Audience[] = [
 
 export function Audiences() {
   return (
-    <section id="built-for-everyone" className="bg-cream py-20 lg:py-28">
+    <section id="built-for-everyone" className="bg-cream py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl lg:text-5xl">
@@ -110,24 +116,37 @@ export function Audiences() {
           {AUDIENCES.map((a) => (
             <div
               key={a.title}
-              className="flex flex-col rounded-3xl border border-black/5 bg-white p-7 shadow-sm"
+              className={`flex flex-col overflow-hidden rounded-3xl ${a.cardBg} p-5`}
             >
-              <div className={`rounded-2xl ${a.accent} px-5 py-5`}>
-                <h3 className="font-display text-2xl font-extrabold text-ink">
-                  {a.title}
-                </h3>
-                <p className="mt-2 text-sm text-ink/75">{a.tagline}</p>
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+                <Image
+                  src={a.image}
+                  alt={a.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 33vw"
+                  className="object-cover"
+                />
               </div>
 
-              <ul className="mt-6 flex-1 space-y-5">
+              <h3 className="mt-5 font-display text-2xl font-extrabold text-ink">
+                {a.title}
+              </h3>
+              <p className="mt-2 text-sm text-ink/75">{a.tagline}</p>
+
+              <ul className="mt-5 flex-1 space-y-4">
                 {a.points.map((p) => (
-                  <li key={p.heading}>
-                    <h4 className="font-display text-sm font-bold text-ink">
-                      {p.heading}
-                    </h4>
-                    <p className="mt-1 text-sm leading-relaxed text-ink/70">
-                      {p.body}
-                    </p>
+                  <li key={p.heading} className="flex gap-2.5">
+                    <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-primary text-white">
+                      <Check size={12} strokeWidth={3} />
+                    </span>
+                    <div>
+                      <h4 className="font-display text-sm font-bold text-ink">
+                        {p.heading}
+                      </h4>
+                      <p className="mt-0.5 text-sm leading-relaxed text-ink/70">
+                        {p.body}
+                      </p>
+                    </div>
                   </li>
                 ))}
               </ul>

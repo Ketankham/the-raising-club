@@ -35,8 +35,9 @@
   --color-pink: #ffecf1;
 
   /* fonts (wired up in layout.tsx) */
-  --font-sans: var(--font-nunito);
-  --font-display: var(--font-poppins);
+  --font-sans: var(--font-albert-sans);   /* body / paragraphs */
+  --font-display: var(--font-dm-sans);     /* headings + UI */
+  --font-serif: var(--font-playfair);      /* elegant accents */
 }
 
 * {
@@ -60,4 +61,8 @@ h3,
 h4,
 .font-display {
   font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+}
+
+.font-serif {
+  font-family: var(--font-serif), Georgia, serif;
 }
