@@ -38,15 +38,15 @@ export function AboutHero() {
           </div>
         </div>
 
-        {/* TODO: replace placeholder with the real About hero image */}
-        <div className="relative mx-auto aspect-[4/3] w-full max-w-xl overflow-hidden rounded-[2rem]">
+        {/* decorative shapes are baked into the asset */}
+        <div className="relative mx-auto w-full max-w-xl">
           <Image
-            src="/images/for-parents.png"
-            alt="A family together"
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover"
+            src="/images/about-hero.png"
+            alt="A caregiver and child smiling together"
+            width={842}
+            height={732}
             priority
+            className="h-auto w-full"
           />
         </div>
       </div>

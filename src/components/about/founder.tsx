@@ -1,20 +1,23 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function Founder() {
   return (
     <section id="founder" className="bg-lavender/50 py-20 lg:py-24">
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
-        {/* TODO: replace placeholder with Ara's real headshot */}
         <div className="relative mx-auto w-full max-w-sm">
-          <div className="absolute -left-4 -top-4 grid h-16 w-16 place-items-center rounded-2xl bg-yellow/70 text-2xl">
+          <div className="absolute -left-4 -top-4 z-10 grid h-16 w-16 place-items-center rounded-2xl bg-yellow/70 text-2xl">
             ☀️
           </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=700&q=80"
-            alt="Ara V., Founder & Montessori Educator"
-            className="aspect-[4/5] w-full rounded-[2rem] object-cover shadow-lg"
-          />
+          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2rem] shadow-lg">
+            <Image
+              src="/images/ara.png"
+              alt="Ara V., Founder & Montessori Educator"
+              fill
+              sizes="(max-width: 1024px) 100vw, 33vw"
+              className="object-cover"
+            />
+          </div>
         </div>
 
         <div>
