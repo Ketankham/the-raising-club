@@ -1,0 +1,32 @@
+name: Mention @claude on new issues
+
+# When a new issue is opened (e.g. from the feedback widget), post a comment
+# asking Claude to look into it. This pairs with the Claude Code GitHub App,
+# whose workflow triggers on the "@claude" mention.
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  mention-claude:
+    runs-on: ubuntu-latest
+    # Skip issues opened by bots/apps to avoid loops.
+    if: ${{ github.event.issue.user.type != 'Bot' }}
+    steps:
+      - name: Comment to trigger Claude
+        env:
+          # IMPORTANT: comments posted with the default GITHUB_TOKEN do NOT
+          # trigger other workflows, so the @claude mention would be ignored.
+          # Add a repo secret CLAUDE_TRIGGER_PAT (a PAT with "Issues: write")
+          # so the comment is posted as a user and triggers the Claude workflow.
+          # Falls back to GITHUB_TOKEN (posts the comment but won't trigger Claude).
+          GH_TOKEN: ${{ secrets.CLAUDE_TRIGGER_PAT || secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --repo "$REPO" \
+            --body "@claude please look into this issue and resolve it please"
