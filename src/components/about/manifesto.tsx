@@ -1,39 +1,140 @@
-const PARAGRAPHS = [
-  "The Raising Club is building modern infrastructure for childhood: a membership platform where education, connection, and community live in one experience. Every adult around a child has a place here—parents, caregivers, grandparents, educators, and extended family.",
-  "We take the best of child development science—brain development, learning, nutrition, language, and mental health—and turn it into guidance rooted in skills, regulation, and repair. That becomes daily practice: consistent routines, clear boundaries without yelling, environments that prevent chaos, and communication tools that reduce frustration.",
-  "We also rebuild the “village” for real life. TRC connects families with screened, trained caregivers and supports care setups that actually work: one-on-one care, nanny shares, pods, playdates, and local networks—made easier with clear agreements, defined roles, and a path that adapts as life changes.",
-  "When you raise the standard of care, you change more than childhood. You professionalize caregiving careers, reduce parental anxiety, and sustain workforce participation—especially for mothers—because raising a child stops being a private problem and becomes shared infrastructure.",
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
+
+// Manifesto body — split across two columns to match the live layout.
+const COLUMN_ONE = [
+  {
+    lead: "Raising a child",
+    rest: " shouldn’t feel improvised and lonely. But families are being asked to do everything—work, logistics, the mental load—while childcare still runs on patches.",
+  },
+  {
+    lead: "The Raising Club",
+    rest: " is building modern infrastructure for childhood: a membership platform where education, connection, and community live in one experience. Every adult around a child has a place here—parents, caregivers, grandparents, educators, and extended family.",
+  },
+  {
+    lead: "",
+    rest: "We take the best of child development science—brain development, learning, nutrition, language, and mental health—and turn it into guidance rooted in skills, regulation, and repair. That becomes daily practice: consistent routines, clear boundaries without yelling, environments that prevent chaos, and communication tools that reduce frustration.",
+  },
 ];
+
+const COLUMN_TWO = [
+  {
+    lead: "",
+    rest: "We also rebuild the “village” for real life. TRC connects families with screened, trained caregivers and supports care setups that actually work: one-on-one care, nanny shares, pods, playdates, and local networks—made easier with clear agreements, defined roles, and a path that adapts as life changes.",
+  },
+  {
+    lead: "",
+    rest: "When you raise the standard of care, you change more than childhood. You professionalize caregiving careers, reduce parental anxiety, and sustain workforce participation—especially for mothers—because raising a child stops being a private problem and becomes shared infrastructure.",
+  },
+];
+
+function Paragraph({ lead, rest }: { lead: string; rest: string }) {
+  return (
+    <p className="text-base leading-relaxed text-ink/80">
+      {lead && <span className="font-bold text-ink">{lead}</span>}
+      {rest}
+    </p>
+  );
+}
 
 export function Manifesto() {
   return (
-    <section id="manifesto" className="scroll-mt-20 bg-lavender/50 py-20 lg:py-24">
-      <div className="mx-auto max-w-3xl px-5 lg:px-8">
-        <p className="text-center font-display text-sm font-bold uppercase tracking-[0.2em] text-primary">
-          Our Manifesto
-        </p>
-
-        {/* lead */}
-        <p className="mt-6 text-center font-serif text-2xl font-medium leading-snug text-ink sm:text-3xl">
-          Raising a child shouldn&rsquo;t feel improvised and lonely. But families
-          are being asked to do everything—work, logistics, the mental load—while
-          childcare still runs on patches.
-        </p>
-
-        <div className="mt-10 space-y-5 text-lg leading-relaxed text-ink/80">
-          {PARAGRAPHS.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+    <>
+      {/* Hero */}
+      <section className="bg-cream">
+        <div className="mx-auto max-w-7xl px-5 pt-8 lg:px-8">
+          <Link
+            href="/about-us"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink/60 transition-colors hover:text-primary"
+          >
+            <ArrowLeft size={16} /> Back to about us
+          </Link>
         </div>
 
-        {/* closing line */}
-        <p className="mt-10 border-t border-black/10 pt-8 text-center font-serif text-2xl font-medium italic leading-snug text-ink sm:text-3xl">
-          We&rsquo;re not building just an app. We&rsquo;re building a new
-          standard: a global club where{" "}
-          <span className="text-primary">care is education.</span> Change
-          childhood, and the future gets built differently.
-        </p>
-      </div>
-    </section>
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-14 pt-6 lg:grid-cols-2 lg:px-8 lg:pb-20">
+          <div>
+            <span className="inline-block rounded-full border border-ink/15 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-ink/70">
+              Our Manifesto
+            </span>
+            <h1 className="mt-6 text-4xl leading-[1.14] sm:text-5xl">
+              <span className="font-display font-extrabold text-ink">
+                A new standard, where{" "}
+              </span>
+              <span className="font-serif font-medium text-primary">
+                care is education.
+              </span>
+            </h1>
+            <p className="mt-6 max-w-xl text-lg text-ink/75">
+              We&rsquo;re not building just an app. We&rsquo;re building modern
+              infrastructure for childhood—a global club where every adult around
+              a child belongs.
+            </p>
+            <Link
+              href="/get-started"
+              className="mt-8 inline-flex items-center justify-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
+            >
+              Join The Club
+            </Link>
+          </div>
+
+          <div className="relative mx-auto w-full max-w-xl">
+            <Image
+              src="/images/about-hero.png"
+              alt="A caregiver and child together"
+              width={842}
+              height={732}
+              priority
+              className="h-auto w-full"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Two-column body */}
+      <section className="bg-cream pb-16">
+        <div className="mx-auto max-w-6xl px-5 lg:px-8">
+          <div className="grid gap-x-12 gap-y-6 rounded-[2rem] bg-primary-soft/12 px-6 py-12 md:grid-cols-2 lg:px-12">
+            <div className="space-y-6">
+              {COLUMN_ONE.map((p, i) => (
+                <Paragraph key={i} {...p} />
+              ))}
+            </div>
+            <div className="space-y-6">
+              {COLUMN_TWO.map((p, i) => (
+                <Paragraph key={i} {...p} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quote */}
+      <section className="bg-cream py-12 lg:py-20">
+        <div className="mx-auto max-w-4xl px-5 text-center lg:px-8">
+          <p className="font-serif text-3xl font-medium leading-snug text-ink sm:text-4xl lg:text-5xl">
+            &ldquo;Change childhood, and the future gets built differently.&rdquo;
+          </p>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="bg-cream pb-20 lg:pb-24">
+        <div className="mx-auto max-w-7xl px-5 lg:px-8">
+          <div className="rounded-[2.5rem] bg-pink px-6 py-16 text-center lg:px-12">
+            <h2 className="text-3xl leading-tight text-ink sm:text-4xl">
+              <span className="font-bold">Are you ready to build</span>{" "}
+              <span className="font-light text-ink/70">the future with us?</span>
+            </h2>
+            <Link
+              href="/get-started"
+              className="mt-8 inline-flex items-center justify-center rounded-full bg-primary px-8 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-primary-hover"
+            >
+              Become a Member
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
