@@ -22,6 +22,7 @@ Schema for the onboarding flow + the four user roles. See the full design ration
 | `0014_events_registration.sql` | participants/payments: registrations, registration-children (capacity by child), `child_safety_profiles` (staff-gated), pickups/emergency contacts, waiver acceptances, Stripe payments + refunds + credits, reminders |
 | `0015_events_figma_additions.sql` | additive from Figma: `events.is_featured` + `events.agenda`, `event_saves` (save-for-later), `event_resources` file support (`file` kind + `file_path`, `url` now nullable) |
 | `0017_event_messages.sql` | two-way event messaging: `event_messages` (one thread per registration; RLS by registrant owner or event manager) |
+| `0018_event_host_name.sql` | `events.host_name` — denormalized organizer display name (org/company name, else creator) for list + detail "Hosted by" |
 
 ## Apply
 With the Supabase CLI (recommended):
