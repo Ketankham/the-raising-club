@@ -39,13 +39,13 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <Link
-            href="/signin"
+            href="/sign-in"
             className="rounded-full border border-ink/15 px-5 py-2 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
           >
             Sign in
           </Link>
           <Link
-            href="/get-started"
+            href="/onboarding"
             className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
           >
             Get Started
@@ -80,13 +80,13 @@ export function SiteHeader() {
           </div>
           <div className="mt-4 flex flex-col gap-3">
             <Link
-              href="/signin"
+              href="/sign-in"
               className="rounded-full border border-ink/15 px-5 py-2.5 text-center text-sm font-semibold text-ink"
             >
               Sign in
             </Link>
             <Link
-              href="/get-started"
+              href="/onboarding"
               className="rounded-full bg-primary px-5 py-2.5 text-center text-sm font-semibold text-white"
             >
               Get Started

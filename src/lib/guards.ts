@@ -15,6 +15,7 @@ export async function requireUserProfile() {
     .eq("id", user.id)
     .maybeSingle();
   if (!profile) redirect("/sign-in");
+  if (profile.deactivated_at) redirect("/deactivated");
 
   return { supabase, user, profile };
 }

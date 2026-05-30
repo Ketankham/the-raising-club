@@ -297,8 +297,20 @@ export async function signInWithPassword(input: {
   password: string;
 }): Promise<ActionResult> {
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(input);
+  const { data, error } = await supabase.auth.signInWithPassword(input);
   if (error) return { ok: false, error: error.message };
+
+  // Block deactivated accounts: sign them straight back out.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("deactivated_at")
+    .eq("id", data.user.id)
+    .maybeSingle();
+  if (profile?.deactivated_at) {
+    await supabase.auth.signOut();
+    return { ok: false, error: "This account has been deactivated. Please contact support." };
+  }
+
   return { ok: true };
 }
 
