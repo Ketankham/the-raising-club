@@ -1,20 +1,17 @@
 import Link from "next/link";
 import { CalendarPlus, Star } from "lucide-react";
 import { requireEventManager } from "@/lib/guards";
-import { AppHeader } from "@/components/app/app-header";
 import { listManagedEvents } from "@/lib/events/admin";
 import { priceLabel, shortDateLabel } from "@/lib/events/format";
 import type { PriceModel } from "@/lib/events/types";
 
 export default async function AdminEventsPage() {
-  const { isAdmin, orgIds, user, profile } = await requireEventManager();
+  const { isAdmin, orgIds, user } = await requireEventManager();
   const events = await listManagedEvents({ isAdmin, orgIds, userId: user.id });
 
   return (
-    <>
-      <AppHeader name={profile.preferred_name || profile.first_name || undefined} />
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-6 flex items-center justify-between">
+    <div>
+      <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="font-display text-2xl font-bold text-ink">Events</h1>
             <p className="text-sm text-ink-soft">Create and manage your events.</p>
@@ -85,7 +82,6 @@ export default async function AdminEventsPage() {
             </table>
           </div>
         )}
-      </main>
-    </>
+    </div>
   );
 }

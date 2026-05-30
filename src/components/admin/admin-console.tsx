@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { Copy, UserX, UserCheck, Mail, Ban } from "lucide-react";
-import { AppHeader } from "@/components/app/app-header";
 import type { AdminUserRow, AdminInvitation } from "@/lib/admin";
 import { deactivateUser, reactivateUser, inviteUser, revokeInvitation } from "@/lib/admin-actions";
 
@@ -27,9 +26,8 @@ function fmtDate(s: string | null) {
 }
 
 export function AdminConsole({
-  name, users, invitations, stats,
+  users, invitations, stats,
 }: {
-  name: string;
   users: AdminUserRow[];
   invitations: AdminInvitation[];
   stats: { total: number; active: number; onboarded: number; byRole: Record<string, number> };
@@ -73,10 +71,8 @@ export function AdminConsole({
   }
 
   return (
-    <div className="min-h-screen bg-cream">
-      <AppHeader name={name} nav={[{ href: "/admin", label: "Users" }]} />
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="mb-6 font-display text-2xl font-bold text-ink">Admin · Users</h1>
+    <>
+      <h1 className="mb-6 font-display text-2xl font-bold text-ink">Users</h1>
 
         {/* STATS */}
         <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
@@ -170,9 +166,8 @@ export function AdminConsole({
             </table>
           </div>
         </section>
-      </main>
 
       <div className={`fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink px-6 py-3 text-sm font-medium text-white shadow-xl transition-all ${toast ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"}`}>{toast}</div>
-    </div>
+    </>
   );
 }
