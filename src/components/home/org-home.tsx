@@ -24,7 +24,7 @@ export async function OrgHome({ userId, name }: { userId: string; name: string }
 
   return (
     <div className="min-h-screen bg-cream">
-      <AppHeader name={name} nav={[{ href: "/organization/roles", label: "Roles" }, { href: "/organization/team", label: "Team" }, { href: "/courses", label: "Training" }]} />
+      <AppHeader name={name} nav={[{ href: "/organization", label: "Program profile" }, { href: "/organization/roles", label: "Roles" }, { href: "/organization/team", label: "Team" }, { href: "/courses", label: "Training" }]} />
       <PageWrap>
         <Greeting name={name} sub={org ? `${org.name} — staff, train, and grow your program.` : "Staff, train, and grow your program."} />
 

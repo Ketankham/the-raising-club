@@ -14,6 +14,7 @@ export interface OrgProfileData {
   memberCount: number;
   pendingInvites: { id: string; email: string; status: string }[];
   jobs: { id: string; title: string; status: string }[];
+  isPublished: boolean;
   isManager: boolean;
 }
 
@@ -52,6 +53,34 @@ export async function getOrgProfileForUser(userId: string): Promise<OrgProfileDa
     memberCount: membersCount.count ?? 0,
     pendingInvites: invites.data ?? [],
     jobs: jobs.data ?? [],
+    isPublished: org.is_published ?? false,
     isManager: ["owner", "admin"].includes(membership.data?.member_role ?? "") || org.owner_user_id === userId,
+  };
+}
+
+/** Public/visitor view of a published organization (limited fields). */
+export async function getPublicOrgProfile(orgId: string): Promise<OrgProfileData | null> {
+  const supabase = await createClient();
+  const { data: pub } = await supabase.rpc("public_organization", { uid: orgId });
+  if (!pub) return null;
+
+  return {
+    orgId: pub.orgId,
+    name: pub.name,
+    about: pub.about,
+    programTypes: pub.programTypes ?? [],
+    agesServed: pub.agesServed ?? [],
+    size: pub.size,
+    multiLocation: pub.multiLocation,
+    intents: [],
+    contactRoleTitle: null,
+    locations: (pub.locations ?? []).map((l: { label: string | null; zip: string | null }, i: number) => ({
+      id: String(i), label: l.label, zip_code: l.zip, is_primary: i === 0,
+    })),
+    memberCount: 0,
+    pendingInvites: [],
+    jobs: [],
+    isPublished: true,
+    isManager: false,
   };
 }
