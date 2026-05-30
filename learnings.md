@@ -1,0 +1,158 @@
+# Learnings & Gotchas — The Raising Club
+
+A running checklist of hard-won lessons. Intended to grow into a pre-flight
+checklist / pre-commit hook. Each entry: **symptom → root cause → fix → guardrail.**
+
+---
+
+## 1. RLS: `INSERT ... RETURNING` fails with 42501 even though the INSERT is allowed
+
+**Symptom**
+- Creating a row through the app fails: `new row violates row-level security
+  policy for table "X"` (Postgres code `42501`), HTTP 403.
+- The user is correctly authenticated (`auth.uid()` is right, `is_admin()` true).
+- It is **intermittent by table**: an old table works, a new one fails with the
+  same policy pattern.
+
+**How to confirm it's the RETURNING, not the INSERT**
+- Repeat the insert with `Prefer: return=minimal` → **succeeds** (201).
+- Repeat with `Prefer: return=representation` (what supabase-js `.insert().select()`
+  does) → **fails** (403).
+- → The INSERT passes WITH CHECK; the failure is the **SELECT (read) policy**
+  applied to the `RETURNING` row.
+
+**Root cause**
+- The SELECT/read policy used a **STABLE `SECURITY DEFINER` helper** that
+  *re-queries the same table by id* (e.g. `course_can_manage(id)` doing
+  `select … from courses where id = target`).
+- During `INSERT … RETURNING`, the just-inserted row is **not visible to that
+  STABLE function's snapshot**, so it returns `false`; the creator "can't read
+  back" their own new row → 42501.
+
+**Fix**
+- In the **read policy**, check the row's **own columns** + claim-based helpers
+  directly (snapshot-independent), not a self-referential table lookup:
+  ```sql
+  -- BAD (self-referential, breaks INSERT...RETURNING for the creator):
+  using ( status = 'published' or course_can_manage(id) )
+  -- GOOD:
+  using ( status = 'published' or created_by = auth.uid() or is_admin() )
+  ```
+- Manage-by-function (`*_can_manage`) is fine for UPDATE/DELETE (they act on
+  already-committed rows) — only the **SELECT used by RETURNING** is sensitive.
+- Reference fix: `web/supabase/migrations/0022_courses_returning_rls_fix.sql`.
+
+**Guardrail / checklist**
+- [ ] Any table whose rows are created via `.insert().select()` /
+      `.upsert().select()` MUST have a SELECT policy that the **creator passes
+      using row-own columns** (`created_by = auth.uid()` / `is_admin()`), not a
+      `*_can_manage(id)` self-lookup.
+- [ ] When adding a new owner-writable table, smoke-test create through the real
+      API (`Prefer: return=representation`), not just raw SQL.
+
+---
+
+## 2. Raw `psql`/`pg` tests can hide RLS bugs (superuser nuance)
+
+**Symptom**
+- A raw insert via the `postgres` (service) connection succeeds, but the same
+  insert via the REST API / app fails RLS.
+
+**Root cause**
+- `postgres` is a superuser and bypasses RLS. Even after `SET ROLE authenticated`,
+  it's easy to *think* you're testing RLS when you're not.
+
+**Fix / how to test RLS faithfully from a script**
+```sql
+begin;
+set local role authenticated;                              -- drop superuser
+select set_config('request.jwt.claims',
+  json_build_object('sub', '<user-uuid>', 'role','authenticated')::text, true);
+-- ...do the insert/select...
+rollback;
+```
+- **Validate the harness**: set the policy's check to `false` and confirm the
+  insert is **BLOCKED**. If it still succeeds, RLS is being bypassed and your
+  test is meaningless.
+- Best of all: reproduce against the **real PostgREST** by signing in via
+  `/auth/v1/token?grant_type=password` and calling `/rest/v1/<table>` with the
+  returned `access_token` (this is exactly what the app does).
+
+**Guardrail / checklist**
+- [ ] For any RLS assertion in a script, include a negative control
+      (`check(false)` ⇒ blocked) before trusting positive results.
+
+---
+
+## 3. Supabase SSR auth: how to debug "auth lost in a Server Action"
+
+We chased a red herring here — writes failing while reads worked looked like a
+session/refresh bug. It was actually #1. Useful debugging recipe regardless:
+
+- **Decode the actual outgoing token** by passing a logging `fetch` to
+  `createServerClient({ global: { fetch } })` and base64-decoding the
+  `Authorization: Bearer` JWT payload (`sub`, `role`, `exp - now`). Confirms
+  whether each REST call is authed and with which token.
+- **Confirm what the DB sees** with a throwaway `SECURITY DEFINER` probe:
+  ```sql
+  create function whoami() returns jsonb language sql stable security definer
+  set search_path=public as $$
+    select jsonb_build_object('uid', auth.uid(), 'is_admin', is_admin(),
+                              'jwt_role', auth.jwt() ->> 'role') $$;
+  ```
+  Call it via `supabase.rpc('whoami')` in the failing action. (Drop it after.)
+- Server-side Supabase clients should not run their own token refresh; the
+  proxy (`updateSession` in `src/lib/supabase/middleware.ts`) owns refresh. (We
+  tried `auth: { autoRefreshToken:false, persistSession:false }` — harmless, but
+  it was NOT the fix here.)
+
+**Guardrail / checklist**
+- [ ] Before blaming auth/session for a write failure, check the **error code**:
+      `42501` = RLS policy, not auth. Decode the JWT + run `whoami()` to confir
+      auth is actually fine, then look at the policy (esp. SELECT-on-RETURNING, #1).
+
+---
+
+## 4. PostgREST schema cache vs live RLS
+
+- DDL applied via a **direct pg connection** (our `scripts/apply-migrations.mjs`)
+  is picked up by PostgREST via the `pgrst_ddl_watch` event trigger (present on
+  this project) — but if in doubt, force a reload:
+  `notify pgrst, 'reload schema';` (and `'reload config'`).
+- **Important:** the PostgREST schema cache does **not** change *RLS enforcement*
+  (Postgres enforces policies live). So a 42501 is never "just a stale cache" —
+  look at the actual policy logic (#1).
+
+---
+
+## 5. `pg` is installed `--no-save`; npm installs prune it
+
+- `pg` (used by `web/scripts/*.mjs`) is intentionally not in `package.json`.
+- Any `npm install <pkg>` (e.g. adding Tiptap, qrcode) **prunes** it. If a script
+  dies with `ERR_MODULE_NOT_FOUND: pg`, run `npm install --no-save pg` again.
+
+**Guardrail / checklist**
+- [ ] After any `npm install`, if you're about to run a `scripts/*.mjs`, re-add
+      `pg`: `npm install --no-save pg`.
+
+---
+
+## 6. Testing writes through the UI needs a real, confirmed login
+
+- Throwaway logins for Playwright/manual testing:
+  `web/scripts/make-test-users.mjs` → a test **admin** + a published test
+  **caregiver** (password `TestPass#2026`). Created by direct insert into
+  `auth.users` (bcrypt) + `auth.identities`, email pre-confirmed, so
+  `signInWithPassword` works immediately.
+- The shared MCP Chrome profile can hold **stale cookies** from a parallel
+  session — sign out / sign in fresh if behavior looks off (though a fresh prod
+  build on a separate port is the cleaner isolation).
+
+---
+
+## 7. Verifying a build without disturbing the dev server
+
+- A long-running `next dev` on :3000 may be someone else's. To test a fix in
+  isolation: `npm run build` then `npx next start -p 3100` and point the browser
+  at :3100. Server-only file changes (e.g. `lib/supabase/server.ts`) are picked
+  up reliably by a fresh build, less reliably by dev HMR.

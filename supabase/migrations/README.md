@@ -26,6 +26,7 @@ Schema for the onboarding flow + the four user roles. See the full design ration
 | `0019_courses_core.sql` | courses authoring: `courses` + chapters/modules/resources, revision questions/options, quizzes/quiz-questions/options (answers manager-only), `course_skills`, `course_certificate_config`, bundles (+items); `course_can_manage()`/`course_is_public()`; `course-assets` Storage bucket; seeds 8 categories + 4 approaches + starter skills. See `Reference-docs/Courses flow/COURSES-PLAN.md`. |
 | `0020_courses_consumption.sql` | courses consumption: enrollments, module progress, revision answers (solved-once), quiz attempts (60% pass, unlimited), `certificates` (TRC-id + verify token). Server-side grading `submit_course_quiz()` issues cert + awards caregiver skills (`proof='trc_course'`); `course_quiz_for_taker()`/`course_quiz_review()` (reveal after pass); public `verify_certificate()`. |
 | `0021_public_course_credentials.sql` | `public_caregiver_certificates(uid)` — SECURITY DEFINER, exposes a safe subset of a *published* caregiver's earned certificates (no verify token) so course credentials surface on the public profile / marketplace. Earned skills already read publicly. |
+| `0022_courses_returning_rls_fix.sql` | **Fix**: admin create-course/bundle (INSERT … RETURNING via `.select()`) hit 42501 because the SELECT policy's `course_can_manage(id)` (STABLE) couldn't see the just-inserted row. SELECT policy now checks `created_by`/`is_admin()` directly. See `learnings.md`. |
 
 ## Apply
 With the Supabase CLI (recommended):
