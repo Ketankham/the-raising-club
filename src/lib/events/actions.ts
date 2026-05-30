@@ -152,6 +152,58 @@ export async function createRegistration(payload: RegistrationPayload): Promise<
   return { ok: true, registrationId: regId, status };
 }
 
+export type CancelResult =
+  | { ok: true }
+  | { ok: false; reason: "unauthenticated" | "not_found" | "too_late" | "error"; message?: string };
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * Cancel the current user's registration. Re-checks the cancellation cutoff
+ * server-side (never trusts the client) and frees the child capacity by setting
+ * status = cancelled. Paid refunds/credits arrive with the Stripe milestone.
+ */
+export async function cancelRegistration(registrationId: string): Promise<CancelResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  // RLS (owns_registration) ensures we can only read/update our own row.
+  const { data: reg } = await supabase
+    .from("event_registrations")
+    .select(
+      `id, event_id, status,
+       events ( slug, cancellation_cutoff_hours, event_sessions ( starts_at ) )`,
+    )
+    .eq("id", registrationId)
+    .eq("registrant_user_id", user.id)
+    .maybeSingle();
+  if (!reg) return { ok: false, reason: "not_found" };
+
+  const ev = (reg as any).events;
+  const cutoffH = ev?.cancellation_cutoff_hours ?? 12;
+  const starts = (ev?.event_sessions ?? [])
+    .map((s: any) => +new Date(s.starts_at))
+    .filter((t: number) => t >= Date.now())
+    .sort((a: number, b: number) => a - b);
+  const nextStart = starts[0];
+  if (nextStart && Date.now() > nextStart - cutoffH * 3600 * 1000) {
+    return { ok: false, reason: "too_late" };
+  }
+
+  const { error } = await supabase
+    .from("event_registrations")
+    .update({ status: "cancelled", cancelled_at: new Date().toISOString() })
+    .eq("id", registrationId);
+  if (error) return { ok: false, reason: "error", message: error.message };
+
+  if (ev?.slug) revalidatePath(`/events/${ev.slug}`);
+  revalidatePath("/events");
+  return { ok: true };
+}
+
 export type MessageResult = { ok: true } | { ok: false; reason: "unauthenticated" | "error" };
 
 /**

@@ -74,6 +74,35 @@ async function writeSessionAndLocation(
       arrival_notes: loc.arrivalNotes || null,
     });
   }
+
+  // Resources (external links, max 5) — replace the set.
+  await supabase.from("event_resources").delete().eq("event_id", eventId);
+  const resources = (form.resources ?? [])
+    .filter((r) => r.label.trim() && r.url.trim())
+    .slice(0, 5)
+    .map((r, i) => ({
+      event_id: eventId,
+      label: r.label.trim(),
+      url: r.url.trim(),
+      kind: r.kind || "link",
+      position: i,
+      registrants_only: true,
+    }));
+  if (resources.length) await supabase.from("event_resources").insert(resources);
+
+  // Instructors — replace the set.
+  await supabase.from("event_instructors").delete().eq("event_id", eventId);
+  const instructors = (form.instructors ?? [])
+    .filter((i) => i.name.trim())
+    .map((i, idx) => ({
+      event_id: eventId,
+      name: i.name.trim(),
+      role_label: i.roleLabel?.trim() || null,
+      bio: i.bio?.trim() || null,
+      avatar_url: i.avatarUrl?.trim() || null,
+      position: idx,
+    }));
+  if (instructors.length) await supabase.from("event_instructors").insert(instructors);
 }
 
 export async function createEvent(form: EventFormInput): Promise<SaveEventResult> {

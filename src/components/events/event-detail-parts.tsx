@@ -201,3 +201,37 @@ export function LocationBlock({ event, canJoin }: { event: EventDetail; canJoin:
     </div>
   );
 }
+
+export function InstructorsBlock({ event }: { event: EventDetail }) {
+  if (!event.instructors?.length) return null;
+  return (
+    <section>
+      <h3 className="mb-3 font-display text-lg font-bold text-ink">
+        {event.instructors.length === 1 ? "Your host" : "Your hosts"}
+      </h3>
+      <ul className="space-y-4">
+        {event.instructors.map((i) => (
+          <li key={i.id} className="flex items-start gap-3">
+            {i.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={i.avatarUrl}
+                alt={i.name ?? "Host"}
+                className="h-12 w-12 shrink-0 rounded-full object-cover"
+              />
+            ) : (
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-lavender text-ink-soft">
+                <Users size={20} />
+              </span>
+            )}
+            <div>
+              <p className="font-display text-sm font-bold text-ink">{i.name}</p>
+              {i.roleLabel && <p className="text-xs text-ink-soft">{i.roleLabel}</p>}
+              {i.bio && <p className="mt-1 text-sm text-ink-soft">{i.bio}</p>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}

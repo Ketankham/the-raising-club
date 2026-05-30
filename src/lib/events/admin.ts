@@ -97,6 +97,8 @@ export interface EditableEvent {
     platform: string | null;
     joinUrl: string | null;
   } | null;
+  resources: { id: string; label: string; url: string | null; kind: string }[];
+  instructors: { id: string; name: string | null; roleLabel: string | null; bio: string | null; avatarUrl: string | null }[];
 }
 
 export async function getEventForEdit(id: string): Promise<EditableEvent | null> {
@@ -105,7 +107,9 @@ export async function getEventForEdit(id: string): Promise<EditableEvent | null>
     .from("events")
     .select(
       `*, event_sessions ( id, starts_at, ends_at ),
-       event_locations ( kind, neighborhood, address, arrival_notes, platform, join_url )`,
+       event_locations ( kind, neighborhood, address, arrival_notes, platform, join_url ),
+       event_resources ( id, label, url, kind, position ),
+       event_instructors ( id, name, role_label, bio, avatar_url, position )`,
     )
     .eq("id", id)
     .maybeSingle();
@@ -149,6 +153,18 @@ export async function getEventForEdit(id: string): Promise<EditableEvent | null>
           joinUrl: l.join_url,
         }
       : null,
+    resources: (e.event_resources ?? [])
+      .sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0))
+      .map((r: any) => ({ id: r.id, label: r.label, url: r.url, kind: r.kind })),
+    instructors: (e.event_instructors ?? [])
+      .sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0))
+      .map((i: any) => ({
+        id: i.id,
+        name: i.name,
+        roleLabel: i.role_label,
+        bio: i.bio,
+        avatarUrl: i.avatar_url,
+      })),
   };
 }
 

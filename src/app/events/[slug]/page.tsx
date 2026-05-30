@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EventDetail } from "@/components/events/event-detail";
-import { getEventBySlug, getMyRegistration } from "@/lib/events/queries";
+import { getEventBySlug, getMyRegistration, getRegistrationDetails } from "@/lib/events/queries";
 
 export async function generateMetadata({
   params,
@@ -29,12 +29,13 @@ export default async function EventDetailPage({
   if (!event) notFound();
 
   const registration = await getMyRegistration(event.id);
+  const registrationDetails = registration ? await getRegistrationDetails(event.id) : null;
 
   return (
     <>
       <SiteHeader />
       <main className="flex-1">
-        <EventDetail event={event} registration={registration} />
+        <EventDetail event={event} registration={registration} registrationDetails={registrationDetails} />
       </main>
       <SiteFooter />
     </>

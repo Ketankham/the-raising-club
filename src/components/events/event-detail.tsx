@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, CalendarCheck, ImageIcon, ShieldCheck } from "lucide-react";
-import type { EventDetail as EventDetailType, MyRegistration } from "@/lib/events/types";
+import type { EventDetail as EventDetailType, MyRegistration, RegistrationDetails } from "@/lib/events/types";
 import { PARTICIPATION_TAGS } from "@/lib/events/types";
 import { priceLabel, sessionDateTimeLabel } from "@/lib/events/format";
 import { SaveButton } from "./save-button";
@@ -8,6 +8,7 @@ import { ShareButton } from "./share-button";
 import { DetailTabs } from "./detail-tabs";
 import {
   EventDetailsCard,
+  InstructorsBlock,
   LocationBlock,
   ScheduleBlock,
   WhatToExpect,
@@ -16,11 +17,13 @@ import {
 export function EventDetail({
   event,
   registration,
+  registrationDetails,
 }: {
   event: EventDetailType;
   registration: MyRegistration | null;
+  registrationDetails?: RegistrationDetails | null;
 }) {
-  const registered = !!registration;
+  const registered = !!registration && !!registrationDetails;
   const price = priceLabel(event.priceModel, event.priceCents, event.currency);
 
   return (
@@ -69,7 +72,7 @@ export function EventDetail({
 
       {registered ? (
         <div className="mt-6">
-          <DetailTabs event={event} />
+          <DetailTabs event={event} registration={registrationDetails!} />
         </div>
       ) : (
         <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_320px]">
@@ -77,6 +80,7 @@ export function EventDetail({
           <div className="space-y-7">
             <EventDetailsCard event={event} />
             <WhatToExpect event={event} />
+            <InstructorsBlock event={event} />
             {event.agenda.length > 0 && (
               <section>
                 <h3 className="mb-3 font-display text-lg font-bold text-ink">Schedule</h3>

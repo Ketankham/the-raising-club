@@ -9,6 +9,7 @@ import type {
   MyRegistration,
   ParticipationType,
   RegistrationContext,
+  RegistrationDetails,
 } from "./types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -257,6 +258,77 @@ export async function getMyRegistration(eventId: string): Promise<MyRegistration
     .maybeSingle();
 
   return data ? { id: data.id, status: data.status } : null;
+}
+
+/** Full details of the current user's registration for an event (Detail B tabs). */
+export async function getRegistrationDetails(eventId: string): Promise<RegistrationDetails | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: reg } = await supabase
+    .from("event_registrations")
+    .select(
+      `id, status, registered_at, qr_token, contact_email, contact_phone,
+       events ( cancellation_cutoff_hours, event_sessions ( starts_at ) ),
+       event_registration_children ( id, display_pet_name, birth_month, birth_year, support_needs, children ( pet_name ) ),
+       emergency_contacts ( name, phone, relationship ),
+       authorized_pickups ( name, phone, relationship ),
+       waiver_acceptances ( media_consent, waivers ( kind ) ),
+       event_payments ( amount_cents, currency, status, receipt_url, refunded_amount_cents )`,
+    )
+    .eq("event_id", eventId)
+    .eq("registrant_user_id", user.id)
+    .not("status", "in", "(cancelled,denied)")
+    .maybeSingle();
+
+  if (!reg) return null;
+
+  const ec = (reg.emergency_contacts ?? [])[0];
+  const pk = (reg.authorized_pickups ?? [])[0];
+  const pay = (reg.event_payments ?? [])[0];
+
+  const ev: any = reg.events;
+  const cutoffH = ev?.cancellation_cutoff_hours ?? 12;
+  const nextStart = (ev?.event_sessions ?? [])
+    .map((s: any) => +new Date(s.starts_at))
+    .filter((t: number) => t >= Date.now())
+    .sort((a: number, b: number) => a - b)[0];
+  const canCancel = nextStart == null || Date.now() < nextStart - cutoffH * 3600 * 1000;
+
+  return {
+    id: reg.id,
+    status: reg.status,
+    registeredAt: reg.registered_at,
+    qrToken: reg.qr_token,
+    contactEmail: reg.contact_email,
+    contactPhone: reg.contact_phone,
+    children: (reg.event_registration_children ?? []).map((c: any) => ({
+      id: c.id,
+      petName: c.display_pet_name ?? c.children?.pet_name ?? null,
+      birthMonth: c.birth_month,
+      birthYear: c.birth_year,
+      supportNeeds: c.support_needs ?? [],
+    })),
+    waiverAcceptances: (reg.waiver_acceptances ?? []).map((w: any) => ({
+      kind: w.waivers?.kind ?? "participation",
+      mediaConsent: w.media_consent ?? "not_set",
+    })),
+    emergencyContact: ec ? { name: ec.name, phone: ec.phone, relationship: ec.relationship } : null,
+    pickup: pk ? { name: pk.name, phone: pk.phone, relationship: pk.relationship } : null,
+    payment: pay
+      ? {
+          amountCents: pay.amount_cents,
+          currency: pay.currency,
+          status: pay.status,
+          receiptUrl: pay.receipt_url,
+          refundedAmountCents: pay.refunded_amount_cents,
+        }
+      : null,
+    canCancel,
+  };
 }
 
 /**

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Plus, Trash2 } from "lucide-react";
 import { createEvent, updateEvent } from "@/lib/events/admin-actions";
 import type { EditableEvent } from "@/lib/events/admin";
 import {
@@ -69,12 +70,52 @@ export function EventForm({
       platform: initial?.location?.platform ?? "zoom",
       joinUrl: initial?.location?.joinUrl ?? "",
     },
+    resources: (initial?.resources ?? []).map((r) => ({
+      label: r.label,
+      url: r.url ?? "",
+      kind: r.kind,
+    })),
+    instructors: (initial?.instructors ?? []).map((i) => ({
+      name: i.name ?? "",
+      roleLabel: i.roleLabel ?? "",
+      bio: i.bio ?? "",
+      avatarUrl: i.avatarUrl ?? "",
+    })),
   }));
 
   const set = <K extends keyof EventFormInput>(k: K, v: EventFormInput[K]) =>
     setF((s) => ({ ...s, [k]: v }));
   const setLoc = (patch: Partial<EventFormInput["location"]>) =>
     setF((s) => ({ ...s, location: { ...s.location, ...patch } }));
+
+  // Resources (max 5 external links)
+  const addResource = () =>
+    setF((s) =>
+      s.resources.length >= 5
+        ? s
+        : { ...s, resources: [...s.resources, { label: "", url: "", kind: "link" }] },
+    );
+  const setResource = (i: number, patch: Partial<EventFormInput["resources"][number]>) =>
+    setF((s) => ({
+      ...s,
+      resources: s.resources.map((r, j) => (j === i ? { ...r, ...patch } : r)),
+    }));
+  const removeResource = (i: number) =>
+    setF((s) => ({ ...s, resources: s.resources.filter((_, j) => j !== i) }));
+
+  // Instructors
+  const addInstructor = () =>
+    setF((s) => ({
+      ...s,
+      instructors: [...s.instructors, { name: "", roleLabel: "", bio: "", avatarUrl: "" }],
+    }));
+  const setInstructor = (i: number, patch: Partial<EventFormInput["instructors"][number]>) =>
+    setF((s) => ({
+      ...s,
+      instructors: s.instructors.map((x, j) => (j === i ? { ...x, ...patch } : x)),
+    }));
+  const removeInstructor = (i: number) =>
+    setF((s) => ({ ...s, instructors: s.instructors.filter((_, j) => j !== i) }));
 
   function submit() {
     setError(null);
@@ -214,6 +255,75 @@ export function EventForm({
             </Field>
           </div>
         )}
+      </Section>
+
+      <Section title="Resources (links)">
+        <p className="-mt-2 mb-1 text-xs text-ink-soft">
+          Up to 5 external links (websites, Vimeo, Google Docs/Drive) shared with registered attendees.
+        </p>
+        {f.resources.map((r, i) => (
+          <div key={i} className="flex flex-wrap items-end gap-2 rounded-xl border border-ink/10 bg-cream/40 p-3">
+            <div className="min-w-[140px] flex-1">
+              <Field label="Label">
+                <input className={input} value={r.label} onChange={(e) => setResource(i, { label: e.target.value })} placeholder="Welcome guide" />
+              </Field>
+            </div>
+            <div className="min-w-[180px] flex-[2]">
+              <Field label="URL">
+                <input className={input} value={r.url} onChange={(e) => setResource(i, { url: e.target.value })} placeholder="https://…" />
+              </Field>
+            </div>
+            <div>
+              <Field label="Type">
+                <select className={input} value={r.kind} onChange={(e) => setResource(i, { kind: e.target.value })}>
+                  <option value="link">Link</option>
+                  <option value="vimeo">Vimeo</option>
+                  <option value="gdoc">Google Doc</option>
+                  <option value="gdrive">Google Drive</option>
+                  <option value="other">Other</option>
+                </select>
+              </Field>
+            </div>
+            <button type="button" aria-label="Remove resource" onClick={() => removeResource(i)} className="mb-1 grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-lavender">
+              <Trash2 size={16} />
+            </button>
+          </div>
+        ))}
+        {f.resources.length < 5 && (
+          <button type="button" onClick={addResource} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#7ba84f] hover:underline">
+            <Plus size={16} /> Add link
+          </button>
+        )}
+      </Section>
+
+      <Section title="Instructors">
+        <p className="-mt-2 mb-1 text-xs text-ink-soft">Shown on the event page.</p>
+        {f.instructors.map((it, i) => (
+          <div key={i} className="space-y-3 rounded-xl border border-ink/10 bg-cream/40 p-3">
+            <div className="flex items-start gap-2">
+              <div className="grid flex-1 gap-3 sm:grid-cols-2">
+                <Field label="Name">
+                  <input className={input} value={it.name} onChange={(e) => setInstructor(i, { name: e.target.value })} />
+                </Field>
+                <Field label="Role / title">
+                  <input className={input} value={it.roleLabel} onChange={(e) => setInstructor(i, { roleLabel: e.target.value })} placeholder="Montessori educator" />
+                </Field>
+              </div>
+              <button type="button" aria-label="Remove instructor" onClick={() => removeInstructor(i)} className="mt-6 grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-lavender">
+                <Trash2 size={16} />
+              </button>
+            </div>
+            <Field label="Avatar image URL">
+              <input className={input} value={it.avatarUrl} onChange={(e) => setInstructor(i, { avatarUrl: e.target.value })} placeholder="https://…" />
+            </Field>
+            <Field label="Short bio">
+              <textarea className={input} rows={2} value={it.bio} onChange={(e) => setInstructor(i, { bio: e.target.value })} />
+            </Field>
+          </div>
+        ))}
+        <button type="button" onClick={addInstructor} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#7ba84f] hover:underline">
+          <Plus size={16} /> Add instructor
+        </button>
       </Section>
 
       <Section title="Pricing & capacity">

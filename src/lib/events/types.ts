@@ -129,6 +129,37 @@ export interface MyRegistration {
   status: string;
 }
 
+/** Full registration for the "Your registration" / "Payments" tabs (Detail B). */
+export interface RegisteredChild {
+  id: string;
+  petName: string | null;
+  birthMonth: number | null;
+  birthYear: number | null;
+  supportNeeds: SupportNeed[];
+}
+
+export interface RegistrationDetails {
+  id: string;
+  status: string;
+  registeredAt: string;
+  qrToken: string;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  children: RegisteredChild[];
+  waiverAcceptances: { kind: string; mediaConsent: string }[];
+  emergencyContact: { name: string; phone: string; relationship: string | null } | null;
+  pickup: { name: string; phone: string; relationship: string | null } | null;
+  payment: {
+    amountCents: number;
+    currency: string;
+    status: string;
+    receiptUrl: string | null;
+    refundedAmountCents: number;
+  } | null;
+  /** Whether the cancellation cutoff still allows self-cancel (computed server-side). */
+  canCancel: boolean;
+}
+
 // --- Registration flow -----------------------------------------------------
 
 export type SupportNeed =
@@ -212,6 +243,9 @@ export interface EventFormInput {
     platform?: string;
     joinUrl?: string;
   };
+  /** External link resources (max 5). */
+  resources: { label: string; url: string; kind: string }[];
+  instructors: { name: string; roleLabel?: string; bio?: string; avatarUrl?: string }[];
 }
 
 /** Payload submitted at the end of the registration wizard. */
