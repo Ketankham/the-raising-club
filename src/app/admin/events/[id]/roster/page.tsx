@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download, Pencil } from "lucide-react";
+import { ArrowLeft, Download, MessagesSquare, Pencil } from "lucide-react";
 import { requireEventManager } from "@/lib/guards";
 import { RosterView } from "@/components/events/admin/roster-view";
 import { getEventForEdit, getRoster } from "@/lib/events/admin";
@@ -28,6 +28,12 @@ export default async function RosterPage({
             <p className="text-sm text-ink-soft">Roster &amp; attendance</p>
           </div>
           <div className="flex gap-3">
+            <Link
+              href={`/admin/events/${ev.id}/messages`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-4 py-2 text-sm font-semibold text-ink hover:border-[#9cc766]"
+            >
+              <MessagesSquare size={14} /> Messages
+            </Link>
             <a
               href={`/admin/events/${ev.id}/roster/export`}
               className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-4 py-2 text-sm font-semibold text-ink hover:border-[#9cc766]"
