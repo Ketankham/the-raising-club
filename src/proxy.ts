@@ -13,8 +13,9 @@ import { updateSession } from "@/lib/supabase/middleware";
  *      anonymous session itself.
  */
 
-// Routes that require a permanent (non-anonymous) signed-in user.
-const PROTECTED_PREFIXES = ["/dashboard", "/profile", "/admin", "/connect"];
+// Routes that require a signed-in user. NOTE: /profile is intentionally absent
+// so /profile/[id] stays publicly shareable; the own /profile page guards itself.
+const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/connect"];
 
 export async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
