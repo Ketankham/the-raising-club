@@ -3,7 +3,7 @@
 import { useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import {
-  Share2, Bookmark, UserPlus, Download, Star, BadgeCheck, Pencil, Check,
+  Share2, Bookmark, UserPlus, Download, Star, BadgeCheck, Pencil, Check, Award,
   Home, Search, Bell, MessageCircle,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
@@ -192,11 +192,23 @@ export function CaregiverProfile({ data, isOwner }: { data: CaregiverProfileData
             </Card>
 
             <Card title="Child Development & Learning" owner={isOwner} tone="pink">
-              {data.experienceLevel || idVerified ? (
+              {(data.experienceLevel || idVerified || data.earnedSkills.some((s) => s.fromCourse)) ? (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white"><Star className="h-3.5 w-3.5 fill-white" /> TRC Certified Pro</span>
               ) : null}
-              <p className="mt-3 text-sm text-ink-soft">Daily routines, developmental play, social-emotional support, and communication — selected from your TRC skills.</p>
-              <p className="mt-3 text-xs italic text-ink-soft">{isOwner ? "Tip: add specialized skills below to populate this section." : ""}</p>
+              {data.earnedSkills.length ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {data.earnedSkills.map((s) => (
+                    <span key={s.id} className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs ${s.fromCourse ? "bg-primary/15 font-medium text-ink" : "bg-white/70 text-ink-soft"}`}>
+                      {s.fromCourse && <Award className="h-3 w-3 text-primary" />} {s.label}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-ink-soft">{isOwner ? "Complete a Raising Club course to earn skills that appear here and in marketplace search." : "No skills added yet."}</p>
+              )}
+              {data.earnedSkills.some((s) => s.fromCourse) && (
+                <p className="mt-3 text-xs italic text-ink-soft">Skills marked with a badge were earned by completing Raising Club courses.</p>
+              )}
             </Card>
 
             <Card title="Education & Credentials" owner={isOwner} open={open === "edu"} onEdit={toggle("edu")}>
@@ -214,7 +226,18 @@ export function CaregiverProfile({ data, isOwner }: { data: CaregiverProfileData
                 <div className="flex flex-col gap-3">
                   {data.education?.level && <div className="text-sm"><span className="font-medium text-ink">{EDUCATION_LEVELS[data.education.level]}</span>{data.education.institution ? <span className="text-ink-soft"> · {data.education.institution}</span> : ""}</div>}
                   {data.certifications.length ? <div className="flex flex-wrap gap-2">{data.certifications.map((c) => <span key={c.id} className="inline-flex items-center gap-1 rounded-full bg-olive/25 px-3 py-1 text-xs text-ink"><Check className="h-3 w-3 text-[#4f6b15]" /> {c.name}</span>)}</div> : null}
-                  {!data.education?.level && !data.certifications.length && <p className="text-sm text-ink-soft">{isOwner ? "Add your education and certifications." : "Not added yet."}</p>}
+                  {data.courseCredentials.length ? (
+                    <div className="flex flex-col gap-1.5">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">The Raising Club courses</p>
+                      {data.courseCredentials.map((c) => (
+                        <a key={c.certificateId} href={`/courses/${c.courseSlug}/certificate`} className="inline-flex items-center gap-1.5 text-sm font-medium text-ink hover:text-primary">
+                          <Award className="h-4 w-4 text-primary" /> {c.courseTitle}
+                          <span className="text-xs text-ink-soft">· {new Date(c.issuedAt).getFullYear()}</span>
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                  {!data.education?.level && !data.certifications.length && !data.courseCredentials.length && <p className="text-sm text-ink-soft">{isOwner ? "Add your education and certifications." : "Not added yet."}</p>}
                 </div>
               )}
             </Card>

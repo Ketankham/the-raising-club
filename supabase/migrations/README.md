@@ -25,6 +25,7 @@ Schema for the onboarding flow + the four user roles. See the full design ration
 | `0018_event_host_name.sql` | `events.host_name` — denormalized organizer display name (org/company name, else creator) for list + detail "Hosted by" |
 | `0019_courses_core.sql` | courses authoring: `courses` + chapters/modules/resources, revision questions/options, quizzes/quiz-questions/options (answers manager-only), `course_skills`, `course_certificate_config`, bundles (+items); `course_can_manage()`/`course_is_public()`; `course-assets` Storage bucket; seeds 8 categories + 4 approaches + starter skills. See `Reference-docs/Courses flow/COURSES-PLAN.md`. |
 | `0020_courses_consumption.sql` | courses consumption: enrollments, module progress, revision answers (solved-once), quiz attempts (60% pass, unlimited), `certificates` (TRC-id + verify token). Server-side grading `submit_course_quiz()` issues cert + awards caregiver skills (`proof='trc_course'`); `course_quiz_for_taker()`/`course_quiz_review()` (reveal after pass); public `verify_certificate()`. |
+| `0021_public_course_credentials.sql` | `public_caregiver_certificates(uid)` — SECURITY DEFINER, exposes a safe subset of a *published* caregiver's earned certificates (no verify token) so course credentials surface on the public profile / marketplace. Earned skills already read publicly. |
 
 ## Apply
 With the Supabase CLI (recommended):
