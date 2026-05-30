@@ -179,6 +179,41 @@ export interface RegistrationContext {
   waivers: WaiverItem[];
 }
 
+/** Create/edit payload for the admin event form. */
+export interface EventFormInput {
+  id?: string;
+  orgId?: string | null;
+  title: string;
+  summary?: string;
+  whatToExpect?: string;
+  heroImageUrl?: string;
+  joinMode: EventJoinMode;
+  style?: EventStyle | null;
+  participationType: ParticipationType;
+  ageMinMonths?: number | null;
+  ageMaxMonths?: number | null;
+  priceModel: PriceModel;
+  priceCents: number;
+  childCapacity?: number | null;
+  adultCapacity?: number | null;
+  visibility: EventVisibility;
+  status: EventStatus;
+  requiresApproval: boolean;
+  waitlistEnabled: boolean;
+  isFeatured: boolean;
+  timezone: string;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  location: {
+    kind: "physical" | "digital";
+    neighborhood?: string;
+    address?: string;
+    arrivalNotes?: string;
+    platform?: string;
+    joinUrl?: string;
+  };
+}
+
 /** Payload submitted at the end of the registration wizard. */
 export interface RegistrationPayload {
   eventId: string;
