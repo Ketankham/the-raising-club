@@ -1,12 +1,8 @@
 import Link from "next/link";
 import { Calendar, ImageIcon, MapPin, Users } from "lucide-react";
 import { SaveButton } from "./save-button";
-import {
-  ageRangeLabel,
-  locationLabel,
-  priceLabel,
-  shortDateLabel,
-} from "@/lib/events/format";
+import { LocalDateTime } from "./local-datetime";
+import { ageRangeLabel, locationLabel, priceLabel } from "@/lib/events/format";
 import { PARTICIPATION_TAGS, type EventListItem } from "@/lib/events/types";
 
 export function EventCard({ event }: { event: EventListItem }) {
@@ -64,7 +60,7 @@ export function EventCard({ event }: { event: EventListItem }) {
           {event.nextSession && (
             <li className="flex items-center gap-2">
               <Calendar size={15} className="shrink-0 text-ink-soft/70" />
-              {shortDateLabel(event.nextSession.startsAt)}
+              <LocalDateTime startIso={event.nextSession.startsAt} mode="shortdate" />
             </li>
           )}
           <li className="flex items-center gap-2">

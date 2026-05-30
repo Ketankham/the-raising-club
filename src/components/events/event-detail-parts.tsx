@@ -2,12 +2,9 @@
 // server-only APIs, so they render fine in BOTH the server detail-A view and the
 // client tabbed detail-B view.
 import { Calendar, Clock, Download, ExternalLink, FileText, MapPin, Users } from "lucide-react";
-import {
-  ageRangeLabel,
-  sessionDateTimeLabel,
-  shortDateLabel,
-} from "@/lib/events/format";
+import { ageRangeLabel } from "@/lib/events/format";
 import type { EventDetail } from "@/lib/events/types";
+import { LocalDateTime } from "./local-datetime";
 
 export function EventDetailsCard({ event }: { event: EventDetail }) {
   const enrolled =
@@ -25,7 +22,7 @@ export function EventDetailsCard({ event }: { event: EventDetail }) {
             <Calendar size={17} className="mt-0.5 shrink-0 text-ink-soft" />
             <span>
               <span className="block text-ink-soft">When</span>
-              {shortDateLabel(next.startsAt, event.timezone)}
+              <LocalDateTime startIso={next.startsAt} mode="shortdate" fallbackTz={event.timezone} />
             </span>
           </li>
         )}
@@ -34,11 +31,7 @@ export function EventDetailsCard({ event }: { event: EventDetail }) {
             <Clock size={17} className="mt-0.5 shrink-0 text-ink-soft" />
             <span>
               <span className="block text-ink-soft">Time</span>
-              {new Date(next.startsAt).toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-                timeZone: event.timezone,
-              })}
+              <LocalDateTime startIso={next.startsAt} mode="time" fallbackTz={event.timezone} />
             </span>
           </li>
         )}
@@ -149,7 +142,12 @@ export function LocationBlock({ event, canJoin }: { event: EventDetail; canJoin:
         <h3 className="font-display text-base font-bold text-ink">How to join</h3>
         {event.nextSession && (
           <p className="text-sm text-ink-soft">
-            {sessionDateTimeLabel(event.nextSession.startsAt, event.nextSession.endsAt, event.timezone)}
+            <LocalDateTime
+              startIso={event.nextSession.startsAt}
+              endIso={event.nextSession.endsAt}
+              mode="range"
+              fallbackTz={event.timezone}
+            />
           </p>
         )}
         {loc.joinInstructions && <p className="text-sm text-ink-soft">{loc.joinInstructions}</p>}

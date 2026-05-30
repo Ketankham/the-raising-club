@@ -67,6 +67,62 @@ export function shortDateLabel(startsAt: string, timeZone?: string): string {
   });
 }
 
+// --- Timezone conversion (admin form <-> stored UTC instant) ----------------
+// `<input type="datetime-local">` gives a naive wall-clock ("2026-05-09T10:00").
+// We interpret that wall-clock in the event's timezone and store the true UTC
+// instant, so it displays correctly in any viewer's local timezone.
+
+/** Offset (ms) of `timeZone` from UTC at the given instant (DST-aware). */
+function tzOffsetMs(date: Date, timeZone: string): number {
+  const dtf = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  const p = dtf.formatToParts(date).reduce<Record<string, string>>((a, x) => {
+    a[x.type] = x.value;
+    return a;
+  }, {});
+  const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
+  return asUTC - date.getTime();
+}
+
+/** Wall-clock ("2026-05-09T10:00") in `timeZone` -> UTC ISO instant. */
+export function wallClockToUtc(wallClock: string, timeZone: string): string | null {
+  if (!wallClock) return null;
+  const naive = new Date(`${wallClock.slice(0, 16)}:00Z`); // digits as if UTC
+  if (Number.isNaN(naive.getTime())) return null;
+  const offset = tzOffsetMs(naive, timeZone);
+  return new Date(naive.getTime() - offset).toISOString();
+}
+
+/** UTC ISO instant -> wall-clock ("2026-05-09T10:00") in `timeZone`. */
+export function utcToWallClock(iso: string | null | undefined, timeZone: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const p = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+    .formatToParts(d)
+    .reduce<Record<string, string>>((a, x) => {
+      a[x.type] = x.value;
+      return a;
+    }, {});
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+}
+
 /** "Online" | "Brooklyn" | "In-person" — neighborhood first per the doc. */
 export function locationLabel(loc: EventListItem["location"]): string {
   if (!loc) return "";

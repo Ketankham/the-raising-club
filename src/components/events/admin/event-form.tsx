@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { createEvent, updateEvent } from "@/lib/events/admin-actions";
 import type { EditableEvent } from "@/lib/events/admin";
+import { utcToWallClock, wallClockToUtc } from "@/lib/events/format";
 import {
   EVENT_STYLE_LABELS,
   PARTICIPATION_LABELS,
@@ -19,12 +20,6 @@ import {
 
 type OrgOption = { id: string; name: string };
 
-// datetime-local needs "YYYY-MM-DDTHH:mm"; trim a stored ISO string to that.
-function toLocalInput(iso: string | null | undefined): string {
-  if (!iso) return "";
-  return iso.slice(0, 16);
-}
-
 export function EventForm({
   initial,
   orgs,
@@ -37,6 +32,13 @@ export function EventForm({
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  // The datetime-local fields hold wall-clock time in THIS timezone. Default a
+  // new event to the creator's own timezone; the entered time is converted to a
+  // UTC instant on save and shown in each viewer's local timezone.
+  const browserTz =
+    typeof Intl !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "America/New_York";
+  const tz = initial?.timezone || browserTz;
 
   const [f, setF] = useState<EventFormInput>(() => ({
     id: initial?.id,
@@ -59,9 +61,9 @@ export function EventForm({
     requiresApproval: initial?.requiresApproval ?? false,
     waitlistEnabled: initial?.waitlistEnabled ?? false,
     isFeatured: initial?.isFeatured ?? false,
-    timezone: initial?.timezone ?? "America/New_York",
-    startsAt: toLocalInput(initial?.session?.startsAt),
-    endsAt: toLocalInput(initial?.session?.endsAt),
+    timezone: tz,
+    startsAt: utcToWallClock(initial?.session?.startsAt, tz),
+    endsAt: utcToWallClock(initial?.session?.endsAt, tz),
     location: {
       kind: (initial?.location?.kind as "physical" | "digital") ?? "physical",
       neighborhood: initial?.location?.neighborhood ?? "",
@@ -123,10 +125,11 @@ export function EventForm({
       setError("Title is required.");
       return;
     }
+    // Interpret the entered wall-clock in the event's timezone -> UTC instant.
     const payload: EventFormInput = {
       ...f,
-      startsAt: f.startsAt || null,
-      endsAt: f.endsAt || null,
+      startsAt: f.startsAt ? wallClockToUtc(f.startsAt, f.timezone) : null,
+      endsAt: f.endsAt ? wallClockToUtc(f.endsAt, f.timezone) : null,
     };
     start(async () => {
       const res = f.id ? await updateEvent(payload) : await createEvent(payload);

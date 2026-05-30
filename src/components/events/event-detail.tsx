@@ -2,9 +2,10 @@ import Link from "next/link";
 import { ArrowLeft, CalendarCheck, ImageIcon, ShieldCheck } from "lucide-react";
 import type { EventDetail as EventDetailType, MyRegistration, RegistrationDetails } from "@/lib/events/types";
 import { PARTICIPATION_TAGS } from "@/lib/events/types";
-import { priceLabel, sessionDateTimeLabel } from "@/lib/events/format";
+import { priceLabel } from "@/lib/events/format";
 import { SaveButton } from "./save-button";
 import { ShareButton } from "./share-button";
+import { LocalDateTime } from "./local-datetime";
 import { DetailTabs } from "./detail-tabs";
 import {
   EventDetailsCard,
@@ -121,11 +122,12 @@ export function EventDetail({
               </div>
               {event.nextSession && (
                 <p className="mb-4 text-sm text-ink-soft">
-                  {sessionDateTimeLabel(
-                    event.nextSession.startsAt,
-                    event.nextSession.endsAt,
-                    event.timezone,
-                  )}
+                  <LocalDateTime
+                    startIso={event.nextSession.startsAt}
+                    endIso={event.nextSession.endsAt}
+                    mode="range"
+                    fallbackTz={event.timezone}
+                  />
                 </p>
               )}
               <Link
