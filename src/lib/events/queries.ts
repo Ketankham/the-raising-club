@@ -45,6 +45,8 @@ function mapRow(row: any, savedIds: Set<string>): EventListItem {
       ? { kind: loc.kind, neighborhood: loc.neighborhood, address: loc.address }
       : null,
     isSaved: savedIds.has(row.id),
+    hostName: row.host_name ?? null,
+    hostType: row.host_type ?? null,
   };
 }
 
@@ -103,7 +105,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
     .select(
       `id, slug, title, summary, hero_image_url, join_mode, style, participation_type,
        age_min_months, age_max_months, price_model, price_cents, currency, is_featured,
-       status, visibility,
+       status, visibility, host_name, host_type,
        event_sessions ( id, starts_at, ends_at ),
        event_locations ( kind, neighborhood, address )`,
     )
@@ -149,7 +151,8 @@ export async function getEventBySlug(slug: string): Promise<EventDetail | null> 
       `id, slug, title, summary, what_to_expect, hero_image_url, join_mode, style,
        participation_type, age_min_months, age_max_months, price_model, price_cents,
        currency, is_featured, timezone, requires_approval, cancellation_cutoff_hours,
-       child_capacity, agenda, status, visibility,
+       child_capacity, agenda, status, visibility, host_name, host_type, org_id,
+       organizations ( id, is_published ),
        event_sessions ( id, starts_at, ends_at ),
        event_locations ( kind, neighborhood, address, arrival_notes, platform, join_url, join_instructions ),
        event_instructors ( id, name, bio, avatar_url, role_label ),
@@ -182,6 +185,8 @@ export async function getEventBySlug(slug: string): Promise<EventDetail | null> 
   if (typeof count === "number") confirmedChildCount = count;
 
   const loc = (row.event_locations ?? [])[0];
+  const orgEmbed: any = (row as any).organizations;
+  const org = Array.isArray(orgEmbed) ? orgEmbed[0] : orgEmbed;
 
   return {
     id: row.id,
@@ -203,6 +208,10 @@ export async function getEventBySlug(slug: string): Promise<EventDetail | null> 
       ? { kind: loc.kind, neighborhood: loc.neighborhood, address: loc.address }
       : null,
     isSaved,
+    hostName: row.host_name ?? null,
+    hostType: row.host_type ?? null,
+    hostOrgId: row.org_id ?? null,
+    hostOrgPublished: !!org?.is_published,
     whatToExpect: row.what_to_expect,
     agenda: Array.isArray(row.agenda) ? row.agenda : [],
     timezone: row.timezone,

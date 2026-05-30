@@ -105,6 +105,31 @@ async function writeSessionAndLocation(
   if (instructors.length) await supabase.from("event_instructors").insert(instructors);
 }
 
+/**
+ * Organizer display name shown on the list + detail screens: the organization's
+ * name when the host belongs to a company, otherwise the creator's own name
+ * (falling back to "The Raising Club" for platform events).
+ */
+async function resolveHostName(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  orgId: string | null,
+  creatorUserId: string,
+): Promise<string> {
+  if (orgId) {
+    const { data } = await supabase.from("organizations").select("name").eq("id", orgId).maybeSingle();
+    if (data?.name) return data.name;
+  }
+  const { data: p } = await supabase
+    .from("profiles")
+    .select("preferred_name, first_name, last_name, role")
+    .eq("id", creatorUserId)
+    .maybeSingle();
+  const name =
+    p?.preferred_name || [p?.first_name, p?.last_name].filter(Boolean).join(" ").trim();
+  if (name) return name;
+  return "The Raising Club";
+}
+
 export async function createEvent(form: EventFormInput): Promise<SaveEventResult> {
   const supabase = await createClient();
   const {
@@ -113,14 +138,17 @@ export async function createEvent(form: EventFormInput): Promise<SaveEventResult
   if (!user) return { ok: false, reason: "unauthenticated" };
 
   const slug = slugify(form.title);
+  const orgId = form.orgId ?? null;
+  const hostName = await resolveHostName(supabase, orgId, user.id);
   const { data, error } = await supabase
     .from("events")
     .insert({
       ...eventColumns(form),
       slug,
       created_by: user.id,
-      org_id: form.orgId ?? null,
-      host_type: form.orgId ? "organization" : "trc",
+      org_id: orgId,
+      host_type: orgId ? "organization" : "trc",
+      host_name: hostName,
     })
     .select("id, slug")
     .single();
@@ -145,9 +173,21 @@ export async function updateEvent(form: EventFormInput): Promise<SaveEventResult
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, reason: "unauthenticated" };
 
+  // Recompute the host name from the event's own org/creator (not the editor).
+  const { data: existing } = await supabase
+    .from("events")
+    .select("org_id, created_by")
+    .eq("id", form.id)
+    .maybeSingle();
+  const hostName = await resolveHostName(
+    supabase,
+    existing?.org_id ?? null,
+    existing?.created_by ?? user.id,
+  );
+
   const { data, error } = await supabase
     .from("events")
-    .update(eventColumns(form))
+    .update({ ...eventColumns(form), host_name: hostName })
     .eq("id", form.id)
     .select("id, slug")
     .maybeSingle();

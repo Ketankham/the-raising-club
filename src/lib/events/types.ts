@@ -41,6 +41,9 @@ export interface EventListItem {
   nextSession: EventSession | null;
   location: EventLocationSummary | null;
   isSaved: boolean;
+  /** Organizer display name: org/company name, else the organizer's own name. */
+  hostName: string | null;
+  hostType: string | null;
 }
 
 /** Filters parsed from the URL search params on /events. */
@@ -122,6 +125,9 @@ export interface EventDetail extends EventListItem {
   locationFull: EventLocationFull | null;
   instructors: EventInstructor[];
   resources: EventResourceItem[];
+  /** Hosting org (when host_type = organization) for the "Hosted by" link. */
+  hostOrgId: string | null;
+  hostOrgPublished: boolean;
 }
 
 export interface MyRegistration {

@@ -70,6 +70,22 @@ export function EventDetail({
         <span className="font-display text-xl font-bold text-ink">{price}</span>
       </div>
 
+      {event.hostName && (
+        <p className="mt-1.5 text-sm text-ink-soft">
+          Hosted by{" "}
+          {event.hostType === "organization" && event.hostOrgId && event.hostOrgPublished ? (
+            <Link
+              href={`/organization/${event.hostOrgId}`}
+              className="font-semibold text-ink hover:text-[#7ba84f]"
+            >
+              {event.hostName}
+            </Link>
+          ) : (
+            <span className="font-semibold text-ink">{event.hostName}</span>
+          )}
+        </p>
+      )}
+
       {registered ? (
         <div className="mt-6">
           <DetailTabs event={event} registration={registrationDetails!} />

@@ -53,6 +53,9 @@ export function EventCard({ event }: { event: EventListItem }) {
             {event.title}
           </h3>
         </Link>
+        {event.hostName && (
+          <p className="-mt-1 text-xs font-medium text-ink-soft">by {event.hostName}</p>
+        )}
         {event.summary && (
           <p className="line-clamp-2 text-sm text-ink-soft">{event.summary}</p>
         )}
