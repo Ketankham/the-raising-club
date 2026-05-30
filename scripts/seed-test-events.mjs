@@ -21,8 +21,14 @@ const events = [
     age_min: 6, age_max: 36, price_model: "paid", price_cents: 4500, child_capacity: 15,
     is_featured: true,
     session: ["2026-02-21T09:00:00-05:00", "2026-02-21T10:30:00-05:00"],
-    loc: { kind: "physical", neighborhood: "Brooklyn", address: "123 Main Street, Suite 100, Brooklyn, NY" },
+    loc: { kind: "physical", neighborhood: "Brooklyn", address: "123 Main Street, Suite 100, Brooklyn, NY", arrival_notes: "Street parking is available. The entrance is on the main street — ring the bell for #100." },
     hero: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&q=80",
+    agenda: [
+      { time: "9:00 AM", title: "Welcome circle", description: "Songs and a gentle settling-in." },
+      { time: "9:20 AM", title: "Prepared environment play", description: "Child-led exploration with Montessori materials." },
+      { time: "10:00 AM", title: "Snack & connect", description: "Time for caregivers to chat." },
+      { time: "10:20 AM", title: "Closing song", description: "Goodbye circle." },
+    ],
   },
   {
     slug: "toddler-open-play-morning",
@@ -56,16 +62,16 @@ for (const e of events) {
        (slug, title, summary, what_to_expect, hero_image_url, join_mode, style,
         participation_type, expectant_parents_allowed, age_min_months, age_max_months,
         visibility, status, price_model, price_cents, child_capacity, is_featured,
-        host_type, timezone, published_at)
-     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'public','published',$12,$13,$14,$15,'trc','America/New_York',now())
+        agenda, host_type, timezone, published_at)
+     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'public','published',$12,$13,$14,$15,$16::jsonb,'trc','America/New_York',now())
      on conflict (slug) do update set
         title=excluded.title, summary=excluded.summary, what_to_expect=excluded.what_to_expect,
         hero_image_url=excluded.hero_image_url, is_featured=excluded.is_featured,
-        price_model=excluded.price_model, price_cents=excluded.price_cents
+        price_model=excluded.price_model, price_cents=excluded.price_cents, agenda=excluded.agenda
      returning id`,
     [e.slug, e.title, e.summary, e.what_to_expect, e.hero, e.join_mode, e.style,
      e.participation_type, false, e.age_min, e.age_max, e.price_model, e.price_cents,
-     e.child_capacity, e.is_featured],
+     e.child_capacity, e.is_featured, JSON.stringify(e.agenda ?? [])],
   );
   const id = ev.rows[0].id;
   // reset child rows so re-runs stay clean
@@ -76,11 +82,12 @@ for (const e of events) {
     [id, e.session[0], e.session[1]],
   );
   await client.query(
-    `insert into event_locations (event_id, kind, neighborhood, address, platform, join_url)
-     values ($1,$2,$3,$4,$5,$6)`,
-    [id, e.loc.kind, e.loc.neighborhood, e.loc.address,
+    `insert into event_locations (event_id, kind, neighborhood, address, arrival_notes, platform, join_url, join_instructions)
+     values ($1,$2,$3,$4,$5,$6,$7,$8)`,
+    [id, e.loc.kind, e.loc.neighborhood, e.loc.address, e.loc.arrival_notes ?? null,
      e.loc.kind === "digital" ? "zoom" : null,
-     e.loc.kind === "digital" ? "https://zoom.us/j/example" : null],
+     e.loc.kind === "digital" ? "https://zoom.us/j/example" : null,
+     e.loc.kind === "digital" ? "We'll email the Zoom link 24 hours before. Please join 5 minutes early." : null],
   );
   console.log(`seeded: ${e.slug}`);
 }

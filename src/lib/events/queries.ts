@@ -8,6 +8,7 @@ import type {
   EventStyle,
   MyRegistration,
   ParticipationType,
+  RegistrationContext,
 } from "./types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -256,6 +257,66 @@ export async function getMyRegistration(eventId: string): Promise<MyRegistration
     .maybeSingle();
 
   return data ? { id: data.id, status: data.status } : null;
+}
+
+/**
+ * Context for the registration wizard. Assumes the caller already ensured a
+ * signed-in user (the page redirects guests to sign-in). Loads the event basics,
+ * the user's saved children, and the event's required waivers.
+ */
+export async function getRegistrationContext(slug: string): Promise<RegistrationContext | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: ev } = await supabase
+    .from("events")
+    .select(
+      `id, slug, title, hero_image_url, participation_type, price_model, price_cents,
+       currency, requires_approval, age_min_months, age_max_months,
+       event_waivers ( waivers ( id, kind, title, body ) )`,
+    )
+    .eq("slug", slug)
+    .maybeSingle();
+  if (!ev) return null;
+
+  const [{ data: kids }, { data: profile }] = await Promise.all([
+    supabase
+      .from("children")
+      .select("id, pet_name, birth_month, birth_year")
+      .eq("parent_user_id", user.id)
+      .order("position"),
+    supabase.from("profiles").select("email").eq("id", user.id).maybeSingle(),
+  ]);
+
+  const waivers = (ev.event_waivers ?? [])
+    .map((ew: any) => ew.waivers)
+    .filter(Boolean)
+    .map((w: any) => ({ id: w.id, kind: w.kind, title: w.title, body: w.body }));
+
+  return {
+    eventId: ev.id,
+    slug: ev.slug,
+    title: ev.title,
+    heroImageUrl: ev.hero_image_url,
+    participationType: ev.participation_type,
+    priceModel: ev.price_model,
+    priceCents: ev.price_cents,
+    currency: ev.currency,
+    requiresApproval: ev.requires_approval,
+    ageMinMonths: ev.age_min_months,
+    ageMaxMonths: ev.age_max_months,
+    contactEmail: profile?.email ?? user.email ?? null,
+    children: (kids ?? []).map((k: any) => ({
+      id: k.id,
+      petName: k.pet_name,
+      birthMonth: k.birth_month,
+      birthYear: k.birth_year,
+    })),
+    waivers,
+  };
 }
 
 /** Parse the /events URL search params into typed filters. */

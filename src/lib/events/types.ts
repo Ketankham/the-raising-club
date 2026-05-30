@@ -128,3 +128,72 @@ export interface MyRegistration {
   id: string;
   status: string;
 }
+
+// --- Registration flow -----------------------------------------------------
+
+export type SupportNeed =
+  | "sensory"
+  | "allergies"
+  | "communication_learning"
+  | "medical_physical"
+  | "prefer_not_to_say"
+  | "other";
+
+export const SUPPORT_NEED_LABELS: Record<SupportNeed, string> = {
+  sensory: "Sensory sensitivities (noise, lights, textures, crowds)",
+  allergies: "Food or environmental allergies",
+  communication_learning: "Communication or learning differences",
+  medical_physical: "Medical or physical support needs",
+  prefer_not_to_say: "Prefer not to share",
+  other: "Other",
+};
+
+export interface ChildOption {
+  id: string;
+  petName: string | null;
+  birthMonth: number | null;
+  birthYear: number | null;
+}
+
+export interface WaiverItem {
+  id: string;
+  kind: "participation" | "media_release";
+  title: string;
+  body: string;
+}
+
+export interface RegistrationContext {
+  eventId: string;
+  slug: string;
+  title: string;
+  heroImageUrl: string | null;
+  participationType: ParticipationType;
+  priceModel: PriceModel;
+  priceCents: number;
+  currency: string;
+  requiresApproval: boolean;
+  ageMinMonths: number | null;
+  ageMaxMonths: number | null;
+  contactEmail: string | null;
+  children: ChildOption[];
+  waivers: WaiverItem[];
+}
+
+/** Payload submitted at the end of the registration wizard. */
+export interface RegistrationPayload {
+  eventId: string;
+  adultCount: number;
+  contactEmail: string;
+  contactPhone?: string;
+  children: {
+    childId?: string;
+    petName?: string;
+    birthMonth: number;
+    birthYear: number;
+  }[];
+  supportNeeds: SupportNeed[];
+  supportNote?: string;
+  emergencyContact?: { name: string; phone: string; relationship?: string };
+  pickup?: { name: string; phone: string; relationship?: string };
+  waiverAcceptances: { waiverId: string; mediaConsent?: "granted" | "declined" }[];
+}

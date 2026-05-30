@@ -178,7 +178,7 @@ export function OrgProfile({ data, isOwner }: { data: OrgProfileData; isOwner: b
                 <h3 className="mb-1.5 font-serif text-base">Manage your program</h3>
                 <p className="mb-3.5 text-[.8rem] leading-relaxed opacity-80">Staff, train, and grow from your dashboard.</p>
                 <Link href="/dashboard" className="mb-2 flex items-center gap-2.5 rounded-lg bg-white/10 px-3 py-2.5 text-[.82rem] transition hover:bg-white/20"><LayoutDashboard className="h-4 w-4" /> Go to dashboard</Link>
-                <Link href="/organization/team/invite" className="mb-2 flex items-center gap-2.5 rounded-lg bg-white/10 px-3 py-2.5 text-[.82rem] transition hover:bg-white/20"><Users className="h-4 w-4" /> Invite staff</Link>
+                <Link href="/organization/team" className="mb-2 flex items-center gap-2.5 rounded-lg bg-white/10 px-3 py-2.5 text-[.82rem] transition hover:bg-white/20"><Users className="h-4 w-4" /> Invite staff</Link>
                 <Link href="/organization/roles/new" className="flex items-center gap-2.5 rounded-lg bg-white/10 px-3 py-2.5 text-[.82rem] transition hover:bg-white/20"><Briefcase className="h-4 w-4" /> Post a role</Link>
               </div>
             ) : (

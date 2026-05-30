@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import type { RegistrationPayload } from "./types";
 
 export type ToggleSaveResult =
   | { ok: true; saved: boolean }
@@ -43,6 +44,112 @@ export async function toggleSaveEvent(eventId: string): Promise<ToggleSaveResult
   if (error) return { ok: false, reason: "error" };
   revalidatePath("/events");
   return { ok: true, saved: true };
+}
+
+export type RegisterResult =
+  | { ok: true; registrationId: string; status: string }
+  | { ok: false; reason: "unauthenticated" | "payment_required" | "already_registered" | "error"; message?: string };
+
+/**
+ * Create a registration (the end of the wizard). For now this is only called for
+ * FREE/included events — paid events stop at the Stripe placeholder in the UI.
+ * Writes the registration + per-child rows + emergency contact / pickup + waiver
+ * acceptances. The event price/approval are re-read server-side (never trusted
+ * from the client). RLS ensures the user can only write their own rows.
+ */
+export async function createRegistration(payload: RegistrationPayload): Promise<RegisterResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  const { data: ev } = await supabase
+    .from("events")
+    .select("id, price_model, price_cents, requires_approval")
+    .eq("id", payload.eventId)
+    .maybeSingle();
+  if (!ev) return { ok: false, reason: "error", message: "Event not found" };
+
+  const isFree = ev.price_model === "included" || ev.price_cents === 0;
+  if (!isFree) {
+    // Guard: paid registration must go through payment (not yet wired).
+    return { ok: false, reason: "payment_required" };
+  }
+
+  // Block a duplicate active registration.
+  const { data: existing } = await supabase
+    .from("event_registrations")
+    .select("id")
+    .eq("event_id", ev.id)
+    .eq("registrant_user_id", user.id)
+    .not("status", "in", "(cancelled,denied)")
+    .maybeSingle();
+  if (existing) return { ok: false, reason: "already_registered" };
+
+  const status = ev.requires_approval ? "pending" : "confirmed";
+
+  const { data: reg, error: regErr } = await supabase
+    .from("event_registrations")
+    .insert({
+      event_id: ev.id,
+      registrant_user_id: user.id,
+      status,
+      adult_count: payload.adultCount,
+      contact_email: payload.contactEmail,
+      contact_phone: payload.contactPhone ?? null,
+    })
+    .select("id")
+    .single();
+  if (regErr || !reg) return { ok: false, reason: "error", message: regErr?.message };
+
+  const regId = reg.id;
+
+  if (payload.children.length) {
+    const rows = payload.children.map((c) => ({
+      registration_id: regId,
+      child_id: c.childId ?? null,
+      display_pet_name: c.petName ?? null,
+      birth_month: c.birthMonth,
+      birth_year: c.birthYear,
+      support_needs: payload.supportNeeds,
+      support_note: payload.supportNote ?? null,
+    }));
+    const { error } = await supabase.from("event_registration_children").insert(rows);
+    if (error) return { ok: false, reason: "error", message: error.message };
+  }
+
+  if (payload.emergencyContact?.name && payload.emergencyContact.phone) {
+    await supabase.from("emergency_contacts").insert({
+      registration_id: regId,
+      name: payload.emergencyContact.name,
+      phone: payload.emergencyContact.phone,
+      relationship: payload.emergencyContact.relationship ?? null,
+    });
+  }
+
+  if (payload.pickup?.name && payload.pickup.phone) {
+    await supabase.from("authorized_pickups").insert({
+      registration_id: regId,
+      name: payload.pickup.name,
+      phone: payload.pickup.phone,
+      relationship: payload.pickup.relationship ?? null,
+    });
+  }
+
+  if (payload.waiverAcceptances.length) {
+    const rows = payload.waiverAcceptances.map((w) => ({
+      user_id: user.id,
+      waiver_id: w.waiverId,
+      registration_id: regId,
+      media_consent: w.mediaConsent ?? "not_set",
+    }));
+    const { error } = await supabase.from("waiver_acceptances").insert(rows);
+    if (error) return { ok: false, reason: "error", message: error.message };
+  }
+
+  revalidatePath("/events");
+  return { ok: true, registrationId: regId, status };
 }
 
 export type MessageResult = { ok: true } | { ok: false; reason: "unauthenticated" | "error" };
