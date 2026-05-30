@@ -75,3 +75,56 @@ export const EVENT_STYLE_LABELS: Record<EventStyle, string> = {
   workshop: "Workshop",
   ongoing_series: "Ongoing series",
 };
+
+// --- Detail page -----------------------------------------------------------
+
+export interface AgendaBlock {
+  time?: string;
+  title: string;
+  description?: string;
+}
+
+export interface EventInstructor {
+  id: string;
+  name: string | null;
+  bio: string | null;
+  avatarUrl: string | null;
+  roleLabel: string | null;
+}
+
+export interface EventResourceItem {
+  id: string;
+  label: string;
+  url: string | null;
+  filePath: string | null;
+  kind: string;
+}
+
+export interface EventLocationFull {
+  kind: "physical" | "digital";
+  neighborhood: string | null;
+  address: string | null;
+  arrivalNotes: string | null;
+  platform: string | null;
+  joinUrl: string | null;
+  joinInstructions: string | null;
+}
+
+export interface EventDetail extends EventListItem {
+  whatToExpect: string | null;
+  agenda: AgendaBlock[];
+  timezone: string;
+  requiresApproval: boolean;
+  cancellationCutoffHours: number;
+  childCapacity: number | null;
+  confirmedChildCount: number;
+  sessions: EventSession[];
+  locationFull: EventLocationFull | null;
+  instructors: EventInstructor[];
+  resources: EventResourceItem[];
+}
+
+export interface MyRegistration {
+  id: string;
+  status: string;
+}
