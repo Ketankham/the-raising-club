@@ -1,24 +1,20 @@
 import { redirect } from "next/navigation";
 import { requireOnboardedProfile } from "@/lib/guards";
-import { ParentHome } from "@/components/home/parent-home";
-import { CaregiverHome } from "@/components/home/caregiver-home";
-import { OrgHome } from "@/components/home/org-home";
+import { DashboardShell, type Role } from "@/components/dashboard/dashboard-shell";
+import { DashboardHome } from "@/components/dashboard/dashboard-home";
 
-/** Role-aware home. The proxy guarantees a session; guards do role + onboarding. */
+/** Logged-in dashboard shell (sidebar + top bar), shared across non-admin roles. */
 export default async function DashboardPage() {
-  const { profile } = await requireOnboardedProfile();
+  const { user, profile } = await requireOnboardedProfile();
   if (profile.role === "admin") redirect("/admin");
 
+  const role = profile.role as Role;
   const name = profile.preferred_name || profile.first_name || "there";
+  const initials = ((profile.preferred_name || profile.first_name || "?")[0] + (profile.last_name?.[0] ?? "")).toUpperCase();
 
-  switch (profile.role) {
-    case "parent":
-      return <ParentHome userId={profile.id} name={name} />;
-    case "caregiver":
-      return <CaregiverHome userId={profile.id} name={name} />;
-    case "organization":
-      return <OrgHome userId={profile.id} name={name} />;
-    default:
-      redirect("/onboarding");
-  }
+  return (
+    <DashboardShell role={role} name={name} email={profile.email} initials={initials}>
+      <DashboardHome role={role} userId={user.id} name={name} />
+    </DashboardShell>
+  );
 }

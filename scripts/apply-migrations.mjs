@@ -23,9 +23,19 @@ await client.connect();
 console.log("Connected.\n");
 
 const dir = path.join(process.cwd(), "supabase", "migrations");
+// Optional CLI args = specific migrations to apply (prefix match), e.g.
+//   node scripts/apply-migrations.mjs 0013 0014
+// With no args, applies every migration in order.
+const only = process.argv.slice(2);
 const files = readdirSync(dir)
   .filter((f) => /^\d+_.*\.sql$/.test(f))
+  .filter((f) => only.length === 0 || only.some((p) => f.startsWith(p)))
   .sort();
+
+if (files.length === 0) {
+  console.error("No matching migrations for:", only.join(", "));
+  process.exit(1);
+}
 
 for (const f of files) {
   const sql = readFileSync(path.join(dir, f), "utf8");

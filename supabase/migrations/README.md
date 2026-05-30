@@ -13,6 +13,14 @@ Schema for the onboarding flow + the four user roles. See the full design ration
 | `0005_organization.sql` | `organizations`, members, locations, job posts, applications, staff invites |
 | `0006_platform.sql` | admin invitations, audit log, feature flags |
 | `0007_seed_taxonomy.sql` | caregiver skill-section taxonomy + initial feature flags |
+| `0008_public_profile.sql` | public caregiver profile (SECURITY DEFINER limited view) |
+| `0009_admin_users.sql` | soft-deactivation + general user invitations |
+| `0010_public_profile_active.sql` | public-profile active flag refinements |
+| `0011_org_about.sql` | organization about/profile fields |
+| `0012_org_public_profile.sql` | public organization profile |
+| `0013_events_core.sql` | events catalog: `events`, sessions, locations, instructors, resources, categories (+map), waivers, invitations; `event_can_manage()` + category seed. (Course links + membership-tier gating deferred — events open to all.) |
+| `0014_events_registration.sql` | participants/payments: registrations, registration-children (capacity by child), `child_safety_profiles` (staff-gated), pickups/emergency contacts, waiver acceptances, Stripe payments + refunds + credits, reminders |
+| `0015_events_figma_additions.sql` | additive from Figma: `events.is_featured` + `events.agenda`, `event_saves` (save-for-later), `event_resources` file support (`file` kind + `file_path`, `url` now nullable) |
 
 ## Apply
 With the Supabase CLI (recommended):
