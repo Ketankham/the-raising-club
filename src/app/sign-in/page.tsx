@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signInWithPassword } from "@/lib/onboarding/actions";
 import { Logo } from "@/components/logo";
+import { SiteHeader } from "@/components/site-header";
 import { Field, inputClass, ErrorText } from "@/components/onboarding/steps/ui";
 
 function SignInForm() {
@@ -58,11 +59,14 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-cream px-4">
-      <Logo />
-      <Suspense>
-        <SignInForm />
-      </Suspense>
-    </div>
+    <>
+      <SiteHeader />
+      <main className="flex flex-1 flex-col items-center justify-center gap-8 bg-cream px-4 py-16">
+        <Logo />
+        <Suspense>
+          <SignInForm />
+        </Suspense>
+      </main>
+    </>
   );
 }
