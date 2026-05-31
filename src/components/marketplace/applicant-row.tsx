@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { MessageCircle } from "lucide-react";
 import { setApplicationStatus } from "@/lib/marketplace/actions";
 import type { JobApplicant } from "@/lib/marketplace/jobs";
 
@@ -50,6 +51,10 @@ export function ApplicantRow({ a }: { a: JobApplicant }) {
         </div>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
+        <a href={`/chat/new?to=${a.caregiverUserId}&ctxType=application&ctxId=${a.applicationId}`}
+          className="inline-flex items-center gap-1.5 rounded-full bg-olive px-3 py-1.5 text-sm font-semibold text-white transition hover:brightness-95">
+          <MessageCircle className="h-4 w-4" /> Message
+        </a>
         {NEXT.map((n) => (
           <button key={n.value} onClick={() => update(n.value)} disabled={pending || status === n.value}
             className="rounded-full border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-cream disabled:opacity-40">

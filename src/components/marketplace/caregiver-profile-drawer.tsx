@@ -126,9 +126,9 @@ export function CaregiverProfileDrawer({
               Invite to Co-Hire
             </button>
           ) : (
-            <Link href={`/chat/new?to=${c.userId}`} className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-olive py-2.5 text-sm font-semibold text-white transition hover:brightness-95">
+            <a href={`/chat/new?to=${c.userId}`} className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-olive py-2.5 text-sm font-semibold text-white transition hover:brightness-95">
               <MessageCircle className="h-4 w-4" /> Message
-            </Link>
+            </a>
           )}
         </div>
       </aside>

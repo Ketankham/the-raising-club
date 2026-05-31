@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
 import { X, MapPin, DollarSign, Baby, MessageCircle } from "lucide-react";
 import { moneyRange, SCHEDULE_LABELS, AGE_GROUP_TAGS, OPEN_TO_LABELS, CARE_TYPE_LABELS, type CareType } from "@/lib/marketplace/format";
 import type { FamilyCard as Family } from "@/lib/marketplace/types";
@@ -55,9 +54,9 @@ export function FamilyProfileDrawer({ open, onClose, f }: { open: boolean; onClo
         </div>
 
         <div className="border-t border-ink/5 bg-white/60 px-6 py-4">
-          <Link href={`/chat/new?to=${f.userId}`} className="flex w-full items-center justify-center gap-1.5 rounded-full bg-olive py-2.5 text-sm font-semibold text-white transition hover:brightness-95">
+          <a href={`/chat/new?to=${f.userId}`} className="flex w-full items-center justify-center gap-1.5 rounded-full bg-olive py-2.5 text-sm font-semibold text-white transition hover:brightness-95">
             <MessageCircle className="h-4 w-4" /> Message this family
-          </Link>
+          </a>
         </div>
       </aside>
     </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Star, BadgeCheck, Briefcase, MapPin, DollarSign, MessageCircle } from "lucide-react";
 import { SaveButton } from "./save-button";
 import { InviteCoHireModal } from "./invite-cohire-modal";
@@ -107,12 +106,12 @@ export function CaregiverCard({
             Invite
           </button>
         ) : (
-          <Link
+          <a
             href={`/chat/new?to=${c.userId}`}
             className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-olive py-2 text-center text-sm font-semibold text-white transition hover:brightness-95"
           >
             <MessageCircle className="h-4 w-4" /> Message
-          </Link>
+          </a>
         )}
       </div>
 

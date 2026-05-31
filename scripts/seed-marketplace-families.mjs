@@ -10,6 +10,7 @@ async function mkUser(email) {
   await q("delete from auth.users where email=$1", [email]);
   const id = crypto.randomUUID();
   await q(`insert into auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data, confirmation_token, recovery_token, email_change_token_new, email_change, email_change_token_current, reauthentication_token, is_sso_user, is_anonymous) values ($1,'00000000-0000-0000-0000-000000000000','authenticated','authenticated',$2, crypt($3, gen_salt('bf')), now(), now(), now(), '{"provider":"email","providers":["email"]}','{}','','','','','','', false, false)`, [id, email, pw]);
+  await q(`insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at) values ($1::text,$1::uuid, jsonb_build_object('sub',$1::text,'email',$2::text), 'email', now(), now(), now())`, [id, email]);
   return id;
 }
 async function family({ email, name, zip, about, needs, bMin, bMax, photo, ages, sched, open, traits, kids, coHire }) {

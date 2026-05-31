@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { MapPin, DollarSign, Baby, CalendarDays, MessageCircle } from "lucide-react";
 import { SaveButton } from "./save-button";
 import { FamilyProfileDrawer } from "./family-profile-drawer";
@@ -72,9 +71,9 @@ export function FamilyCard({ f }: { f: Family }) {
         <button onClick={() => setDrawerOpen(true)} className="flex-1 rounded-full border border-ink/15 bg-white py-2 text-center text-sm font-semibold text-ink transition hover:bg-cream">
           View Profile
         </button>
-        <Link href={`/chat/new?to=${f.userId}`} className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-olive py-2 text-sm font-semibold text-white transition hover:brightness-95">
+        <a href={`/chat/new?to=${f.userId}`} className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-olive py-2 text-sm font-semibold text-white transition hover:brightness-95">
           <MessageCircle className="h-4 w-4" /> Message
-        </Link>
+        </a>
       </div>
 
       <FamilyProfileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} f={f} />
