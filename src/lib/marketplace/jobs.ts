@@ -156,19 +156,33 @@ export async function getSkillsList(): Promise<SkillOption[]> {
   return (data ?? []).map((s: any) => ({ id: s.id, label: s.label }));
 }
 
-/** Load a job the current user manages, for the edit form. */
+/** Load a job the current user manages, for the edit form. Returns null unless
+ *  the caller OWNS it (or manages it as an org/platform admin) — so a non-owner
+ *  can't open the editor for someone else's job even though RLS lets them read
+ *  an OPEN job. */
 export async function getJobForEdit(id: string): Promise<JobForEdit | null> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
   const { data, error } = await supabase
     .from("job_posts")
     .select(`id, title, description, care_type, ages, schedule, schedule_label,
       pay_min, pay_max, pay_unit, hours_per_week, location_label, zip_code,
-      start_date, is_co_hire, openings, org_id, status,
+      start_date, is_co_hire, openings, org_id, owner_user_id, status,
       job_skills ( skill_id )`)
     .eq("id", id)
     .maybeSingle();
   if (error || !data) return null;
   const j: any = data;
+
+  // Ownership guard: owner, or (org job) an org admin / platform admin.
+  if (j.owner_user_id !== user.id) {
+    const { data: canManage } = await supabase.rpc("job_can_manage", { target_job: id });
+    if (!canManage) return null;
+  }
   return {
     id: j.id,
     title: j.title,

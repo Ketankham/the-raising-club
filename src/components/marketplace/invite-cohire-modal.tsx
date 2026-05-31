@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
-import { X, Send, Check } from "lucide-react";
-import { sendCoHireInvite } from "@/lib/marketplace/actions";
+import { X, Send, Check, BadgeCheck } from "lucide-react";
+import { sendCoHireInvite, getCaregiverApplicationsToMyJobs } from "@/lib/marketplace/actions";
 import type { OwnJobOption } from "@/lib/marketplace/types";
 
 /** "Invite to Co-Hire" modal (Figma slide 1). Select one+ of the viewer's own
@@ -24,8 +24,16 @@ export function InviteCoHireModal({
   const [pending, start] = useTransition();
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [applied, setApplied] = useState<Record<string, string>>({});
+
+  // When the modal opens, find which of these jobs the caregiver already applied to.
+  useEffect(() => {
+    if (open) getCaregiverApplicationsToMyJobs(caregiver.userId).then(setApplied).catch(() => {});
+  }, [open, caregiver.userId]);
 
   if (!open) return null;
+
+  const appliedCount = jobs.filter((j) => applied[j.id]).length;
 
   const toggle = (id: string) =>
     setSelected((prev) => {
@@ -91,6 +99,11 @@ export function InviteCoHireModal({
             </div>
           ) : (
             <>
+              {appliedCount > 0 && (
+                <div className="mb-3 flex items-center gap-2 rounded-xl bg-olive/10 px-3 py-2 text-sm font-medium text-olive">
+                  <BadgeCheck className="h-4 w-4" /> {caregiver.name.split(" ")[0]} already applied to {appliedCount} of your job{appliedCount > 1 ? "s" : ""}.
+                </div>
+              )}
               <p className="mb-2 text-sm font-semibold text-ink">Select jobs</p>
               <div className="space-y-2">
                 {jobs.map((j) => {
@@ -110,8 +123,13 @@ export function InviteCoHireModal({
                         </span>
                         <span className="font-medium text-ink">{j.title}</span>
                       </span>
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${j.status === "open" ? "bg-olive/20 text-olive" : "border border-ink/15 text-ink-soft"}`}>
-                        {j.status === "open" ? "Active" : "Draft"}
+                      <span className="flex items-center gap-1.5">
+                        {applied[j.id] && (
+                          <span className="rounded-full bg-purple/20 px-2 py-0.5 text-xs font-medium text-purple">Applied</span>
+                        )}
+                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${j.status === "open" ? "bg-olive/20 text-olive" : "border border-ink/15 text-ink-soft"}`}>
+                          {j.status === "open" ? "Active" : "Draft"}
+                        </span>
                       </span>
                     </button>
                   );

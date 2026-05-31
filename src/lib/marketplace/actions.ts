@@ -89,6 +89,29 @@ export async function sendCoHireInvite(
   return { ok: true, count: data?.length ?? jobIds.length };
 }
 
+/**
+ * Which of the current owner's jobs has this caregiver already applied to?
+ * Returns { jobPostId: status }. RLS (japps_manager_read = job_can_manage) limits
+ * the rows to applications on jobs the caller manages, so this is owner-scoped.
+ * Used by the Invite-to-Co-Hire modal to show "Applied" next to those jobs.
+ */
+export async function getCaregiverApplicationsToMyJobs(
+  caregiverUserId: string,
+): Promise<Record<string, string>> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return {};
+  const { data } = await supabase
+    .from("job_applications")
+    .select("job_post_id, status")
+    .eq("caregiver_user_id", caregiverUserId);
+  const map: Record<string, string> = {};
+  for (const a of data ?? []) map[a.job_post_id] = a.status;
+  return map;
+}
+
 export type ApplyResult =
   | { ok: true }
   | { ok: false; reason: "unauthenticated" | "already_applied" | "error"; message?: string };
