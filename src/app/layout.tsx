@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { DM_Sans, Playfair_Display, Albert_Sans } from "next/font/google";
 import "./globals.css";
 import { FeedbackWidget } from "@/components/feedback/feedback-widget";
+import { AppFrame } from "@/components/app/app-frame";
+import { createClient } from "@/lib/supabase/server";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -31,18 +34,31 @@ export const metadata: Metadata = {
     "Trusted care for families, real careers for caregivers, and reliable staffing and training for the programs that serve them—all inside one club.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Resolve the logged-in user's role so the global sidebar can render on every
+  // page (for parent/caregiver/organization). Anonymous/guest users get none.
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  let role: string | null = null;
+  if (user && !user.is_anonymous) {
+    const { data } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+    role = data?.role ?? null;
+  }
+  const expanded = (await cookies()).get("trc_sidebar")?.value !== "collapsed";
+
   return (
     <html
       lang="en"
       className={`${dmSans.variable} ${playfair.variable} ${albertSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
-        {children}
+        <AppFrame role={role} expanded={expanded}>
+          {children}
+        </AppFrame>
         <FeedbackWidget />
       </body>
     </html>
