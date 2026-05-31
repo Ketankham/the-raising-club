@@ -10,7 +10,7 @@ import path from "node:path";
 import fs from "node:fs";
 
 const EXE = path.join(os.homedir(), "AppData/Local/ms-playwright/chromium-1217/chrome-win64/chrome.exe");
-const BASE = "http://localhost:3200";
+const BASE = (process.env.E2E_BASE || "http://localhost:3200").replace(/\/$/, "");
 const PW = "TestPass#2026";
 const SHOTS = "D:/Projects/The Raising Club/Reference-docs/Marketplace/screenshots/test";
 fs.mkdirSync(SHOTS, { recursive: true });
