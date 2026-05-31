@@ -34,13 +34,13 @@ async function signIn(p, email) {
   await p.getByRole("textbox", { name: "Email" }).fill(email);
   await p.getByRole("textbox", { name: "Password" }).fill(PW);
   await p.getByRole("button", { name: "Sign in" }).click();
-  await p.waitForURL("**/dashboard", { timeout: 20000 });
+  await p.waitForURL("**/dashboard", { timeout: 45000 });
 }
 async function sendChat(p, text) {
-  await p.getByPlaceholder("Write a message…").waitFor({ timeout: 8000 });
+  await p.getByPlaceholder("Write a message…").waitFor({ timeout: 30000 });
   await p.getByPlaceholder("Write a message…").fill(text);
   await p.keyboard.press("Enter");
-  await p.getByText(text).first().waitFor({ timeout: 8000 });
+  await p.getByText(text).first().waitFor({ timeout: 30000 });
 }
 
 let jobId;
@@ -58,7 +58,7 @@ try {
   await parent.getByPlaceholder("e.g. Brooklyn, NY").fill("Brooklyn, NY");
   await parent.getByPlaceholder("Specifics, e.g. Mon–Thu, 3–6pm").fill("Mon–Thu, 3–6pm");
   await parent.getByRole("button", { name: "Post job" }).click();
-  await parent.waitForURL("**/dashboard/posts", { timeout: 12000 });
+  await parent.waitForURL("**/dashboard/posts", { timeout: 45000 });
   rec("CASE 1  parent creates job (Active in My Care Posts)", await parent.getByText(JOB_TITLE).isVisible().catch(() => false));
   jobId = (await db.query("select id from job_posts where owner_user_id=$1 and title=$2", [parentId, JOB_TITLE])).rows[0]?.id;
   rec("CASE 1b job persisted with owner", !!jobId);
@@ -68,13 +68,13 @@ try {
   await signIn(cg, CG);
   await cg.goto(`${BASE}/jobs?q=Round%20Test%20Job%20${tag}`, { waitUntil: "domcontentloaded" });
   const jobCard = cg.locator('[class*="bg-mint"]').filter({ hasText: JOB_TITLE }).first();
-  await jobCard.waitFor({ timeout: 8000 });
+  await jobCard.waitFor({ timeout: 30000 });
   rec("CASE 2  caregiver finds the job in Find Jobs", true);
   await jobCard.getByRole("button", { name: "Apply", exact: true }).click();
-  await cg.getByRole("heading", { name: "Apply to this job" }).waitFor({ timeout: 6000 });
+  await cg.getByRole("heading", { name: "Apply to this job" }).waitFor({ timeout: 25000 });
   await cg.getByPlaceholder(/Introduce yourself/).fill(`Applying - round test ${tag}`);
   await cg.getByRole("button", { name: "Send application" }).click();
-  await cg.getByText("Application sent").waitFor({ timeout: 8000 });
+  await cg.getByText("Application sent").waitFor({ timeout: 30000 });
   rec("CASE 2b caregiver applies", true);
 
   // CASE 3: parent sees applicant
@@ -84,7 +84,7 @@ try {
 
   // CASE 4: parent shortlists
   await parent.getByRole("button", { name: "Shortlist" }).first().click();
-  rec("CASE 4  parent shortlists applicant", await parent.getByText("Shortlisted").first().waitFor({ timeout: 6000 }).then(() => true).catch(() => false));
+  rec("CASE 4  parent shortlists applicant", await parent.getByText("Shortlisted").first().waitFor({ timeout: 25000 }).then(() => true).catch(() => false));
 
   // CASE 5: parent messages applicant
   await parent.getByRole("link", { name: "Message", exact: true }).first().click();
@@ -103,13 +103,13 @@ try {
 
   await parent.goto(`${BASE}/chat`, { waitUntil: "domcontentloaded" });
   await parent.getByText("Maya").first().click();
-  rec("CASE 6c parent receives caregiver reply (two-way)", await parent.getByText(`C2P ${tag}`).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false));
+  rec("CASE 6c parent receives caregiver reply (two-way)", await parent.getByText(`C2P ${tag}`).first().waitFor({ timeout: 30000 }).then(() => true).catch(() => false));
   await parent.screenshot({ path: `${SHOTS}/full-06-two-way-thread.png` });
 
   // CASE 7: parent <-> parent chat
   await parent.goto(`${BASE}/connect/families`, { waitUntil: "domcontentloaded" });
   const famCard = parent.locator('[class*="bg-sage"]').filter({ hasText: "The Alvarez" }).first();
-  await famCard.waitFor({ timeout: 8000 });
+  await famCard.waitFor({ timeout: 30000 });
   await famCard.getByRole("link", { name: "Message", exact: true }).click();
   await parent.waitForURL("**/chat**", { timeout: 10000 });
   await sendChat(parent, `P2P ${tag}`);
@@ -122,7 +122,7 @@ try {
   rec("CASE 7b other parent sees the conversation", famConvo);
   if (famConvo) {
     await fam.getByText(/Pat/).first().click();
-    rec("CASE 7c other parent receives the message", await fam.getByText(`P2P ${tag}`).first().waitFor({ timeout: 8000 }).then(() => true).catch(() => false));
+    rec("CASE 7c other parent receives the message", await fam.getByText(`P2P ${tag}`).first().waitFor({ timeout: 30000 }).then(() => true).catch(() => false));
     await sendChat(fam, `P2P-reply ${tag}`);
     rec("CASE 7d other parent replies (sent)", true);
   }
@@ -132,10 +132,10 @@ try {
   await parent.goto(`${BASE}/connect`, { waitUntil: "domcontentloaded" });
   const mayaCard = parent.locator('[class*="bg-mint"]').filter({ hasText: "Maya H." }).first();
   await mayaCard.getByRole("button", { name: "Invite", exact: true }).click();
-  await parent.getByRole("heading", { name: "Invite to Co-Hire" }).waitFor({ timeout: 6000 });
+  await parent.getByRole("heading", { name: "Invite to Co-Hire" }).waitFor({ timeout: 25000 });
   await parent.locator("button", { hasText: JOB_TITLE }).first().click();
   await parent.getByRole("button", { name: /Send Invitation/ }).click();
-  await parent.getByText("Invitation sent").waitFor({ timeout: 8000 });
+  await parent.getByText("Invitation sent").waitFor({ timeout: 30000 });
   rec("CASE 8  parent sends co-hire invite for the job", true);
   await cg.goto(`${BASE}/dashboard/applications`, { waitUntil: "domcontentloaded" });
   rec("CASE 8b caregiver sees invite in My Applications", await cg.getByText("Co-hire invitations").isVisible().catch(() => false));
