@@ -290,6 +290,11 @@ export function CaregiverProfile({ data, isOwner }: { data: CaregiverProfileData
                   ))}
                 </div>
               ) : <p className="text-sm text-ink-soft">No reviews yet. {isOwner ? "Invite a past family or employer to leave a short review." : ""}</p>}
+              {isOwner && (
+                <Link href="/profile/reviews" className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/70 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-white">
+                  <Star className="h-3.5 w-3.5 text-[#e0a72e]" /> Invite &amp; manage reviews
+                </Link>
+              )}
             </Card>
           </div>
 
