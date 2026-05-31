@@ -141,7 +141,30 @@ try {
   rec("CASE 8b caregiver sees invite in My Applications", await cg.getByText("Co-hire invitations").isVisible().catch(() => false));
   await cg.screenshot({ path: `${SHOTS}/full-08-my-applications.png` });
 
-  await pc.close(); await cc.close(); await fc.close();
+  // CASE 9: caregiver <-> caregiver chat (Meet Caregivers)
+  const AIKO = "mkt-demo-aiko@raisingclub-test.dev";
+  await cg.goto(`${BASE}/connect`, { waitUntil: "domcontentloaded" });
+  const aikoCard = cg.locator('[class*="bg-mint"]').filter({ hasText: "Aiko T." }).first();
+  await aikoCard.waitFor({ timeout: 30000 });
+  await aikoCard.getByRole("link", { name: "Message", exact: true }).click();
+  await cg.waitForURL("**/chat**", { timeout: 30000 });
+  await sendChat(cg, `C2C ${tag}`);
+  rec("CASE 9  caregiver -> caregiver chat (sent)", true);
+
+  const { c: ac, p: aiko } = await newCtx();
+  await signIn(aiko, AIKO);
+  await aiko.goto(`${BASE}/chat`, { waitUntil: "domcontentloaded" });
+  const aikoConvo = await aiko.getByText("Maya").first().isVisible().catch(() => false);
+  rec("CASE 9b other caregiver sees the conversation", aikoConvo);
+  if (aikoConvo) {
+    await aiko.getByText("Maya").first().click();
+    rec("CASE 9c other caregiver receives the message", await aiko.getByText(`C2C ${tag}`).first().waitFor({ timeout: 30000 }).then(() => true).catch(() => false));
+    await sendChat(aiko, `C2C-reply ${tag}`);
+    rec("CASE 9d other caregiver replies (sent)", true);
+  }
+  await aiko.screenshot({ path: `${SHOTS}/full-09-caregiver-to-caregiver.png` });
+
+  await pc.close(); await cc.close(); await fc.close(); await ac.close();
 } catch (e) {
   rec("UNEXPECTED ERROR", false, e.message);
 } finally {
