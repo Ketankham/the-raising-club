@@ -15,8 +15,8 @@ type Item = { label: string; href: string; icon: LucideIcon; badge?: number };
 
 function itemsFor(role: SidebarRole): Item[] {
   const home: Item = { label: "Home", href: "/dashboard", icon: Home };
-  const learn: Item = { label: "Learn", href: "/courses", icon: BookOpen };
-  const events: Item = { label: "Events", href: "/events", icon: CalendarDays };
+  const learn: Item = { label: "Learn", href: "/courses/my", icon: BookOpen };
+  const events: Item = { label: "Events", href: "/events/my", icon: CalendarDays };
   const messages: Item = { label: "Messages", href: "/chat", icon: MessageCircle, badge: 0 };
   if (role === "caregiver") {
     return [
