@@ -40,13 +40,23 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Resolve the logged-in user's role so the global sidebar can render on every
-  // page (for parent/caregiver/organization). Anonymous/guest users get none.
+  // page (for parent/caregiver/organization). Guests get none. NOTE: a user who
+  // just finished onboarding with email-confirmation ON is still is_anonymous
+  // until they confirm — but they ARE a real, registered account (registered_at
+  // set) and must get the app chrome, otherwise they land on the dashboard with
+  // no sidebar and no way to navigate.
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   let role: string | null = null;
-  if (user && !user.is_anonymous) {
-    const { data } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-    role = data?.role ?? null;
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("role, registered_at")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (data && (!user.is_anonymous || data.registered_at)) {
+      role = data.role ?? null;
+    }
   }
   const expanded = (await cookies()).get("trc_sidebar")?.value !== "collapsed";
 
