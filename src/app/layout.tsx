@@ -4,6 +4,8 @@ import { DM_Sans, Playfair_Display, Albert_Sans } from "next/font/google";
 import "./globals.css";
 import { FeedbackWidget } from "@/components/feedback/feedback-widget";
 import { AppFrame } from "@/components/app/app-frame";
+import { BetaBanner } from "@/components/beta-banner";
+import { isBetaLocked } from "@/lib/beta";
 import { createClient } from "@/lib/supabase/server";
 
 const dmSans = DM_Sans({
@@ -73,6 +75,7 @@ export default async function RootLayout({
       className={`${dmSans.variable} ${playfair.variable} ${albertSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
+        {isBetaLocked() && !role && <BetaBanner />}
         <AppFrame role={role} expanded={expanded} unreadCount={unreadCount}>
           {children}
         </AppFrame>

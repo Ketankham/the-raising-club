@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { isBetaLocked } from "@/lib/beta";
 
 /**
  * Next 16 Proxy (formerly Middleware). Two jobs only — kept optimistic and
@@ -20,6 +21,19 @@ const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/connect"];
 export async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
   const { pathname } = request.nextUrl;
+
+  // Beta lock (LIVE only): block the signup wizard so no new accounts are
+  // created. Sign-in stays open for existing users. The redirect happens before
+  // the wizard runs, so no anonymous account is ever created.
+  if (
+    isBetaLocked() &&
+    (pathname === "/onboarding" || pathname.startsWith("/onboarding/"))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/beta";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
 
   const needsAuth = PROTECTED_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
