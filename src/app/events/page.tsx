@@ -22,7 +22,7 @@ export default async function EventsPage({
 
   // Preserve active filters when submitting the search form (no-JS friendly).
   const hidden: { name: string; value: string }[] = [];
-  for (const k of ["ageMax", "priceMax", "join", "who", "style", "date"]) {
+  for (const k of ["ageMax", "priceMax", "join", "who", "style", "date", "dateTo", "near"]) {
     const v = sp[k];
     const val = Array.isArray(v) ? v[0] : v;
     if (val) hidden.push({ name: k, value: val });
@@ -53,7 +53,7 @@ export default async function EventsPage({
                   name="q"
                   defaultValue={filters.q ?? ""}
                   placeholder="Search events..."
-                  className="w-full rounded-full border border-ink/15 bg-white py-3 pl-11 pr-4 text-sm text-ink shadow-sm outline-none focus:border-[#9cc766]"
+                  className="w-full rounded-full border border-ink/15 bg-white py-3 pl-11 pr-4 text-sm text-ink shadow-sm outline-none focus:border-[#baaae1]"
                 />
               </div>
             </form>
@@ -63,6 +63,13 @@ export default async function EventsPage({
             <EventsFilters initial={filters} />
 
             <div className="flex-1">
+              <div className="mb-5 flex items-center gap-3">
+                <h2 className="font-display text-lg font-bold text-ink">Live Events</h2>
+                <span className="rounded-full bg-[#dcebbf] px-2.5 py-0.5 text-xs font-semibold text-[#5b7a2e]">
+                  {events.length} event{events.length === 1 ? "" : "s"}
+                </span>
+              </div>
+
               {events.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-ink/15 bg-white/50 p-12 text-center">
                   <p className="font-display text-lg font-bold text-ink">No events found</p>

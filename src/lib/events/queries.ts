@@ -88,6 +88,19 @@ function matchesFilters(item: EventListItem, f: EventFilters): boolean {
       item.nextSession != null && +new Date(item.nextSession.startsAt) >= from;
     if (!hasOnOrAfter) return false;
   }
+  if (f.dateTo) {
+    const to = new Date(`${f.dateTo}T23:59:59`).getTime();
+    const hasOnOrBefore =
+      item.nextSession != null && +new Date(item.nextSession.startsAt) <= to;
+    if (!hasOnOrBefore) return false;
+  }
+  if (f.near) {
+    const needle = f.near.toLowerCase();
+    const hay = `${item.location?.neighborhood ?? ""} ${item.location?.address ?? ""}`.toLowerCase();
+    // "online" matches digital events typed into the box
+    const digital = item.location?.kind === "digital" && "online".includes(needle);
+    if (!hay.includes(needle) && !digital) return false;
+  }
   return true;
 }
 
@@ -427,5 +440,7 @@ export function parseFilters(sp: Record<string, string | string[] | undefined>):
     whoAttends: list<ParticipationType>("who"),
     styles: list<EventStyle>("style"),
     date: one("date") || undefined,
+    dateTo: one("dateTo") || undefined,
+    near: one("near") || undefined,
   };
 }

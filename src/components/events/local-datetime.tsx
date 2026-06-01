@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-type Mode = "shortdate" | "date" | "time" | "range";
+type Mode = "shortdate" | "date" | "time" | "clocktime" | "range";
 
 const noop = () => () => {};
 // false during SSR + hydration, true after mount — lets us render the event's
@@ -24,6 +24,10 @@ function fmt(startIso: string, endIso: string | null | undefined, mode: Mode, tz
   }
   if (mode === "time") {
     return start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZoneName: "short", timeZone: tz });
+  }
+  if (mode === "clocktime") {
+    // Card chip: bare time, no timezone label ("9:00 AM").
+    return start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: tz });
   }
   // range: "Saturday, May 9 · 9:00–10:30 AM EDT"
   const datePart = start.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: tz });

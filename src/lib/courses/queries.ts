@@ -24,6 +24,8 @@ export interface CourseListItem {
   skillIds: string[];
 }
 
+export type CourseContentType = "course" | "bundle";
+
 export interface CourseFilters {
   q?: string;
   categoryId?: string;
@@ -31,6 +33,88 @@ export interface CourseFilters {
   careType?: CourseCareType;
   skillIds?: string[];
   ageMax?: number;
+  /** undefined = show both courses and bundles */
+  contentType?: CourseContentType;
+}
+
+/**
+ * Unified card shape for the Browse grid — a course or a bundle. Bundles carry
+ * `courseCount` (and no module/duration/age), courses carry `moduleCount` etc.
+ */
+export interface CatalogItem {
+  kind: CourseContentType;
+  id: string;
+  slug: string;
+  title: string;
+  summary: string | null;
+  coverImageUrl: string | null;
+  isFree: boolean;
+  priceCents: number;
+  compareAtPriceCents: number | null;
+  currency: string;
+  isFeatured: boolean;
+  // course-only
+  moduleCount?: number;
+  estimatedLearningMinutes?: number | null;
+  ageMinMonths?: number | null;
+  ageMaxMonths?: number | null;
+  // bundle-only
+  courseCount?: number;
+}
+
+/**
+ * Merged course + bundle catalog for the Browse grid. Course-specific filters
+ * (category/approach/care/skill/age) only apply to courses; bundles are matched
+ * on search text only. The Content Type toggle narrows to one kind.
+ */
+export async function listCatalog(filters: CourseFilters = {}): Promise<CatalogItem[]> {
+  const wantCourses = filters.contentType !== "bundle";
+  const wantBundles = filters.contentType !== "course";
+
+  const [courses, bundles] = await Promise.all([
+    wantCourses ? listPublishedCourses(filters) : Promise.resolve([]),
+    wantBundles ? listPublishedBundles() : Promise.resolve([]),
+  ]);
+
+  const q = filters.q?.toLowerCase();
+  const courseItems: CatalogItem[] = courses.map((c) => ({
+    kind: "course",
+    id: c.id,
+    slug: c.slug,
+    title: c.title,
+    summary: c.summary,
+    coverImageUrl: c.coverImageUrl,
+    isFree: c.isFree,
+    priceCents: c.priceCents,
+    compareAtPriceCents: c.compareAtPriceCents,
+    currency: c.currency,
+    isFeatured: c.isFeatured,
+    moduleCount: c.moduleCount,
+    estimatedLearningMinutes: c.estimatedLearningMinutes,
+    ageMinMonths: c.ageMinMonths,
+    ageMaxMonths: c.ageMaxMonths,
+  }));
+
+  const bundleItems: CatalogItem[] = bundles
+    .filter((b) => !q || `${b.title} ${b.summary ?? ""}`.toLowerCase().includes(q))
+    .map((b) => ({
+      kind: "bundle",
+      id: b.id,
+      slug: b.slug,
+      title: b.title,
+      summary: b.summary,
+      coverImageUrl: b.coverImageUrl,
+      isFree: b.isFree,
+      priceCents: b.priceCents,
+      compareAtPriceCents: b.compareAtPriceCents,
+      currency: b.currency,
+      isFeatured: b.isFeatured,
+      courseCount: b.courseCount,
+    }));
+
+  return [...courseItems, ...bundleItems].sort((a, b) =>
+    a.isFeatured !== b.isFeatured ? (a.isFeatured ? -1 : 1) : a.title.localeCompare(b.title),
+  );
 }
 
 function ageOverlaps(min: number | null, max: number | null, selMax?: number): boolean {
@@ -163,6 +247,7 @@ export function parseCourseFilters(sp: Record<string, string | string[] | undefi
     return Number.isFinite(n) ? n : undefined;
   };
   const skills = one("skills");
+  const type = one("type");
   return {
     q: one("q") || undefined,
     categoryId: one("category") || undefined,
@@ -170,5 +255,6 @@ export function parseCourseFilters(sp: Record<string, string | string[] | undefi
     careType: (one("care") as CourseCareType) || undefined,
     skillIds: skills ? skills.split(",").filter(Boolean) : undefined,
     ageMax: num("ageMax"),
+    contentType: type === "course" || type === "bundle" ? type : undefined,
   };
 }

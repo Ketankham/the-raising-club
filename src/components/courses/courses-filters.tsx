@@ -43,6 +43,37 @@ export function CoursesFilters({ taxonomy }: { taxonomy: CourseTaxonomyLite }) {
 
       <div className="space-y-5">
         <div>
+          <p className="mb-1.5 text-sm font-semibold text-ink">Content type</p>
+          <div className="space-y-2">
+            {[
+              { value: "", label: "All" },
+              { value: "course", label: "Courses" },
+              { value: "bundle", label: "Bundles" },
+            ].map((o) => {
+              const on = (get("type") || "") === o.value;
+              return (
+                <button
+                  key={o.label}
+                  type="button"
+                  onClick={() => setParam("type", o.value || null)}
+                  aria-pressed={on}
+                  className="flex w-full items-center gap-2.5 text-sm text-ink"
+                >
+                  <span
+                    className={`grid h-[18px] w-[18px] place-items-center rounded-full border-2 transition ${
+                      on ? "border-primary" : "border-ink/25"
+                    }`}
+                  >
+                    {on && <span className="h-2.5 w-2.5 rounded-full bg-primary" />}
+                  </span>
+                  {o.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
           <p className="mb-1.5 text-sm font-semibold text-ink">Care type</p>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(CARE_TYPE_LABELS) as CourseCareType[]).map((k) => {

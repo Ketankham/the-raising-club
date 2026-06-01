@@ -58,6 +58,10 @@ export interface EventFilters {
   styles?: EventStyle[];
   /** ISO date (yyyy-mm-dd) — events with a session on/after this day */
   date?: string;
+  /** ISO date (yyyy-mm-dd) — events with a session on/before this day */
+  dateTo?: string;
+  /** free-text city / neighborhood / zip match against the event location */
+  near?: string;
 }
 
 export const PARTICIPATION_LABELS: Record<ParticipationType, string> = {

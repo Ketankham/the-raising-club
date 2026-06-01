@@ -3,8 +3,8 @@ import { Search } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CoursesFilters } from "@/components/courses/courses-filters";
-import { CourseCard } from "@/components/courses/course-card";
-import { listPublishedCourses, getPublicTaxonomy, parseCourseFilters } from "@/lib/courses/queries";
+import { CatalogCard } from "@/components/courses/course-card";
+import { listCatalog, getPublicTaxonomy, parseCourseFilters } from "@/lib/courses/queries";
 
 export const metadata: Metadata = {
   title: "Browse Courses — The Raising Club",
@@ -18,10 +18,10 @@ export default async function CoursesPage({
 }) {
   const sp = await searchParams;
   const filters = parseCourseFilters(sp);
-  const [courses, taxonomy] = await Promise.all([listPublishedCourses(filters), getPublicTaxonomy()]);
+  const [items, taxonomy] = await Promise.all([listCatalog(filters), getPublicTaxonomy()]);
 
   const hidden: { name: string; value: string }[] = [];
-  for (const k of ["category", "approach", "care", "skills", "ageMax"]) {
+  for (const k of ["category", "approach", "care", "skills", "ageMax", "type"]) {
     const v = sp[k];
     const val = Array.isArray(v) ? v[0] : v;
     if (val) hidden.push({ name: k, value: val });
@@ -59,15 +59,15 @@ export default async function CoursesPage({
             </div>
 
             <div className="flex-1">
-              {courses.length === 0 ? (
+              {items.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-ink/15 bg-white/50 p-12 text-center">
                   <p className="font-display text-lg font-bold text-ink">No courses found</p>
                   <p className="mt-1 text-sm text-ink-soft">Try adjusting your filters or check back soon.</p>
                 </div>
               ) : (
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                  {courses.map((c) => (
-                    <CourseCard key={c.id} course={c} />
+                  {items.map((it) => (
+                    <CatalogCard key={`${it.kind}-${it.id}`} item={it} />
                   ))}
                 </div>
               )}
