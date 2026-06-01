@@ -215,3 +215,24 @@ export async function setAttendanceStatus(
   if (error) return { ok: false, message: error.message };
   return { ok: true };
 }
+
+/**
+ * Approve or deny a registration on an approval-gated event ("Requires approval").
+ * New registrations come in as `pending`; the host confirms or denies them here.
+ * RLS (event_reg_staff_update -> event_can_manage) ensures only a manager of the
+ * event can do this. `denied` frees the child capacity (excluded from counts).
+ */
+export async function setRegistrationStatus(
+  registrationId: string,
+  status: "confirmed" | "denied",
+  eventId: string,
+): Promise<AttendanceResult> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("event_registrations")
+    .update({ status })
+    .eq("id", registrationId);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath(`/manage/events/${eventId}/roster`);
+  return { ok: true };
+}

@@ -48,7 +48,7 @@ export default async function RosterPage({
             </Link>
           </div>
         </div>
-      <RosterView entries={roster} />
+      <RosterView entries={roster} eventId={ev.id} />
     </div>
   );
 }

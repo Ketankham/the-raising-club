@@ -1,10 +1,18 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { AlertTriangle, Mail, Phone } from "lucide-react";
-import { setAttendanceStatus } from "@/lib/events/admin-actions";
+import { AlertTriangle, Check, Mail, Phone, X } from "lucide-react";
+import { setAttendanceStatus, setRegistrationStatus } from "@/lib/events/admin-actions";
 import { SUPPORT_NEED_LABELS, type SupportNeed } from "@/lib/events/types";
 import type { RosterEntry } from "@/lib/events/admin";
+
+const STATUS_STYLES: Record<string, string> = {
+  confirmed: "bg-[#eef6e3] text-[#5f8a36]",
+  pending: "bg-[#fdf2e2] text-[#a05014]",
+  waitlisted: "bg-yellow/50 text-ink",
+  denied: "bg-pink text-[#a02c4a]",
+  cancelled: "bg-lavender text-ink-soft",
+};
 
 const ATT = [
   { value: "registered", label: "Registered" },
@@ -21,10 +29,11 @@ function ageFromMonthYear(month: number | null, year: number | null): string {
   return `${Math.floor(months / 12)} yr`;
 }
 
-export function RosterView({ entries }: { entries: RosterEntry[] }) {
+export function RosterView({ entries, eventId }: { entries: RosterEntry[]; eventId: string }) {
   const totalChildren = entries
     .filter((e) => !["cancelled", "denied"].includes(e.status))
     .reduce((n, e) => n + e.children.length, 0);
+  const pendingCount = entries.filter((e) => e.status === "pending").length;
 
   if (entries.length === 0) {
     return (
@@ -39,15 +48,29 @@ export function RosterView({ entries }: { entries: RosterEntry[] }) {
       <p className="text-sm text-ink-soft">
         {entries.length} {entries.length === 1 ? "registration" : "registrations"} · {totalChildren}{" "}
         {totalChildren === 1 ? "child" : "children"}
+        {pendingCount > 0 && (
+          <span className="ml-2 rounded-full bg-[#fdf2e2] px-2 py-0.5 text-xs font-semibold text-[#a05014]">
+            {pendingCount} awaiting approval
+          </span>
+        )}
       </p>
       {entries.map((e) => (
-        <RegistrationCard key={e.registrationId} entry={e} />
+        <RegistrationCard key={e.registrationId} entry={e} eventId={eventId} />
       ))}
     </div>
   );
 }
 
-function RegistrationCard({ entry }: { entry: RosterEntry }) {
+function RegistrationCard({ entry, eventId }: { entry: RosterEntry; eventId: string }) {
+  const [status, setStatus] = useState(entry.status);
+  const [pending, start] = useTransition();
+
+  const decide = (next: "confirmed" | "denied") =>
+    start(async () => {
+      const res = await setRegistrationStatus(entry.registrationId, next, eventId);
+      if (res.ok) setStatus(next);
+    });
+
   return (
     <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -64,17 +87,35 @@ function RegistrationCard({ entry }: { entry: RosterEntry }) {
           )}
           <span>· {entry.adultCount} adult{entry.adultCount === 1 ? "" : "s"}</span>
         </div>
-        <span
-          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-            entry.status === "confirmed"
-              ? "bg-[#eef6e3] text-[#5f8a36]"
-              : entry.status === "waitlisted"
-                ? "bg-yellow/50 text-ink"
-                : "bg-lavender text-ink-soft"
-          }`}
-        >
-          {entry.status}
-        </span>
+        <div className="flex items-center gap-2">
+          {status === "pending" && (
+            <>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => decide("confirmed")}
+                className="inline-flex items-center gap-1 rounded-full bg-[#9cc766] px-3 py-1 text-xs font-semibold text-white transition hover:bg-[#8bb957] disabled:opacity-50"
+              >
+                <Check size={13} /> Approve
+              </button>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => decide("denied")}
+                className="inline-flex items-center gap-1 rounded-full border border-ink/15 px-3 py-1 text-xs font-semibold text-ink-soft transition hover:border-[#d08] hover:text-[#a02c4a] disabled:opacity-50"
+              >
+                <X size={13} /> Deny
+              </button>
+            </>
+          )}
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+              STATUS_STYLES[status] ?? "bg-lavender text-ink-soft"
+            }`}
+          >
+            {status}
+          </span>
+        </div>
       </div>
 
       <ul className="divide-y divide-black/5">
