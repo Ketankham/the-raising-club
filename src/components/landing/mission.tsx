@@ -26,20 +26,22 @@ const PILLARS = [
 export function Mission() {
   return (
     <>
-      {/* Quote band (sage image with flowers baked in) */}
-      <section className="relative">
+      {/* Quote band — sage with white flowers (asset) + cream cloud banner */}
+      <section className="relative isolate overflow-hidden bg-sage">
         <Image
           src="/images/quote-band.png"
           alt=""
-          width={1068}
-          height={187}
-          className="h-40 w-full object-cover sm:h-48 lg:h-56"
+          aria-hidden
+          fill
+          sizes="100vw"
+          className="-z-10 object-cover"
         />
-        <div className="absolute inset-0 grid place-items-center px-5 text-center">
-          <p className="font-serif text-2xl font-medium leading-snug text-ink sm:text-3xl lg:text-[2.5rem]">
-            &ldquo;When families rise,{" "}
-            <span className="italic text-primary">society rises.</span>&rdquo;
-          </p>
+        <div className="px-5 py-12 sm:py-16">
+          <div className="cloud-banner mx-auto max-w-3xl bg-cream px-8 py-10 text-center sm:px-12">
+            <p className="font-serif text-2xl font-medium leading-snug text-ink sm:text-3xl lg:text-[2.5rem]">
+              &ldquo;When families rise, society rises.&rdquo;
+            </p>
+          </div>
         </div>
       </section>
 

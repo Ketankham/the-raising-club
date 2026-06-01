@@ -70,6 +70,24 @@ html {
   mask-composite: intersect;
 }
 
+/*
+  Cloud / washi-tape banner — a solid panel whose top and bottom edges are a
+  row of soft outward bumps (the cream quote banner on the sage band). The two
+  bump strips and a center fill are unioned together.
+*/
+.cloud-banner {
+  --cb-b: 13px;
+  --cb-tile: 30px;
+  -webkit-mask:
+    radial-gradient(var(--cb-b) at 50% 100%, #000 98%, #0000) top / var(--cb-tile) var(--cb-b) repeat-x,
+    radial-gradient(var(--cb-b) at 50% 0, #000 98%, #0000) bottom / var(--cb-tile) var(--cb-b) repeat-x,
+    linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--cb-b)) no-repeat;
+  mask:
+    radial-gradient(var(--cb-b) at 50% 100%, #000 98%, #0000) top / var(--cb-tile) var(--cb-b) repeat-x,
+    radial-gradient(var(--cb-b) at 50% 0, #000 98%, #0000) bottom / var(--cb-tile) var(--cb-b) repeat-x,
+    linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--cb-b)) no-repeat;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
