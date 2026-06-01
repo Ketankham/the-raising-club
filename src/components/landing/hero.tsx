@@ -14,7 +14,7 @@ export function Hero() {
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 lg:grid-cols-2 lg:px-8 lg:py-20">
         <div>
           <h1 className="text-4xl leading-[1.14] sm:text-5xl">
-            <span className="font-display font-extrabold text-ink">
+            <span className="font-display font-extrabold text-primary">
               More Than Childcare:
             </span>{" "}
             <span className="font-serif font-medium text-ink/90">
