@@ -63,7 +63,17 @@ export default async function AdminCoursesPage() {
                   <td className="px-4 py-3 text-ink-soft">{c.chapterCount}</td>
                   <td className="px-4 py-3 text-ink-soft">{c.moduleCount}</td>
                   <td className="px-4 py-3 text-ink-soft">{c.enrollmentCount}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                    <a
+                      href={`/admin/courses/${c.id}/preview`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-[#7ba84f] hover:underline"
+                      title="Preview the course as a learner (admin only)"
+                    >
+                      Preview
+                    </a>
+                    <span className="mx-2 text-ink-soft/40">·</span>
                     <Link href={`/admin/courses/${c.id}/edit`} className="font-semibold text-primary hover:underline">
                       Edit
                     </Link>
