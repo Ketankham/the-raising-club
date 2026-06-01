@@ -3,9 +3,9 @@ import { requireUserProfile } from "@/lib/guards";
 import { AdminShell } from "@/components/admin/admin-shell";
 
 /**
- * Chrome for the whole /admin area (sidebar + top bar). Page-level guards
- * (requireAdmin / requireEventManager) still enforce access per route — this
- * layout only requires a signed-in profile and tailors the sidebar to role.
+ * Chrome for the platform-admin console (/admin: Users, Courses). Event
+ * management lives under /manage and is shared with org owners — see
+ * src/app/manage/layout.tsx. Page-level guards (requireAdmin) enforce access.
  */
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const { profile } = await requireUserProfile();

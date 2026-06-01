@@ -21,7 +21,7 @@ export default async function EventMessagesPage({
   return (
     <div className="mx-auto max-w-4xl">
       <Link
-        href={`/admin/events/${id}/roster`}
+        href={`/manage/events/${id}/roster`}
         className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink"
       >
         <ArrowLeft size={16} /> Back to roster

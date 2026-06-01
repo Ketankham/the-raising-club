@@ -24,7 +24,7 @@ export async function OrgHome({ userId, name }: { userId: string; name: string }
 
   return (
     <div className="min-h-screen bg-cream">
-      <AppHeader name={name} nav={[{ href: "/organization", label: "Program profile" }, { href: "/organization/roles", label: "Roles" }, { href: "/organization/team", label: "Team" }, { href: "/admin/events", label: "Events" }, { href: "/courses", label: "Training" }]} />
+      <AppHeader name={name} nav={[{ href: "/organization", label: "Program profile" }, { href: "/organization/roles", label: "Roles" }, { href: "/organization/team", label: "Team" }, { href: "/manage/events", label: "Events" }, { href: "/courses", label: "Training" }]} />
       <PageWrap>
         <Greeting name={name} sub={org ? `${org.name} — staff, train, and grow your program.` : "Staff, train, and grow your program."} />
 
@@ -32,7 +32,7 @@ export async function OrgHome({ userId, name }: { userId: string; name: string }
           <LaneCard href="/organization/roles" emoji="👥" title="Staff" body="Post roles, browse caregivers, and access a bench of substitutes." tone="cream" />
           <LaneCard href="/courses" emoji="📊" title="Train" body="Assign courses, track completion, and verify badges across your team." tone="mint" />
           <LaneCard href="/organization/team" emoji="🌱" title="Grow" body="Add locations, invite staff, and scale as your program grows." tone="sage" />
-          <LaneCard href="/admin/events" emoji="📅" title="Events" body="Create and manage events, registrations, rosters, and messages." tone="lavender" />
+          <LaneCard href="/manage/events" emoji="📅" title="Events" body="Create and manage events, registrations, rosters, and messages." tone="lavender" />
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">

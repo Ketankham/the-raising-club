@@ -160,7 +160,7 @@ export async function createEvent(form: EventFormInput): Promise<SaveEventResult
   }
 
   await writeSessionAndLocation(supabase, data.id, form);
-  revalidatePath("/admin/events");
+  revalidatePath("/manage/events");
   revalidatePath("/events");
   return { ok: true, id: data.id, slug: data.slug };
 }
@@ -196,7 +196,7 @@ export async function updateEvent(form: EventFormInput): Promise<SaveEventResult
   if (!data) return { ok: false, reason: "forbidden" }; // RLS filtered the row out
 
   await writeSessionAndLocation(supabase, form.id, form);
-  revalidatePath("/admin/events");
+  revalidatePath("/manage/events");
   revalidatePath(`/events/${data.slug}`);
   return { ok: true, id: data.id, slug: data.slug };
 }

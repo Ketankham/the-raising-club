@@ -17,7 +17,7 @@ export default async function AdminEventsPage() {
             <p className="text-sm text-ink-soft">Create and manage your events.</p>
           </div>
           <Link
-            href="/admin/events/new"
+            href="/manage/events/new"
             className="inline-flex items-center gap-2 rounded-full bg-[#9cc766] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#8bb957]"
           >
             <CalendarPlus size={16} /> Create event
@@ -67,12 +67,22 @@ export default async function AdminEventsPage() {
                       {e.registrationCount}
                       {e.childCapacity != null ? ` / ${e.childCapacity}` : ""}
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <Link href={`/admin/events/${e.id}/roster`} className="font-semibold text-[#7ba84f] hover:underline">
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      <a
+                        href={`/events/${e.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-[#7ba84f] hover:underline"
+                        title={e.status === "published" ? "Open the live event page" : "Preview the event page"}
+                      >
+                        View
+                      </a>
+                      <span className="mx-2 text-ink-soft/40">·</span>
+                      <Link href={`/manage/events/${e.id}/roster`} className="font-semibold text-[#7ba84f] hover:underline">
                         Roster
                       </Link>
                       <span className="mx-2 text-ink-soft/40">·</span>
-                      <Link href={`/admin/events/${e.id}/edit`} className="font-semibold text-ink-soft hover:text-ink">
+                      <Link href={`/manage/events/${e.id}/edit`} className="font-semibold text-ink-soft hover:text-ink">
                         Edit
                       </Link>
                     </td>

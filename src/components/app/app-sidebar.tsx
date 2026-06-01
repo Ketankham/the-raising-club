@@ -33,7 +33,9 @@ function itemsFor(role: SidebarRole): Item[] {
       { label: "Find Staff", href: "/connect", icon: Search },
       { label: "Open Roles", href: "/organization/roles", icon: ClipboardList },
       { label: "Team Learning", href: "/courses", icon: Users },
-      events, messages,
+      // Orgs host events — point Events at the management hub, not /events/my.
+      { label: "Events", href: "/manage/events", icon: CalendarDays },
+      messages,
     ];
   }
   return [

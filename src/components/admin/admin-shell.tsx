@@ -28,7 +28,7 @@ export function AdminShell({
 
   const items: Item[] = [];
   if (isAdmin) items.push({ label: "Users", href: "/admin", icon: Users });
-  items.push({ label: "Events", href: "/admin/events", icon: Calendar });
+  items.push({ label: "Events", href: "/manage/events", icon: Calendar });
   if (isAdmin) items.push({ label: "Courses", href: "/admin/courses", icon: BookOpen });
 
   const active = (href: string) =>
@@ -36,7 +36,7 @@ export function AdminShell({
 
   const SidebarBody = (
     <div className="flex h-full flex-col bg-[#f3ebdd] p-4">
-      <Link href="/admin/events" aria-label="Home" className="mb-6 inline-block px-1" onClick={() => setOpen(false)}>
+      <Link href="/manage/events" aria-label="Home" className="mb-6 inline-block px-1" onClick={() => setOpen(false)}>
         <Logo />
       </Link>
       <p className="mb-2 px-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Admin</p>

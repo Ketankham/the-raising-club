@@ -19,7 +19,7 @@ export default async function RosterPage({
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/admin/events" className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink">
+      <Link href="/manage/events" className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink">
         <ArrowLeft size={16} /> Back to events
       </Link>
       <div className="mb-6 flex items-center justify-between">
@@ -29,13 +29,13 @@ export default async function RosterPage({
           </div>
           <div className="flex gap-3">
             <Link
-              href={`/admin/events/${ev.id}/messages`}
+              href={`/manage/events/${ev.id}/messages`}
               className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-4 py-2 text-sm font-semibold text-ink hover:border-[#9cc766]"
             >
               <MessagesSquare size={14} /> Messages
             </Link>
             <a
-              href={`/admin/events/${ev.id}/roster/export`}
+              href={`/manage/events/${ev.id}/roster/export`}
               className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-4 py-2 text-sm font-semibold text-ink hover:border-[#9cc766]"
             >
               <Download size={14} /> Export CSV
@@ -43,7 +43,7 @@ export default async function RosterPage({
             <Link href={`/events/${ev.slug}`} className="rounded-full border border-ink/15 px-4 py-2 text-sm font-semibold text-ink hover:border-ink/30">
               View page
             </Link>
-            <Link href={`/admin/events/${ev.id}/edit`} className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">
+            <Link href={`/manage/events/${ev.id}/edit`} className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">
               <Pencil size={14} /> Edit
             </Link>
           </div>

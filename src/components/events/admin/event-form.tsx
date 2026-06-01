@@ -133,7 +133,7 @@ export function EventForm({
     };
     start(async () => {
       const res = f.id ? await updateEvent(payload) : await createEvent(payload);
-      if (res.ok) router.push(`/admin/events/${res.id}/roster`);
+      if (res.ok) router.push(`/manage/events/${res.id}/roster`);
       else if (res.reason === "forbidden") setError("You don't have permission to manage this event.");
       else if (res.reason === "unauthenticated") router.push("/sign-in");
       else setError(res.message ?? "Something went wrong.");
@@ -380,7 +380,7 @@ export function EventForm({
       </Section>
 
       <div className="flex justify-end gap-3">
-        <button type="button" onClick={() => router.push("/admin/events")} className="rounded-full border border-ink/15 px-5 py-2.5 text-sm font-semibold text-ink">
+        <button type="button" onClick={() => router.push("/manage/events")} className="rounded-full border border-ink/15 px-5 py-2.5 text-sm font-semibold text-ink">
           Cancel
         </button>
         <button type="button" onClick={submit} disabled={pending} className="rounded-full bg-[#9cc766] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#8bb957] disabled:opacity-50">
