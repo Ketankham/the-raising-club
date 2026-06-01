@@ -1,19 +1,15 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { completeDashboardTour } from "@/lib/dashboard/actions";
 
 /**
  * First-run dashboard tour (Figma p56–57): a welcome modal, then three
  * one-by-one coachmarks spotlighting the Connect / Learn / Events cards.
- * Shown once per browser, then hidden forever via localStorage.
+ * Rendered only when the user hasn't completed it
+ * (profiles.dashboard_tour_completed_at); finishing/skipping marks it done so
+ * it's hidden forever.
  */
-const STORAGE_KEY = "trc_dashboard_tour_v1";
-
 type Step = { target: string; title: string; body: string };
 
 const STEPS: Step[] = [
@@ -36,25 +32,14 @@ const STEPS: Step[] = [
 
 const TOOLTIP_W = 340;
 
-// localStorage-backed "already seen" flag, read without setState-in-effect.
-const subscribeSeen = () => () => {};
-const seenSnapshot = () => {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY) === "1";
-  } catch {
-    return true;
-  }
-};
-const seenServerSnapshot = () => true;
-
 export function DashboardTour() {
-  const seen = useSyncExternalStore(subscribeSeen, seenSnapshot, seenServerSnapshot);
   const [closed, setClosed] = useState(false);
   const [view, setView] = useState<"intro" | "steps">("intro");
   const [stepIdx, setStepIdx] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [, startTransition] = useTransition();
 
-  const active = !seen && !closed;
+  const active = !closed;
 
   const measure = useCallback(() => {
     const el = document.querySelector(`[data-tour="${STEPS[stepIdx].target}"]`);
@@ -78,12 +63,10 @@ export function DashboardTour() {
   }, [active, view, stepIdx, measure]);
 
   const finish = useCallback(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      /* ignore */
-    }
     setClosed(true);
+    startTransition(() => {
+      void completeDashboardTour();
+    });
   }, []);
 
   useEffect(() => {

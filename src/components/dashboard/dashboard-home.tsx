@@ -31,7 +31,7 @@ function ThemeCard({
   );
 }
 
-export function DashboardHome({ name }: { role: Role; userId: string; name: string }) {
+export function DashboardHome({ name, showTour }: { role: Role; userId: string; name: string; showTour?: boolean }) {
   return (
     <div className="relative">
       {/* decorative organic curves */}
@@ -108,7 +108,7 @@ export function DashboardHome({ name }: { role: Role; userId: string; name: stri
         </section>
       </div>
 
-      <DashboardTour />
+      {showTour && <DashboardTour />}
     </div>
   );
 }

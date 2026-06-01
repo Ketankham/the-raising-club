@@ -14,7 +14,12 @@ export default async function DashboardPage() {
 
   return (
     <DashboardShell role={role} name={name} email={profile.email} initials={initials}>
-      <DashboardHome role={role} userId={user.id} name={name} />
+      <DashboardHome
+        role={role}
+        userId={user.id}
+        name={name}
+        showTour={!profile.dashboard_tour_completed_at}
+      />
     </DashboardShell>
   );
 }
