@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, Check, BookOpen, MapPin, UserRound } from "lucide-react";
 import type { Role } from "./dashboard-shell";
+import { DashboardTour } from "./dashboard-tour";
 
 /* Matches dashboard-expected-design (PDF p10): next-best-step hero, three
    tinted Connect/Learn/Events cards, and a "Your journey" stepper. */
 
 function ThemeCard({
-  tone, title, subtitle, children, cta, ctaHref, link, linkHref,
+  tone, title, subtitle, children, cta, ctaHref, link, linkHref, tourId,
 }: {
   tone: "peach" | "sage" | "lavender";
   title: string;
@@ -16,10 +17,11 @@ function ThemeCard({
   ctaHref: string;
   link: string;
   linkHref: string;
+  tourId?: string;
 }) {
   const bg = { peach: "bg-[#fbeadd]", sage: "bg-[#e6ecd6]", lavender: "bg-[#ece9f5]" }[tone];
   return (
-    <div className={`flex flex-col rounded-2xl ${bg} p-5`}>
+    <div data-tour={tourId} className={`flex flex-col rounded-2xl ${bg} p-5`}>
       <h3 className="font-display text-lg font-semibold text-ink">{title}</h3>
       <p className="mt-1 text-sm text-ink-soft">{subtitle}</p>
       <div className="my-4 flex-1 rounded-xl bg-white/80 p-4">{children}</div>
@@ -52,7 +54,7 @@ export function DashboardHome({ name }: { role: Role; userId: string; name: stri
 
         {/* THREE CARDS */}
         <div className="mt-6 grid gap-5 lg:grid-cols-3">
-          <ThemeCard tone="peach" title="Connect" subtitle="Build your club with other parents, caregivers or educators." cta="View your Raising Club" ctaHref="/connect" link="Invite someone" linkHref="/connect">
+          <ThemeCard tourId="connect" tone="peach" title="Connect" subtitle="Build your club with other parents, caregivers or educators." cta="View your Raising Club" ctaHref="/connect" link="Invite someone" linkHref="/connect">
             <div className="flex items-start gap-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pink"><UserRound className="h-5 w-5 text-primary" /></span>
               <div>
@@ -62,7 +64,7 @@ export function DashboardHome({ name }: { role: Role; userId: string; name: stri
             </div>
           </ThemeCard>
 
-          <ThemeCard tone="sage" title="Learn" subtitle="Short lessons you can use today." cta="Continue Lesson" ctaHref="/courses" link="Browse courses" linkHref="/courses">
+          <ThemeCard tourId="learn" tone="sage" title="Learn" subtitle="Short lessons you can use today." cta="Continue Lesson" ctaHref="/courses" link="Browse courses" linkHref="/courses">
             <div className="flex items-start gap-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sage"><BookOpen className="h-5 w-5 text-ink" /></span>
               <div className="min-w-0 flex-1">
@@ -73,7 +75,7 @@ export function DashboardHome({ name }: { role: Role; userId: string; name: stri
             </div>
           </ThemeCard>
 
-          <ThemeCard tone="lavender" title="Events" subtitle="Meet people who care like you." cta="Reserve" ctaHref="/events" link="See calendar" linkHref="/events">
+          <ThemeCard tourId="events" tone="lavender" title="Events" subtitle="Meet people who care like you." cta="Reserve" ctaHref="/events" link="See calendar" linkHref="/events">
             <div className="flex items-start gap-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-lavender"><MapPin className="h-5 w-5 text-purple" /></span>
               <div>
@@ -105,6 +107,8 @@ export function DashboardHome({ name }: { role: Role; userId: string; name: stri
           <Link href="/dashboard" className="mt-5 inline-block rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-ink shadow-sm">View my plan</Link>
         </section>
       </div>
+
+      <DashboardTour />
     </div>
   );
 }
