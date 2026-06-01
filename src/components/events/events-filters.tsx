@@ -36,7 +36,8 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
 
   const [ageMax, setAgeMax] = useState(initial.ageMax ?? AGE_MAX);
   const [priceMax, setPriceMax] = useState(initial.priceMax ?? PRICE_MAX);
-  const [join, setJoin] = useState<EventJoinMode[]>(initial.joinModes ?? []);
+  // "How you'll join" is single-select (Online OR In-Person); click again clears.
+  const [join, setJoin] = useState<EventJoinMode | "">(initial.joinModes?.[0] ?? "");
   const [near, setNear] = useState(initial.near ?? "");
   const [who, setWho] = useState<ParticipationType[]>(initial.whoAttends ?? []);
   const [style, setStyle] = useState<EventStyle | "">(initial.styles?.[0] ?? "");
@@ -48,7 +49,7 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
     if (initial.q) p.set("q", initial.q); // keep any active search
     if (ageMax < AGE_MAX) p.set("ageMax", String(ageMax));
     if (priceMax < PRICE_MAX) p.set("priceMax", String(priceMax));
-    if (join.length) p.set("join", join.join(","));
+    if (join) p.set("join", join);
     if (near.trim()) p.set("near", near.trim());
     if (who.length) p.set("who", who.join(","));
     if (style) p.set("style", style);
@@ -62,7 +63,7 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
   function clearAll() {
     setAgeMax(AGE_MAX);
     setPriceMax(PRICE_MAX);
-    setJoin([]);
+    setJoin("");
     setNear("");
     setWho([]);
     setStyle("");
@@ -117,8 +118,8 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
             <CircleCheck
               key={o.value}
               label={o.label}
-              checked={join.includes(o.value)}
-              onChange={() => setJoin((s) => toggle(s, o.value))}
+              checked={join === o.value}
+              onChange={() => setJoin((cur) => (cur === o.value ? "" : o.value))}
             />
           ))}
         </div>
@@ -196,26 +197,31 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
         </div>
       </fieldset>
 
-      {/* When */}
+      {/* When (stacked — two date inputs won't fit side-by-side in the rail) */}
       <fieldset>
         <legend className="mb-2 text-sm font-semibold text-ink">When</legend>
-        <div className="flex items-center gap-2">
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            aria-label="From date"
-            className="w-full rounded-lg border border-ink/15 bg-white px-2.5 py-2 text-sm text-ink outline-none focus:border-[#baaae1]"
-          />
-          <span className="text-xs text-ink-soft">to</span>
-          <input
-            type="date"
-            value={dateTo}
-            min={date || undefined}
-            onChange={(e) => setDateTo(e.target.value)}
-            aria-label="To date"
-            className="w-full rounded-lg border border-ink/15 bg-white px-2.5 py-2 text-sm text-ink outline-none focus:border-[#baaae1]"
-          />
+        <div className="space-y-2">
+          <label className="block">
+            <span className="mb-1 block text-xs text-ink-soft">From</span>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              aria-label="From date"
+              className="block w-full min-w-0 rounded-lg border border-ink/15 bg-white px-2.5 py-2 text-sm text-ink outline-none focus:border-[#baaae1]"
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-xs text-ink-soft">To</span>
+            <input
+              type="date"
+              value={dateTo}
+              min={date || undefined}
+              onChange={(e) => setDateTo(e.target.value)}
+              aria-label="To date"
+              className="block w-full min-w-0 rounded-lg border border-ink/15 bg-white px-2.5 py-2 text-sm text-ink outline-none focus:border-[#baaae1]"
+            />
+          </label>
         </div>
       </fieldset>
 
