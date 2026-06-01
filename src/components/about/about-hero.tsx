@@ -36,10 +36,10 @@ export function AboutHero() {
         {/* decorative shapes are baked into the asset */}
         <div className="relative mx-auto w-full max-w-xl">
           <Image
-            src="/images/about-hero.png"
-            alt="A caregiver and child smiling together"
-            width={842}
-            height={732}
+            src="/images/about-hero-family.png"
+            alt="A family embracing together outdoors"
+            width={2643}
+            height={1756}
             priority
             className="h-auto w-full"
           />

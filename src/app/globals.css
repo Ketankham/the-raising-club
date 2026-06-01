@@ -48,6 +48,28 @@ html {
   scroll-behavior: smooth;
 }
 
+/*
+  Postage-stamp scalloped edge — semicircular notches cut out along all four
+  sides (matches the Figma "stamp" panel on the manifesto body). The four
+  masks are intersected so a pixel is hidden if any edge mask removes it.
+*/
+.stamp-edge {
+  --stamp-r: 12px;
+  --stamp-sp: 26px;
+  -webkit-mask:
+    radial-gradient(var(--stamp-r) at 50% 0, #0000 98%, #000) 0 0 / var(--stamp-sp) 100% repeat-x,
+    radial-gradient(var(--stamp-r) at 50% 100%, #0000 98%, #000) 0 100% / var(--stamp-sp) 100% repeat-x,
+    radial-gradient(var(--stamp-r) at 0 50%, #0000 98%, #000) 0 0 / 100% var(--stamp-sp) repeat-y,
+    radial-gradient(var(--stamp-r) at 100% 50%, #0000 98%, #000) 100% 0 / 100% var(--stamp-sp) repeat-y;
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(var(--stamp-r) at 50% 0, #0000 98%, #000) 0 0 / var(--stamp-sp) 100% repeat-x,
+    radial-gradient(var(--stamp-r) at 50% 100%, #0000 98%, #000) 0 100% / var(--stamp-sp) 100% repeat-x,
+    radial-gradient(var(--stamp-r) at 0 50%, #0000 98%, #000) 0 0 / 100% var(--stamp-sp) repeat-y,
+    radial-gradient(var(--stamp-r) at 100% 50%, #0000 98%, #000) 100% 0 / 100% var(--stamp-sp) repeat-y;
+  mask-composite: intersect;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

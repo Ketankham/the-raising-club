@@ -36,15 +36,47 @@ export function Hero() {
           <JoinCards className="mt-9" />
         </div>
 
-        {/* hero image (decorative shapes baked into the asset) */}
+        {/* hero image (transparent scalloped photo + decorative flower overlays) */}
         <div className="relative mx-auto w-full max-w-xl">
           <Image
             src="/images/hero.png"
             alt="A caregiver and child sharing a high five"
-            width={1007}
-            height={749}
+            width={947}
+            height={896}
             priority
-            className="h-auto w-full"
+            className="relative z-0 h-auto w-full"
+          />
+          <Image
+            src="/images/flower-olive.png"
+            alt=""
+            aria-hidden
+            width={168}
+            height={209}
+            className="pointer-events-none absolute -top-4 left-[10%] z-10 w-16 lg:w-24"
+          />
+          <Image
+            src="/images/blob-yellow.png"
+            alt=""
+            aria-hidden
+            width={177}
+            height={196}
+            className="pointer-events-none absolute top-[58%] -left-5 z-10 w-14 lg:w-20"
+          />
+          <Image
+            src="/images/flower-sage.png"
+            alt=""
+            aria-hidden
+            width={168}
+            height={209}
+            className="pointer-events-none absolute -bottom-3 left-2 z-10 w-16 lg:w-24"
+          />
+          <Image
+            src="/images/flower-pink.png"
+            alt=""
+            aria-hidden
+            width={228}
+            height={212}
+            className="pointer-events-none absolute -bottom-4 -right-3 z-10 w-20 lg:w-28"
           />
         </div>
       </div>

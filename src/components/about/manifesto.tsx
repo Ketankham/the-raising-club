@@ -82,8 +82,8 @@ export function Manifesto() {
             <Image
               src="/images/about-hero.png"
               alt="A caregiver and child together"
-              width={842}
-              height={732}
+              width={1660}
+              height={1436}
               priority
               className="h-auto w-full"
             />
@@ -94,7 +94,7 @@ export function Manifesto() {
       {/* Two-column body */}
       <section className="bg-cream pb-16">
         <div className="mx-auto max-w-6xl px-5 lg:px-8">
-          <div className="grid gap-x-12 gap-y-6 rounded-[2rem] bg-primary-soft/12 px-6 py-12 md:grid-cols-2 lg:px-12">
+          <div className="stamp-edge grid gap-x-12 gap-y-6 bg-[#f6edcb] px-8 py-14 md:grid-cols-2 lg:px-16 lg:py-16">
             <div className="space-y-6">
               {COLUMN_ONE.map((p, i) => (
                 <Paragraph key={i} {...p} />
