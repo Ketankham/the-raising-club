@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, Star } from "lucide-react";
+import { Flower } from "@/components/about/star-burst";
 
 type Feature = { label: string; body: string };
 type Plan = {
@@ -21,6 +22,8 @@ type Tab = {
   id: string;
   label: string;
   title: string; // e.g. "Caregiver & Educator"
+  // Centered page heading, split so the first part renders in serif italic.
+  heading: { accent: string; rest: string };
   includes?: string[];
   includesNote?: string;
   plans: Plan[];
@@ -31,6 +34,7 @@ const TABS: Tab[] = [
     id: "caregiver",
     label: "Caregiver",
     title: "Caregiver & Educator",
+    heading: { accent: "Caregiver & Educator", rest: "memberships" },
     plans: [
       {
         name: "TRC Community",
@@ -52,6 +56,7 @@ const TABS: Tab[] = [
         description:
           "For career-focused caregivers & educators seeking consistent work and professional verification.",
         cta: "Become a TRC Pro Caregiver",
+        badge: "Best value",
         highlight: true,
         features: [
           { label: "Best for", body: "Caregivers who want structured training, visible skills, and access to more stable, better-aligned roles as they grow professionally." },
@@ -80,6 +85,7 @@ const TABS: Tab[] = [
     id: "families",
     label: "Families",
     title: "Family",
+    heading: { accent: "Family", rest: "memberships" },
     plans: [
       {
         name: "Family Essentials",
@@ -111,7 +117,7 @@ const TABS: Tab[] = [
       {
         name: "Family Club+",
         price: 49,
-        badge: "Most Popular",
+        badge: "Most popular",
         subtitle: "Coordinate care together",
         description:
           "For families coordinating care with others—including nanny shares, shared-care setups, or extended family—who want a more integrated way of doing things together.",
@@ -131,6 +137,7 @@ const TABS: Tab[] = [
     id: "centers",
     label: "Centers & Programs",
     title: "Centers & Programs",
+    heading: { accent: "Centers &", rest: "Programs" },
     includes: [
       "Unlimited job posts with filtering",
       "Public TRC profile signaling trained staff",
@@ -153,7 +160,7 @@ const TABS: Tab[] = [
         name: "Program Growth",
         price: 349,
         unit: "per site",
-        badge: "Most Popular",
+        badge: "Most popular",
         subtitle: "Best for growing programs needing visibility and advanced tracking.",
         description: "Multi-site networks and chains standardizing hiring and training across locations.",
         cta: "See How It Works",
@@ -190,20 +197,28 @@ function priceView(plan: Plan, annual: boolean) {
   return { big: `$${plan.price}`, unit, sub: "Billed monthly" };
 }
 
+// Plan name: first word in serif italic, the remainder in bold sans —
+// matches the Figma card headings (e.g. "*Family* Club+", "*Program* Core").
+function planName(name: string) {
+  const i = name.indexOf(" ");
+  if (i === -1) return { accent: name, rest: "" };
+  return { accent: name.slice(0, i), rest: name.slice(i) };
+}
+
 export function Membership() {
   const [tabId, setTabId] = useState("caregiver");
   const [annual, setAnnual] = useState(false);
   const tab = TABS.find((t) => t.id === tabId)!;
+  const showToggle = tab.id !== "centers";
 
   return (
-    <section className="bg-cream py-14 lg:py-20">
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <h1 className="mx-auto max-w-3xl text-center font-display text-3xl font-extrabold text-ink sm:text-4xl lg:text-5xl">
-          Choose the membership that matches your role with children
-        </h1>
+    <section className="relative overflow-hidden bg-cream py-14 lg:py-20">
+      <Flower className="pointer-events-none absolute left-2 top-44 h-28 w-28 text-sage/70" />
+      <Flower className="pointer-events-none absolute right-3 top-1/2 h-32 w-32 text-pink/70" />
 
+      <div className="relative mx-auto max-w-7xl px-5 lg:px-8">
         {/* role tabs */}
-        <div className="mt-10 flex justify-center">
+        <div className="flex justify-center">
           <div className="inline-flex flex-wrap justify-center gap-1 rounded-full bg-lavender p-1.5">
             {TABS.map((t) => (
               <button
@@ -221,20 +236,19 @@ export function Membership() {
           </div>
         </div>
 
-        {/* section title + billing toggle */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <h2 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">
-            {tab.title}{" "}
-            <span className="font-serif font-medium italic text-ink/80">
-              memberships
-            </span>
-          </h2>
+        {/* centered page title */}
+        <h1 className="mt-10 text-center text-4xl leading-tight text-ink sm:text-5xl lg:text-6xl">
+          <span className="font-serif font-medium italic">{tab.heading.accent}</span>{" "}
+          <span className="font-display font-extrabold">{tab.heading.rest}</span>
+        </h1>
 
-          <div className="flex items-center gap-3">
-            <div className="inline-flex items-center rounded-full bg-lavender p-1 text-sm font-semibold">
+        {/* billing toggle */}
+        {showToggle && (
+          <div className="mt-7 flex justify-center">
+            <div className="inline-flex items-center rounded-full bg-lavender p-1.5 text-sm font-semibold">
               <button
                 onClick={() => setAnnual(false)}
-                className={`rounded-full px-4 py-1.5 transition-colors ${
+                className={`rounded-full px-5 py-1.5 transition-colors ${
                   !annual ? "bg-white text-ink shadow-sm" : "text-ink/60"
                 }`}
               >
@@ -242,24 +256,22 @@ export function Membership() {
               </button>
               <button
                 onClick={() => setAnnual(true)}
-                className={`rounded-full px-4 py-1.5 transition-colors ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-5 py-1.5 transition-colors ${
                   annual ? "bg-white text-ink shadow-sm" : "text-ink/60"
                 }`}
               >
                 Annual
+                <span className="text-xs font-bold text-olive">Save 15%</span>
               </button>
             </div>
-            <span className="rounded-full bg-olive/40 px-3 py-1 text-xs font-bold text-ink">
-              Save 15%
-            </span>
           </div>
-        </div>
+        )}
 
         {/* "all programs include" banner (centers only) */}
         {tab.includes && (
-          <div className="mt-8 rounded-3xl bg-mint px-6 py-6">
+          <div className="mt-10 rounded-3xl bg-[#faf1e4] px-6 py-6">
             <p className="font-display text-sm font-bold uppercase tracking-wide text-ink">
-              All TRC programs include
+              All TRC Programs Include
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               {tab.includes.map((inc) => (
@@ -276,26 +288,29 @@ export function Membership() {
         )}
 
         {/* plan cards */}
-        <div className="mt-8 grid items-start gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid items-start gap-6 lg:grid-cols-3">
           {tab.plans.map((plan) => {
-            const p = priceView(plan, annual);
+            const p = priceView(plan, annual && showToggle);
+            const nm = planName(plan.name);
             return (
               <div
                 key={plan.name}
-                className={`relative flex h-full flex-col rounded-3xl border p-7 ${
+                className={`relative flex h-full flex-col rounded-[2rem] border p-8 ${
                   plan.highlight
-                    ? "border-primary bg-white shadow-lg lg:scale-[1.02]"
-                    : "border-black/10 bg-white shadow-sm"
+                    ? "border-[#e9c79a] bg-[#f5dab6] shadow-lg lg:scale-[1.02]"
+                    : "border-[#f0e3d2] bg-[#faf1e4] shadow-sm"
                 }`}
               >
                 {plan.badge && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold text-white">
+                  <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-cream px-4 py-1.5 text-xs font-bold text-ink shadow-sm">
+                    <Star size={12} className="fill-yellow text-yellow" />
                     {plan.badge}
                   </span>
                 )}
 
-                <h3 className="font-display text-xl font-extrabold text-ink">
-                  {plan.name}
+                <h3 className="text-2xl text-ink">
+                  <span className="font-serif font-medium italic">{nm.accent}</span>
+                  <span className="font-display font-extrabold">{nm.rest}</span>
                 </h3>
                 {plan.subtitle && (
                   <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-primary">
@@ -321,16 +336,12 @@ export function Membership() {
 
                 <Link
                   href="/get-started"
-                  className={`mt-6 inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition-colors ${
-                    plan.highlight
-                      ? "bg-primary text-white hover:bg-primary-hover"
-                      : "border border-ink/15 text-ink hover:border-primary hover:text-primary"
-                  }`}
+                  className="mt-6 inline-flex items-center justify-center rounded-full bg-yellow px-6 py-3 text-sm font-semibold text-ink shadow-sm transition-[filter] hover:brightness-95"
                 >
                   {plan.cta}
                 </Link>
 
-                <ul className="mt-7 space-y-4 border-t border-black/5 pt-6">
+                <ul className="mt-7 space-y-4 border-t border-ink/10 pt-6">
                   {plan.features.map((f) => (
                     <li key={f.label} className="flex gap-2.5">
                       <Check size={16} className="mt-0.5 shrink-0 text-primary" strokeWidth={3} />

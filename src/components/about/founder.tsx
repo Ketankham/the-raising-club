@@ -1,14 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ChevronRight } from "lucide-react";
+import { StarBurst } from "@/components/about/star-burst";
 
 export function Founder() {
   return (
     <section id="founder" className="bg-lavender/50 py-20 lg:py-24">
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
         <div className="relative mx-auto w-full max-w-sm">
-          <div className="absolute -left-4 -top-4 z-10 grid h-16 w-16 place-items-center rounded-2xl bg-yellow/70 text-2xl">
-            ☀️
-          </div>
+          <StarBurst className="absolute -left-7 -top-7 z-10 h-20 w-20 text-yellow" />
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2rem] shadow-lg">
             <Image
               src="/images/ara.png"
@@ -63,15 +63,15 @@ export function Founder() {
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
               href="/get-started"
-              className="rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
+              className="rounded-full bg-yellow px-8 py-3.5 text-sm font-semibold text-ink shadow-sm transition-[filter] hover:brightness-95"
             >
               Join the Club
             </Link>
             <Link
               href="/manifesto"
-              className="rounded-full border border-ink/15 px-7 py-3 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
+              className="inline-flex items-center gap-1 rounded-full border border-ink/15 bg-white px-7 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
             >
-              Read Our Manifesto
+              Read our Manifesto <ChevronRight size={16} />
             </Link>
           </div>
         </div>

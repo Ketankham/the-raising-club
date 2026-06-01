@@ -48,7 +48,7 @@ export function Manifesto() {
             href="/about-us"
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink/60 transition-colors hover:text-primary"
           >
-            <ArrowLeft size={16} /> Back to about us
+            <ArrowLeft size={16} /> Back to about
           </Link>
         </div>
 
@@ -57,11 +57,11 @@ export function Manifesto() {
             <span className="inline-block rounded-full border border-ink/15 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-ink/70">
               Our Manifesto
             </span>
-            <h1 className="mt-6 text-4xl leading-[1.14] sm:text-5xl">
+            <h1 className="mt-6 text-4xl leading-[1.18] sm:text-5xl">
               <span className="font-display font-extrabold text-ink">
                 A new standard, where{" "}
               </span>
-              <span className="font-serif font-medium text-primary">
+              <span className="rounded-[0.4em] bg-primary-soft/35 px-2 py-0.5 font-serif font-medium text-ink [box-decoration-break:clone]">
                 care is education.
               </span>
             </h1>
@@ -72,9 +72,9 @@ export function Manifesto() {
             </p>
             <Link
               href="/get-started"
-              className="mt-8 inline-flex items-center justify-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
+              className="mt-8 inline-flex items-center justify-center rounded-full bg-yellow px-8 py-3.5 text-sm font-semibold text-ink shadow-sm transition-[filter] hover:brightness-95"
             >
-              Join The Club
+              Join the Club
             </Link>
           </div>
 
@@ -112,8 +112,14 @@ export function Manifesto() {
       {/* Quote */}
       <section className="bg-cream py-12 lg:py-20">
         <div className="mx-auto max-w-4xl px-5 text-center lg:px-8">
-          <p className="font-serif text-3xl font-medium leading-snug text-ink sm:text-4xl lg:text-5xl">
-            &ldquo;Change childhood, and the future gets built differently.&rdquo;
+          <p className="relative font-serif text-3xl font-medium italic leading-snug text-ink sm:text-4xl lg:text-5xl">
+            <span className="mr-1 align-top font-serif text-5xl not-italic text-sage lg:text-6xl">
+              &ldquo;
+            </span>
+            Change childhood, and the future gets built differently.
+            <span className="ml-1 align-top font-serif text-5xl not-italic text-sage lg:text-6xl">
+              &rdquo;
+            </span>
           </p>
         </div>
       </section>
@@ -123,12 +129,14 @@ export function Manifesto() {
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <div className="rounded-[2.5rem] bg-pink px-6 py-16 text-center lg:px-12">
             <h2 className="text-3xl leading-tight text-ink sm:text-4xl">
-              <span className="font-bold">Are you ready to build</span>{" "}
-              <span className="font-light text-ink/70">the future with us?</span>
+              <span className="font-display font-extrabold">Are you ready to build</span>{" "}
+              <span className="font-serif font-medium italic text-ink/80">
+                the future with us?
+              </span>
             </h2>
             <Link
               href="/get-started"
-              className="mt-8 inline-flex items-center justify-center rounded-full bg-primary px-8 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-primary-hover"
+              className="mt-8 inline-flex items-center justify-center rounded-full bg-yellow px-8 py-3.5 text-sm font-semibold text-ink shadow-sm transition-[filter] hover:brightness-95"
             >
               Become a Member
             </Link>

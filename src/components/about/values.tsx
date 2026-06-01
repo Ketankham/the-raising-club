@@ -1,23 +1,23 @@
-import { BookOpen, HeartHandshake, KeyRound } from "lucide-react";
+import { Blocks, House, Accessibility } from "lucide-react";
 
 const VALUES = [
   {
-    Icon: BookOpen,
-    color: "bg-purple/30",
-    title: "Evidence Based",
+    Icon: Blocks,
+    lead: "Evidence",
+    accent: "Based",
     body: "Every recommendation is grounded in child development science.",
   },
   {
-    Icon: HeartHandshake,
-    color: "bg-olive/30",
-    title: "Community First",
-    body: "We rebuild the village—connecting families, caregivers, and programs around each child.",
+    Icon: House,
+    lead: "Community",
+    accent: "first",
+    body: "A real village: parents, caregivers, grandparents, and educators.",
   },
   {
-    Icon: KeyRound,
-    color: "bg-primary-soft/35",
-    title: "Built for Access",
-    body: "We design for opportunity, so quality care isn’t limited by who can afford it.",
+    Icon: Accessibility,
+    lead: "Built for",
+    accent: "Access",
+    body: "Designed for minorities, women, and disabled communities.",
   },
 ];
 
@@ -25,21 +25,21 @@ export function Values() {
   return (
     <section className="bg-cream py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <h2 className="mx-auto max-w-3xl text-center font-display text-3xl font-extrabold text-ink sm:text-4xl lg:text-5xl">
-          Built on values that put children first
+        <h2 className="mx-auto max-w-3xl text-center text-3xl font-extrabold text-ink sm:text-4xl lg:text-5xl">
+          <span className="font-display">Built on values that put </span>
+          <span className="font-serif font-medium italic">children first</span>
         </h2>
 
         <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {VALUES.map(({ Icon, color, title, body }) => (
+          {VALUES.map(({ Icon, lead, accent, body }) => (
             <div
-              key={title}
-              className="rounded-3xl border border-black/5 bg-white p-8 text-center shadow-sm"
+              key={accent}
+              className="rounded-3xl border border-black/5 bg-white p-9 text-center shadow-sm"
             >
-              <span className={`mx-auto inline-grid h-14 w-14 place-items-center rounded-2xl ${color}`}>
-                <Icon size={24} className="text-ink" />
-              </span>
-              <h3 className="mt-5 font-display text-xl font-bold text-ink">
-                {title}
+              <Icon size={34} strokeWidth={1.5} className="mx-auto text-ink" />
+              <h3 className="mt-5 text-xl text-ink">
+                <span className="font-display font-bold">{lead} </span>
+                <span className="font-serif font-medium italic">{accent}</span>
               </h3>
               <p className="mt-2.5 text-sm leading-relaxed text-ink/70">{body}</p>
             </div>
