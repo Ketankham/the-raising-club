@@ -15,7 +15,7 @@ export default function BetaPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-cream px-6 py-16 text-center">
       <div className="max-w-lg">
-        <span className="mb-6 inline-block rounded-full bg-primary-soft px-4 py-1.5 text-sm font-semibold text-primary">
+        <span className="mb-6 inline-block rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-white">
           🧪 Beta testing
         </span>
         <h1 className="font-serif text-3xl font-semibold text-ink sm:text-4xl">
