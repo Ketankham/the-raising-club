@@ -3,7 +3,7 @@
 import { type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell } from "lucide-react";
+import { Search } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 export type Role = "parent" | "caregiver" | "organization";
@@ -45,7 +45,7 @@ export function DashboardShell({
         </nav>
         <div className="flex items-center gap-2">
           <button className="grid h-9 w-9 place-items-center rounded-full text-ink-soft hover:bg-white" aria-label="Search"><Search className="h-5 w-5" /></button>
-          <button className="relative grid h-9 w-9 place-items-center rounded-full text-ink-soft hover:bg-white" aria-label="Notifications"><Bell className="h-5 w-5" /><span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary" /></button>
+          {/* Notifications live in the global sidebar bell (NotificationBell). */}
           <span title={email ?? ""} className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">{initials}</span>
         </div>
       </header>

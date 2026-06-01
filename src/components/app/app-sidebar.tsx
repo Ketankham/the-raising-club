@@ -5,9 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home, Search, ClipboardList, Users, BookOpen, CalendarDays, MessageCircle,
-  Settings, LogOut, PanelLeft, type LucideIcon,
+  Settings, LogOut, PanelLeft, UserRound, type LucideIcon,
 } from "lucide-react";
 import { signOut } from "@/lib/auth";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 export type SidebarRole = "parent" | "caregiver" | "organization";
 
@@ -21,6 +22,9 @@ function itemsFor(role: SidebarRole): Item[] {
   if (role === "caregiver") {
     return [
       home,
+      // The caregiver's public profile is what the whole marketplace searches —
+      // give it a first-class nav entry (there was no link to it before).
+      { label: "My Profile", href: "/profile", icon: UserRound },
       { label: "Find Care Roles", href: "/jobs", icon: Search },
       { label: "My Applications", href: "/dashboard/applications", icon: ClipboardList },
       { label: "Meet Caregivers", href: "/connect", icon: Users },
@@ -51,7 +55,15 @@ function setCookie(expanded: boolean) {
   document.cookie = `trc_sidebar=${expanded ? "expanded" : "collapsed"}; path=/; max-age=31536000; samesite=lax`;
 }
 
-export function AppSidebar({ role, defaultExpanded }: { role: SidebarRole; defaultExpanded: boolean }) {
+export function AppSidebar({
+  role,
+  defaultExpanded,
+  unreadCount,
+}: {
+  role: SidebarRole;
+  defaultExpanded: boolean;
+  unreadCount: number;
+}) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(defaultExpanded);
   const items = itemsFor(role);
@@ -107,6 +119,7 @@ export function AppSidebar({ role, defaultExpanded }: { role: SidebarRole; defau
       </nav>
 
       <div className="mt-2">
+        <NotificationBell initialUnread={unreadCount} expanded={expanded} />
         {renderRow({ label: "Settings", href: "/dashboard/settings", icon: Settings })}
         <button onClick={() => signOut()}
           className="group relative mx-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-soft transition hover:bg-white/60 hover:text-ink">

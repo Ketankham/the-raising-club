@@ -17,10 +17,11 @@ const SIDEBAR_ROLES: SidebarRole[] = ["parent", "caregiver", "organization"];
  * admins, and auth/onboarding flows render without it.
  */
 export function AppFrame({
-  role, expanded, children,
+  role, expanded, unreadCount, children,
 }: {
   role: string | null;
   expanded: boolean;
+  unreadCount: number;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -33,7 +34,7 @@ export function AppFrame({
 
   return (
     <div className="flex min-h-screen w-full">
-      <AppSidebar role={role as SidebarRole} defaultExpanded={expanded} />
+      <AppSidebar role={role as SidebarRole} defaultExpanded={expanded} unreadCount={unreadCount} />
       <div className="flex min-w-0 flex-1 flex-col">{children}</div>
     </div>
   );

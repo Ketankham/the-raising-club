@@ -48,6 +48,7 @@ export default async function RootLayout({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   let role: string | null = null;
+  let unreadCount = 0;
   if (user) {
     const { data } = await supabase
       .from("profiles")
@@ -57,6 +58,12 @@ export default async function RootLayout({
     if (data && (!user.is_anonymous || data.registered_at)) {
       role = data.role ?? null;
     }
+    // Unread badge for the sidebar bell (cheap count; RLS scopes it to this user).
+    const { count } = await supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .is("read_at", null);
+    unreadCount = count ?? 0;
   }
   const expanded = (await cookies()).get("trc_sidebar")?.value !== "collapsed";
 
@@ -66,7 +73,7 @@ export default async function RootLayout({
       className={`${dmSans.variable} ${playfair.variable} ${albertSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
-        <AppFrame role={role} expanded={expanded}>
+        <AppFrame role={role} expanded={expanded} unreadCount={unreadCount}>
           {children}
         </AppFrame>
         <FeedbackWidget />
