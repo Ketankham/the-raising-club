@@ -24,7 +24,12 @@ export default async function OnboardingStepPage({
 
   // role-select is always reachable, even before a role is chosen.
   if (step === "role-select") {
-    return <div>{renderStep("role-select", state)}</div>;
+    return (
+      <div>
+        <StepProgress index={1} total={5} />
+        {renderStep("role-select", state)}
+      </div>
+    );
   }
 
   const ctx = toFlowContext(state);

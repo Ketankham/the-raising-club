@@ -88,7 +88,7 @@ export function CompletionStep({ slug, state }: { slug: string; state: Onboardin
         type="button"
         onClick={() => advance()}
         disabled={pending}
-        className="rounded-lg bg-primary px-8 py-3 font-display font-semibold text-white transition hover:bg-primary-hover disabled:opacity-50"
+        className="rounded-full bg-yellow px-9 py-3 font-display font-semibold text-ink shadow-sm transition hover:brightness-95 disabled:opacity-50"
       >
         {pending ? "Finishing…" : primary}
       </button>

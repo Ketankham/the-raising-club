@@ -1,6 +1,6 @@
 "use client";
 
-import { StepHeading, StepNav, Small, ErrorText, useAdvance } from "./ui";
+import { StepNav, Small, ErrorText, useAdvance } from "./ui";
 import type { OnboardingState } from "@/lib/onboarding/state";
 
 const CONTENT = {
@@ -30,20 +30,46 @@ const CONTENT = {
   },
 } as const;
 
+// Soft pastel card backgrounds, matching the Figma "ways to use" cards.
+const CARD_BG = ["bg-[#faf1e4]", "bg-mint", "bg-sage/60"];
+
+/** Title with "The Raising Club" in bold sans and the rest in serif. */
+function MixedTitle({ text }: { text: string }) {
+  const brand = "The Raising Club";
+  const i = text.indexOf(brand);
+  if (i === -1) return <span className="font-display font-bold">{text}</span>;
+  return (
+    <>
+      <span className="font-serif font-medium">{text.slice(0, i)}</span>
+      <span className="font-display font-bold">{brand}</span>
+      <span className="font-serif font-medium">{text.slice(i + brand.length)}</span>
+    </>
+  );
+}
+
 export function WaysToUseStep({ state }: { state: OnboardingState }) {
   const { advance, pending, error } = useAdvance("ways-to-use");
   const content = CONTENT[(state.role ?? "parent") as keyof typeof CONTENT];
 
   return (
     <div>
-      <StepHeading title={content.title} />
+      <h1 className="mb-10 text-center text-3xl leading-tight text-ink sm:text-4xl">
+        <MixedTitle text={content.title} />
+      </h1>
       <div className="grid gap-4 sm:grid-cols-3">
-        {content.cards.map(([title, body]) => (
-          <div key={title} className="rounded-xl border border-ink/10 bg-cream/60 p-5">
-            <h3 className="font-display font-semibold text-ink">{title}</h3>
-            <p className="mt-2 text-sm text-ink-soft">{body}</p>
-          </div>
-        ))}
+        {content.cards.map(([title, body], i) => {
+          const [icon, ...rest] = title.split(" ");
+          const label = rest.join(" ");
+          return (
+            <div key={title} className={`rounded-2xl p-6 ${CARD_BG[i % CARD_BG.length]}`}>
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/70 text-xl">
+                {icon}
+              </span>
+              <h3 className="mt-4 font-serif text-xl font-semibold text-ink">{label}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink/75">{body}</p>
+            </div>
+          );
+        })}
       </div>
       <Small>You don&rsquo;t need to decide how you&rsquo;ll use it right now. You can start in one place and explore more over time.</Small>
       <ErrorText>{error}</ErrorText>

@@ -62,48 +62,36 @@ export function StepNav({
   pending,
   disabled,
   onSaveLater,
-  showBack = true,
 }: {
   onContinue: () => void;
   continueLabel?: string;
   pending?: boolean;
   disabled?: boolean;
   onSaveLater?: () => void;
+  /** @deprecated back now lives in the progress header */
   showBack?: boolean;
 }) {
-  const router = useRouter();
+  // Navigation: "Save & Continue Later" (secondary) + Continue (yellow pill),
+  // centered. Back lives in the progress header.
   return (
-    <div className="mt-8 flex items-center justify-between gap-3">
-      {showBack ? (
+    <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+      {onSaveLater && (
         <button
           type="button"
-          onClick={() => router.back()}
-          className="rounded-lg border border-ink/15 px-6 py-3 font-display font-semibold text-ink transition hover:bg-cream"
+          onClick={onSaveLater}
+          className="rounded-full bg-ink/5 px-7 py-3 font-display font-semibold text-ink transition hover:bg-ink/10"
         >
-          Back
+          Save &amp; Continue Later
         </button>
-      ) : (
-        <span />
       )}
-      <div className="flex items-center gap-3">
-        {onSaveLater && (
-          <button
-            type="button"
-            onClick={onSaveLater}
-            className="text-sm font-medium text-ink-soft underline-offset-2 hover:underline"
-          >
-            Save &amp; Continue Later
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={onContinue}
-          disabled={disabled || pending}
-          className="rounded-lg bg-primary px-8 py-3 font-display font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {pending ? "Saving…" : continueLabel}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={onContinue}
+        disabled={disabled || pending}
+        className="rounded-full bg-yellow px-9 py-3 font-display font-semibold text-ink shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {pending ? "Saving…" : continueLabel}
+      </button>
     </div>
   );
 }
@@ -125,18 +113,18 @@ function OptionCard({
       role={kind === "radio" ? "radio" : "checkbox"}
       aria-checked={selected}
       onClick={onToggle}
-      className={`flex w-full items-start gap-3 rounded-xl border p-4 text-left transition ${
+      className={`flex w-full items-center gap-3 rounded-2xl border px-5 py-4 text-left transition ${
         selected
-          ? "border-primary bg-primary/5 ring-1 ring-primary"
-          : "border-ink/10 hover:border-primary/50 hover:bg-cream"
+          ? "border-yellow bg-yellow/25"
+          : "border-ink/12 bg-white hover:border-ink/25"
       }`}
     >
       <span
-        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border ${
-          kind === "radio" ? "rounded-full" : "rounded"
-        } ${selected ? "border-primary bg-primary text-white" : "border-ink/30"}`}
+        className={`flex h-6 w-6 shrink-0 items-center justify-center border transition ${
+          kind === "radio" ? "rounded-full" : "rounded-md"
+        } ${selected ? "border-yellow bg-yellow text-white" : "border-ink/25 bg-white"}`}
       >
-        {selected && <Check className="h-3.5 w-3.5" aria-hidden />}
+        {selected && <Check className="h-4 w-4" strokeWidth={3} aria-hidden />}
       </span>
       <span>
         <span className="block font-medium text-ink">{option.label}</span>
@@ -206,4 +194,4 @@ export function Field({
 }
 
 export const inputClass =
-  "w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-ink outline-none transition focus:border-primary focus:ring-1 focus:ring-primary";
+  "w-full rounded-full border border-ink/15 bg-white px-5 py-3 text-ink outline-none transition placeholder:text-ink/40 focus:border-primary focus:ring-1 focus:ring-primary";
