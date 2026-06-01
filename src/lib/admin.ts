@@ -64,6 +64,76 @@ export async function listInvitations(): Promise<AdminInvitation[]> {
   }));
 }
 
+export interface AdminUserDetail {
+  id: string;
+  role: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  preferredName: string | null;
+  email: string | null;
+  phone: string | null;
+  zip: string | null;
+  registeredAt: string | null;
+  createdAt: string;
+  emailConfirmed: boolean;
+  onboardingCompleted: boolean;
+  deactivated: boolean;
+  planKey: string | null;
+  planInterval: "monthly" | "annual";
+  parent: { childTerm: string | null; intents: string[] } | null;
+  organization: { name: string; about: string | null } | null;
+}
+
+/**
+ * Full detail for a single user, for the admin user-detail page. Admin RLS
+ * (`profiles_admin_all`, and the per-table admin select policies) lets an admin
+ * read any profile and role record, so no SECURITY DEFINER RPC is needed.
+ */
+export async function getAdminUserDetail(userId: string): Promise<AdminUserDetail | null> {
+  const supabase = await createClient();
+  const { data: p } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+  if (!p) return null;
+
+  let parent: AdminUserDetail["parent"] = null;
+  let organization: AdminUserDetail["organization"] = null;
+
+  if (p.role === "parent") {
+    const { data } = await supabase
+      .from("parent_profiles")
+      .select("child_term, intents")
+      .eq("user_id", userId)
+      .maybeSingle();
+    parent = { childTerm: data?.child_term ?? null, intents: data?.intents ?? [] };
+  } else if (p.role === "organization") {
+    const { data } = await supabase
+      .from("organizations")
+      .select("name, about")
+      .eq("owner_user_id", userId)
+      .maybeSingle();
+    organization = data ? { name: data.name, about: data.about } : null;
+  }
+
+  return {
+    id: p.id,
+    role: p.role,
+    firstName: p.first_name,
+    lastName: p.last_name,
+    preferredName: p.preferred_name,
+    email: p.email,
+    phone: p.phone,
+    zip: p.zip_code,
+    registeredAt: p.registered_at,
+    createdAt: p.created_at,
+    emailConfirmed: !!p.email_confirmed_at,
+    onboardingCompleted: !!p.onboarding_completed_at,
+    deactivated: !!p.deactivated_at,
+    planKey: p.plan_key ?? null,
+    planInterval: (p.plan_interval as "monthly" | "annual") ?? "monthly",
+    parent,
+    organization,
+  };
+}
+
 export function summarize(users: AdminUserRow[]) {
   const byRole: Record<string, number> = {};
   let active = 0;

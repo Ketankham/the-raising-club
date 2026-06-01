@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Copy, UserX, UserCheck, Mail, Ban } from "lucide-react";
+import Link from "next/link";
+import { Copy, UserX, UserCheck, Mail, Ban, SlidersHorizontal } from "lucide-react";
 import type { AdminUserRow, AdminInvitation } from "@/lib/admin";
 import { deactivateUser, reactivateUser, inviteUser, revokeInvitation } from "@/lib/admin-actions";
 
@@ -153,12 +154,17 @@ export function AdminConsole({
                     <td className="py-3 pr-4">{u.emailConfirmed ? <span className="text-emerald-700">Confirmed</span> : <span className="text-ink-soft">Unconfirmed</span>}</td>
                     <td className="py-3 pr-4 text-ink-soft">{fmtDate(u.registeredAt ?? u.createdAt)}</td>
                     <td className="py-3 pr-4">{u.deactivated ? <span className="text-red-600">Deactivated</span> : <span className="text-emerald-700">● Active</span>}</td>
-                    <td className="py-3 pr-4 text-right">
-                      {u.role !== "admin" && (
-                        <button onClick={() => toggleActive(u)} disabled={pending} className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition disabled:opacity-50 ${u.deactivated ? "border-emerald-300 text-emerald-700 hover:bg-emerald-50" : "border-red-200 text-red-600 hover:bg-red-50"}`}>
-                          {u.deactivated ? <><UserCheck className="h-3.5 w-3.5" /> Reactivate</> : <><UserX className="h-3.5 w-3.5" /> Deactivate</>}
-                        </button>
-                      )}
+                    <td className="py-3 pr-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link href={`/admin/users/${u.id}`} className="inline-flex items-center gap-1.5 rounded-lg border border-ink/15 px-3 py-1.5 text-xs font-medium text-ink-soft transition hover:bg-ink/5 hover:text-ink">
+                          <SlidersHorizontal className="h-3.5 w-3.5" /> Manage
+                        </Link>
+                        {u.role !== "admin" && (
+                          <button onClick={() => toggleActive(u)} disabled={pending} className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition disabled:opacity-50 ${u.deactivated ? "border-emerald-300 text-emerald-700 hover:bg-emerald-50" : "border-red-200 text-red-600 hover:bg-red-50"}`}>
+                            {u.deactivated ? <><UserCheck className="h-3.5 w-3.5" /> Reactivate</> : <><UserX className="h-3.5 w-3.5" /> Deactivate</>}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

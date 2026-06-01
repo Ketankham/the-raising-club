@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { plansForRole } from "@/lib/membership/plans";
 
 type Result<T = unknown> = { ok: true; data?: T } | { ok: false; error: string };
 
@@ -31,6 +32,56 @@ export async function reactivateUser(userId: string): Promise<Result> {
   if (!isAdmin) return { ok: false, error: "Admins only" };
   const { error } = await supabase.from("profiles").update({ deactivated_at: null }).eq("id", userId);
   if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+/** Admin edit of a user's name + contact fields (admin RLS allows the update). */
+export async function adminUpdatePersonalDetails(
+  userId: string,
+  input: { firstName: string; lastName: string; preferredName: string; phone: string; zip: string },
+): Promise<Result> {
+  const { supabase, isAdmin } = await asAdmin();
+  if (!isAdmin) return { ok: false, error: "Admins only" };
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      first_name: input.firstName.trim() || null,
+      last_name: input.lastName.trim() || null,
+      preferred_name: input.preferredName.trim() || null,
+      phone: input.phone.trim() || null,
+      zip_code: input.zip.trim() || null,
+    })
+    .eq("id", userId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath(`/admin/users/${userId}`);
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+/** Admin edit of a user's membership plan. Plan key validated against the target's role. */
+export async function adminUpdatePlan(
+  userId: string,
+  planKey: string,
+  interval: "monthly" | "annual",
+): Promise<Result> {
+  const { supabase, isAdmin } = await asAdmin();
+  if (!isAdmin) return { ok: false, error: "Admins only" };
+
+  const { data: target } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+  if (!target) return { ok: false, error: "User not found" };
+
+  const plan = plansForRole(target.role).find((p) => p.key === planKey);
+  if (!plan) return { ok: false, error: "That plan isn't available for this user's role" };
+  if (interval !== "monthly" && interval !== "annual") return { ok: false, error: "Invalid billing interval" };
+
+  const planValue = plan.price === "free" ? null : plan.key;
+  const { error } = await supabase
+    .from("profiles")
+    .update({ plan_key: planValue, plan_interval: interval, plan_selected_at: new Date().toISOString() })
+    .eq("id", userId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath(`/admin/users/${userId}`);
   revalidatePath("/admin");
   return { ok: true };
 }
