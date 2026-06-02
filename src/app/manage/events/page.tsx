@@ -35,6 +35,7 @@ export default async function AdminEventsPage() {
               <thead className="bg-cream/60 text-left text-xs font-semibold uppercase text-ink-soft">
                 <tr>
                   <th className="px-4 py-3">Event</th>
+                  <th className="px-4 py-3">Created by</th>
                   <th className="px-4 py-3">Date</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Price</th>
@@ -51,6 +52,10 @@ export default async function AdminEventsPage() {
                         {e.title}
                       </span>
                       <span className="text-xs text-ink-soft">{e.visibility}</span>
+                    </td>
+                    <td className="px-4 py-3 text-ink-soft">
+                      <span className="block font-medium text-ink">{e.orgName ?? e.createdBy ?? "—"}</span>
+                      {e.orgName && e.createdBy && <span className="text-xs">{e.createdBy}</span>}
                     </td>
                     <td className="px-4 py-3 text-ink-soft">
                       {e.nextStartsAt ? shortDateLabel(e.nextStartsAt) : "—"}

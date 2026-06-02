@@ -32,6 +32,8 @@ export function EventForm({
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  // Price/model is locked once published to avoid charge disputes with existing registrations.
+  const priceLocked = initial?.status === "published";
 
   // The datetime-local fields hold wall-clock time in THIS timezone. Default a
   // new event to the creator's own timezone; the entered time is converted to a
@@ -330,9 +332,14 @@ export function EventForm({
       </Section>
 
       <Section title="Pricing & capacity">
+        {priceLocked && (
+          <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700">
+            Price is locked because this event is published. To change pricing, unpublish the event first.
+          </p>
+        )}
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Pricing">
-            <select className={input} value={f.priceModel} onChange={(e) => set("priceModel", e.target.value as PriceModel)}>
+            <select className={input} value={f.priceModel} disabled={priceLocked} onChange={(e) => set("priceModel", e.target.value as PriceModel)}>
               <option value="included">Included (free)</option>
               <option value="paid">Paid</option>
               <option value="donation">Pay what you can</option>
@@ -340,7 +347,7 @@ export function EventForm({
           </Field>
           {f.priceModel === "paid" && (
             <Field label="Price (USD)">
-              <input type="number" min={0} step="0.01" className={input}
+              <input type="number" min={0} step="0.01" className={input} disabled={priceLocked}
                 value={f.priceCents ? f.priceCents / 100 : ""}
                 onChange={(e) => set("priceCents", Math.round(Number(e.target.value) * 100))} />
             </Field>

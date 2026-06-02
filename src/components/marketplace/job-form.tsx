@@ -14,17 +14,21 @@ function toggle<T>(arr: T[], v: T): T[] {
   return arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
 }
 
-/** Create/edit a job post (My Care Posts). */
+/** Create/edit a job post (My Care Posts or Org Roles). */
 export function JobForm({
   initial,
   jobId,
   skillOptions,
   orgOptions,
+  defaultOrgId,
+  backHref = "/dashboard/posts",
 }: {
   initial?: JobForEdit;
   jobId?: string;
   skillOptions: SkillOption[];
   orgOptions: { id: string; name: string }[];
+  defaultOrgId?: string;
+  backHref?: string;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -47,7 +51,7 @@ export function JobForm({
     isCoHire: initial?.isCoHire ?? false,
     openings: initial?.openings ?? 1,
     skills: initial?.skills ?? [],
-    orgId: initial?.orgId ?? null,
+    orgId: initial?.orgId ?? defaultOrgId ?? null,
     status: initial?.status ?? "draft",
   }));
 
@@ -62,7 +66,7 @@ export function JobForm({
     start(async () => {
       const payload = { ...f, status };
       const res = jobId ? await updateJob(jobId, payload) : await createJob(payload);
-      if (res.ok) router.push("/dashboard/posts");
+      if (res.ok) router.push(backHref);
       else setError(res.message || "Something went wrong.");
     });
   }

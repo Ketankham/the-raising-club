@@ -128,9 +128,9 @@ export function NotificationBell({
             <button
               aria-label="Close notifications"
               onClick={() => setOpen(false)}
-              className="fixed inset-0 z-[190] cursor-default bg-ink/10"
+              className="fixed inset-0 z-[9998] cursor-default bg-ink/10"
             />
-            <div className="fixed right-3 top-[68px] z-[200] flex max-h-[min(72vh,560px)] w-[360px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-2xl">
+            <div className={`fixed z-[9999] flex max-h-[min(72vh,560px)] w-[360px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-2xl ${variant === "sidebar" ? "bottom-[4.5rem] left-[4.5rem]" : "right-3 top-16"}`}>
               <div className="flex items-center justify-between border-b border-ink/5 px-4 py-3">
               <h2 className="font-display text-base font-semibold text-ink">Notifications</h2>
               <div className="flex items-center gap-1">

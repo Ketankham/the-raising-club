@@ -14,6 +14,8 @@ export interface ManagedEventRow {
   childCapacity: number | null;
   nextStartsAt: string | null;
   registrationCount: number;
+  orgName: string | null;
+  createdBy: string | null;
 }
 
 /** Events the current user manages (admins see all; org admins see their orgs'). */
@@ -27,8 +29,11 @@ export async function listManagedEvents(opts: {
     .from("events")
     .select(
       `id, slug, title, status, visibility, is_featured, price_model, price_cents,
-       child_capacity, event_sessions ( starts_at ),
-       event_registrations ( id, status )`,
+       child_capacity, org_id, created_by,
+       event_sessions ( starts_at ),
+       event_registrations ( id, status ),
+       organizations ( name ),
+       profiles ( first_name, last_name, preferred_name )`,
     );
 
   if (!opts.isAdmin) {
@@ -61,6 +66,8 @@ export async function listManagedEvents(opts: {
         childCapacity: e.child_capacity,
         nextStartsAt: starts[0] ?? null,
         registrationCount: active.length,
+        orgName: e.organizations?.name ?? null,
+        createdBy: e.profiles ? (e.profiles.preferred_name || `${e.profiles.first_name ?? ""} ${e.profiles.last_name ?? ""}`.trim() || null) : null,
       };
     })
     .sort((a, b) => (b.nextStartsAt ?? "").localeCompare(a.nextStartsAt ?? ""));
