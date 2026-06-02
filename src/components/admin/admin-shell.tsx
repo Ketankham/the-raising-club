@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, BookOpen, Calendar, LogOut, Menu, Users, X } from "lucide-react";
+import { Bell, BookOpen, Calendar, CreditCard, LogOut, Menu, Tag, Users, X } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { signOut } from "@/lib/auth";
 
@@ -30,7 +30,9 @@ export function AdminShell({
   if (isAdmin) items.push({ label: "Users", href: "/admin", icon: Users });
   items.push({ label: "Events", href: "/manage/events", icon: Calendar });
   if (isAdmin) items.push({ label: "Courses", href: "/admin/courses", icon: BookOpen });
+  if (isAdmin) items.push({ label: "Plans", href: "/admin/plans", icon: Tag });
   if (isAdmin) items.push({ label: "Notifications", href: "/admin/notifications", icon: Bell });
+  if (isAdmin) items.push({ label: "Payments", href: "/admin/settings/payments", icon: CreditCard });
 
   const active = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);

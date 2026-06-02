@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home, Search, ClipboardList, Users, BookOpen, CalendarDays, MessageCircle,
-  Settings, LogOut, PanelLeft, UserRound, type LucideIcon,
+  Settings, LogOut, PanelLeft, UserRound, HeartHandshake, type LucideIcon,
 } from "lucide-react";
 import { signOut } from "@/lib/auth";
 import { NotificationBell } from "@/components/notifications/notification-bell";
@@ -47,6 +47,7 @@ function itemsFor(role: SidebarRole): Item[] {
     { label: "Find Care", href: "/connect", icon: Search },
     { label: "My Care Posts", href: "/dashboard/posts", icon: ClipboardList },
     { label: "Community", href: "/connect/families", icon: Users },
+    { label: "Your Raising Club", href: "/dashboard/family", icon: HeartHandshake },
     learn, events, messages,
   ];
 }

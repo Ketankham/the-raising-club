@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { plansForRole } from "@/lib/membership/plans";
+import { plansForRole } from "@/lib/plans/queries";
 
 type Result<T = unknown> = { ok: true; data?: T } | { ok: false; error: string };
 
@@ -71,7 +71,7 @@ export async function adminUpdatePlan(
   const { data: target } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
   if (!target) return { ok: false, error: "User not found" };
 
-  const plan = plansForRole(target.role).find((p) => p.key === planKey);
+  const plan = (await plansForRole(target.role)).find((p) => p.key === planKey);
   if (!plan) return { ok: false, error: "That plan isn't available for this user's role" };
   if (interval !== "monthly" && interval !== "annual") return { ok: false, error: "Invalid billing interval" };
 

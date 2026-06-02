@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Check, UserX, UserCheck } from "lucide-react";
 import type { AdminUserDetail } from "@/lib/admin";
-import type { Plan } from "@/lib/membership/plans";
+import type { Plan } from "@/lib/plans/types";
 import { adminUpdatePersonalDetails, adminUpdatePlan, deactivateUser, reactivateUser } from "@/lib/admin-actions";
 
 type Result = { ok: true } | { ok: false; error: string };

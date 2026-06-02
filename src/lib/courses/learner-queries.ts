@@ -56,6 +56,8 @@ export interface LearnerCourse {
   estimatedLearningMinutes: number | null;
   mode: string;
   skipToCertEnabled: boolean;
+  isFree: boolean;
+  priceCents: number;
   skills: { id: string; label: string }[];
   chapters: LearnerChapter[];
   hasQuiz: boolean;
@@ -73,7 +75,7 @@ export async function getCourseForLearner(slug: string): Promise<LearnerCourse |
     .select(
       `id, slug, title, subtitle, summary, description, cover_image_url, intro_video_provider,
        intro_video_url, age_min_months, age_max_months, estimated_learning_minutes, mode,
-       skip_to_cert_enabled, status,
+       skip_to_cert_enabled, status, is_free, price_cents,
        course_skills ( skills ( id, label ) ),
        course_quizzes ( id ),
        course_chapters (
@@ -169,6 +171,8 @@ export async function getCourseForLearner(slug: string): Promise<LearnerCourse |
     estimatedLearningMinutes: c.estimated_learning_minutes,
     mode: c.mode ?? "Online · Self-paced",
     skipToCertEnabled: c.skip_to_cert_enabled,
+    isFree: c.is_free ?? true,
+    priceCents: c.price_cents ?? 0,
     skills: (c.course_skills ?? []).map((s: any) => s.skills).filter(Boolean).map((s: any) => ({ id: s.id, label: s.label })),
     chapters,
     hasQuiz: (c.course_quizzes ?? []).length > 0,

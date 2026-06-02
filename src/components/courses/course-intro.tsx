@@ -57,7 +57,9 @@ export function CourseIntro({ course, signedIn }: { course: LearnerCourse; signe
         {/* Sidebar enrol card */}
         <aside>
           <div className="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm lg:sticky lg:top-20">
-            <p className="font-display text-2xl font-bold text-ink">Free</p>
+            <p className="font-display text-2xl font-bold text-ink">
+              {course.isFree || !course.priceCents ? "Free" : `$${Math.round(course.priceCents / 100)}`}
+            </p>
             <ul className="mt-4 space-y-2.5 text-sm text-ink-soft">
               <li className="flex items-center gap-2"><BookOpen size={16} className="text-ink-soft/70" /> {totalModules} module{totalModules === 1 ? "" : "s"}</li>
               {duration && <li className="flex items-center gap-2"><Clock size={16} className="text-ink-soft/70" /> {duration}</li>}
@@ -67,7 +69,7 @@ export function CourseIntro({ course, signedIn }: { course: LearnerCourse; signe
               <li className="flex items-center gap-2"><GraduationCap size={16} className="text-ink-soft/70" /> {course.mode}</li>
             </ul>
             <div className="mt-5">
-              <EnrollButton courseId={course.id} slug={course.slug} signedIn={signedIn} />
+              <EnrollButton courseId={course.id} slug={course.slug} signedIn={signedIn} isFree={course.isFree} priceCents={course.priceCents} />
             </div>
             {course.hasQuiz && (
               <p className="mt-3 text-center text-xs text-ink-soft">Earn a certificate on completion.</p>

@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Check, Plus, Trash2 } from "lucide-react";
-import { createRegistration } from "@/lib/events/actions";
+import { createRegistration, startEventCheckout } from "@/lib/events/actions";
 import { priceLabel } from "@/lib/events/format";
 import {
   SUPPORT_NEED_LABELS,
@@ -124,6 +124,22 @@ export function RegisterFlow({ context }: { context: RegistrationContext }) {
         setError("This is a paid event — online payment is coming soon.");
       } else {
         setError(res.message ?? "Something went wrong. Please try again.");
+      }
+    });
+  }
+
+  function payAndRegister() {
+    setError(null);
+    start(async () => {
+      const res = await startEventCheckout(buildPayload());
+      if (res.ok) {
+        window.location.href = res.url;
+      } else if (res.reason === "unauthenticated") {
+        router.push(`/sign-in?next=/events/${context.slug}/register`);
+      } else if (res.reason === "already_registered") {
+        router.push(`/events/${context.slug}`);
+      } else {
+        setError(res.message ?? "Could not start checkout. Please try again.");
       }
     });
   }
@@ -490,16 +506,12 @@ export function RegisterFlow({ context }: { context: RegistrationContext }) {
               nextLabel={pending ? "Confirming…" : "Confirm registration"}
             />
           ) : (
-            <div className="space-y-4">
-              <div className="rounded-2xl bg-lavender p-5 text-center">
-                <p className="font-display text-sm font-bold text-ink">Online payment coming soon</p>
-                <p className="mt-1 text-sm text-ink-soft">
-                  Secure card payment for this event will be available shortly. Your details above are
-                  saved for when checkout opens.
-                </p>
-              </div>
-              <StepNav onBack={() => setStep(1)} />
-            </div>
+            <StepNav
+              onBack={() => setStep(1)}
+              onNext={payAndRegister}
+              nextDisabled={pending}
+              nextLabel={pending ? "Redirecting to checkout…" : "Pay & register"}
+            />
           )}
         </div>
       )}

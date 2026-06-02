@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { requireOnboardedProfile } from "@/lib/guards";
 import { getSettingsData } from "@/lib/settings/queries";
-import { plansForRole } from "@/lib/membership/plans";
+import { plansForRole } from "@/lib/plans/queries";
+import { getMyEntitlement } from "@/lib/entitlement/queries";
 import { DashboardShell, type Role } from "@/components/dashboard/dashboard-shell";
 import {
   PersonalDetailsSection,
@@ -19,7 +20,7 @@ export default async function SettingsPage() {
   const { profile } = await requireOnboardedProfile();
   if (profile.role === "admin") redirect("/admin");
 
-  const data = await getSettingsData();
+  const [data, entitlement] = await Promise.all([getSettingsData(), getMyEntitlement()]);
   const role = data.role as Role;
   const name = profile.preferred_name || profile.first_name || "there";
   const initials = ((profile.preferred_name || profile.first_name || "?")[0] + (profile.last_name?.[0] ?? "")).toUpperCase();
@@ -72,9 +73,11 @@ export default async function SettingsPage() {
           <SecuritySection />
 
           <MembershipSection
-            plans={plansForRole(data.role)}
+            plans={await plansForRole(data.role)}
             currentPlanKey={data.planKey}
             currentInterval={data.planInterval}
+            status={entitlement.status}
+            entitlementUntil={entitlement.entitlementUntil}
           />
         </div>
       </div>

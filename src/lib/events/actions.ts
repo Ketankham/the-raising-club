@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getStripe } from "@/lib/stripe/server";
 import type { RegistrationPayload } from "./types";
 
 export type ToggleSaveResult =
@@ -104,7 +106,21 @@ export async function createRegistration(payload: RegistrationPayload): Promise<
   if (regErr || !reg) return { ok: false, reason: "error", message: regErr?.message };
 
   const regId = reg.id;
+  const detail = await writeRegistrationDetails(supabase, user.id, regId, payload);
+  if (!detail.ok) return { ok: false, reason: "error", message: detail.error };
 
+  revalidatePath("/events");
+  return { ok: true, registrationId: regId, status };
+}
+
+// Shared registration detail inserts (children / contacts / pickup / waivers).
+type EventsSupa = Awaited<ReturnType<typeof createClient>>;
+async function writeRegistrationDetails(
+  supabase: EventsSupa,
+  userId: string,
+  regId: string,
+  payload: RegistrationPayload,
+): Promise<{ ok: true } | { ok: false; error: string }> {
   if (payload.children.length) {
     const rows = payload.children.map((c) => ({
       registration_id: regId,
@@ -116,7 +132,7 @@ export async function createRegistration(payload: RegistrationPayload): Promise<
       support_note: payload.supportNote ?? null,
     }));
     const { error } = await supabase.from("event_registration_children").insert(rows);
-    if (error) return { ok: false, reason: "error", message: error.message };
+    if (error) return { ok: false, error: error.message };
   }
 
   if (payload.emergencyContact?.name && payload.emergencyContact.phone) {
@@ -139,17 +155,114 @@ export async function createRegistration(payload: RegistrationPayload): Promise<
 
   if (payload.waiverAcceptances.length) {
     const rows = payload.waiverAcceptances.map((w) => ({
-      user_id: user.id,
+      user_id: userId,
       waiver_id: w.waiverId,
       registration_id: regId,
       media_consent: w.mediaConsent ?? "not_set",
     }));
     const { error } = await supabase.from("waiver_acceptances").insert(rows);
-    if (error) return { ok: false, reason: "error", message: error.message };
+    if (error) return { ok: false, error: error.message };
   }
+  return { ok: true };
+}
 
-  revalidatePath("/events");
-  return { ok: true, registrationId: regId, status };
+export type EventCheckoutResult =
+  | { ok: true; url: string }
+  | { ok: false; reason: "unauthenticated" | "already_registered" | "not_payable" | "error"; message?: string };
+
+/**
+ * Paid-event registration: re-read price server-side, create a PENDING
+ * registration + a pending event_payments row, then a Stripe Checkout session.
+ * The webhook confirms the registration on payment. Never trusts client price.
+ */
+export async function startEventCheckout(payload: RegistrationPayload): Promise<EventCheckoutResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  const { data: ev } = await supabase
+    .from("events")
+    .select("id, slug, title, price_model, price_cents, currency, requires_approval")
+    .eq("id", payload.eventId)
+    .maybeSingle();
+  if (!ev) return { ok: false, reason: "error", message: "Event not found" };
+
+  const isFree = ev.price_model === "included" || ev.price_cents === 0;
+  if (isFree) return { ok: false, reason: "not_payable", message: "This event is free." };
+
+  const { data: existing } = await supabase
+    .from("event_registrations")
+    .select("id")
+    .eq("event_id", ev.id)
+    .eq("registrant_user_id", user.id)
+    .not("status", "in", "(cancelled,denied)")
+    .maybeSingle();
+  if (existing) return { ok: false, reason: "already_registered" };
+
+  const resolved = await getStripe();
+  if (!resolved) return { ok: false, reason: "error", message: "Payments are not configured yet." };
+  const { stripe } = resolved;
+
+  // Pending registration (capacity held while they pay).
+  const { data: reg, error: regErr } = await supabase
+    .from("event_registrations")
+    .insert({
+      event_id: ev.id,
+      registrant_user_id: user.id,
+      status: "pending",
+      adult_count: payload.adultCount,
+      contact_email: payload.contactEmail,
+      contact_phone: payload.contactPhone ?? null,
+    })
+    .select("id")
+    .single();
+  if (regErr || !reg) return { ok: false, reason: "error", message: regErr?.message };
+  const regId = reg.id;
+
+  const detail = await writeRegistrationDetails(supabase, user.id, regId, payload);
+  if (!detail.ok) return { ok: false, reason: "error", message: detail.error };
+
+  const amount = ev.price_cents as number;
+  const currency = (ev.currency as string) || "usd";
+  await supabase.from("event_payments").insert({
+    registration_id: regId,
+    amount_cents: amount,
+    currency,
+    status: "pending",
+  });
+
+  const base = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency,
+            unit_amount: amount,
+            product_data: { name: ev.title as string },
+          },
+        },
+      ],
+      metadata: { kind: "event", registrationId: regId, eventId: ev.id as string, userId: user.id },
+      customer_email: payload.contactEmail || user.email || undefined,
+      success_url: `${base}/events/${ev.slug}?payment=success`,
+      cancel_url: `${base}/events/${ev.slug}/register?payment=cancelled`,
+    });
+    if (!session.url) return { ok: false, reason: "error", message: "Stripe did not return a URL." };
+
+    await supabase
+      .from("event_payments")
+      .update({ stripe_checkout_session_id: session.id })
+      .eq("registration_id", regId);
+
+    return { ok: true, url: session.url };
+  } catch (e) {
+    return { ok: false, reason: "error", message: e instanceof Error ? e.message : "Checkout failed" };
+  }
 }
 
 export type CancelResult =

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, Star } from "lucide-react";
 import { Flower } from "@/components/about/star-burst";
-import { TABS, type Plan } from "@/lib/membership/plans";
+import type { Plan, Tab } from "@/lib/plans/types";
 
 function priceView(plan: Plan, annual: boolean) {
   if (plan.price === "free") return { big: "Free", unit: "", sub: "Free forever" };
@@ -12,8 +12,11 @@ function priceView(plan: Plan, annual: boolean) {
     return { big: "Custom", unit: "", sub: plan.customLabel ?? "" };
   const unit = `/month${plan.unit ? ` ${plan.unit}` : ""}`;
   if (annual) {
-    const per = Math.round(plan.price * 0.85);
-    const yearly = Math.round(plan.price * 12 * 0.85);
+    // Prefer the admin-set annual price; fall back to the 15%-off computation.
+    const yearly = plan.priceAnnualCents != null
+      ? Math.round(plan.priceAnnualCents / 100)
+      : Math.round(plan.price * 12 * 0.85);
+    const per = Math.round(yearly / 12);
     return { big: `$${per}`, unit, sub: `Billed annually ($${yearly}${plan.unit ? " per site" : ""}/yr)` };
   }
   return { big: `$${plan.price}`, unit, sub: "Billed monthly" };
@@ -27,10 +30,10 @@ function planName(name: string) {
   return { accent: name.slice(0, i), rest: name.slice(i) };
 }
 
-export function Membership() {
-  const [tabId, setTabId] = useState("caregiver");
+export function Membership({ tabs }: { tabs: Tab[] }) {
+  const [tabId, setTabId] = useState<string>(tabs[0]?.id ?? "caregiver");
   const [annual, setAnnual] = useState(false);
-  const tab = TABS.find((t) => t.id === tabId)!;
+  const tab = tabs.find((t) => t.id === tabId) ?? tabs[0];
   const showToggle = tab.id !== "centers";
 
   return (
@@ -42,7 +45,7 @@ export function Membership() {
         {/* role tabs */}
         <div className="flex justify-center">
           <div className="inline-flex flex-wrap justify-center gap-1 rounded-full bg-lavender p-1.5">
-            {TABS.map((t) => (
+            {tabs.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setTabId(t.id)}

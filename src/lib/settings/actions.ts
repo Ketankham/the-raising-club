@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { plansForRole } from "@/lib/membership/plans";
+import { plansForRole } from "@/lib/plans/queries";
 
 type Result = { ok: true } | { ok: false; error: string };
 
@@ -87,7 +87,7 @@ export async function updatePlan(planKey: string, interval: "monthly" | "annual"
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
   if (!profile) return { ok: false, error: "No profile" };
 
-  const allowed = plansForRole(profile.role);
+  const allowed = await plansForRole(profile.role);
   const plan = allowed.find((p) => p.key === planKey);
   if (!plan) return { ok: false, error: "That plan isn't available for your account" };
   if (interval !== "monthly" && interval !== "annual") return { ok: false, error: "Invalid billing interval" };

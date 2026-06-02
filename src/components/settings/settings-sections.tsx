@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { Field, inputClass, ErrorText, MultiSelect, type Option } from "@/components/onboarding/steps/ui";
-import type { Plan } from "@/lib/membership/plans";
+import type { Plan } from "@/lib/plans/types";
 import {
   updatePersonalDetails,
   updateEmail,
@@ -14,6 +14,7 @@ import {
   updatePlan,
   updateParentPreferences,
 } from "@/lib/settings/actions";
+import { startSubscriptionCheckout, openBillingPortal } from "@/lib/billing/actions";
 
 type Result = { ok: true } | { ok: false; error: string };
 
@@ -325,22 +326,74 @@ export function MembershipSection(props: {
   plans: Plan[];
   currentPlanKey: string | null;
   currentInterval: "monthly" | "annual";
+  status?: string;
+  entitlementUntil?: string | null;
 }) {
   const [annual, setAnnual] = useState(props.currentInterval === "annual");
   const { pending, error, run } = useSave();
   const [pendingKey, setPendingKey] = useState<string | null>(null);
+  const [billing, startBilling] = useTransition();
+  const [billingError, setBillingError] = useState<string | null>(null);
 
   // The free starter plan is stored as plan_key = null.
   const freeKey = props.plans.find((p) => p.price === "free")?.key ?? null;
   const currentKey = props.currentPlanKey ?? freeKey;
+  const hasPaidSub = props.status === "active" || props.status === "trialing" || props.status === "past_due";
+  const showStatus = Boolean(props.status) && props.status !== "none";
 
   function choose(plan: Plan) {
     setPendingKey(plan.key);
+    setBillingError(null);
+    const priceId = annual ? plan.stripePriceAnnualId : plan.stripePriceMonthlyId;
+    // Paid plan with a configured Stripe price → Checkout. Otherwise record-only.
+    if (plan.price !== "free" && priceId) {
+      startBilling(async () => {
+        const res = await startSubscriptionCheckout(plan.key, annual ? "annual" : "monthly");
+        if (res.ok) window.location.href = res.url;
+        else setBillingError(res.error);
+      });
+      return;
+    }
     run(() => updatePlan(plan.key, annual ? "annual" : "monthly"));
+  }
+
+  function manageBilling() {
+    setBillingError(null);
+    startBilling(async () => {
+      const res = await openBillingPortal();
+      if (res.ok) window.location.href = res.url;
+      else setBillingError(res.error);
+    });
   }
 
   return (
     <Card title="Membership" description="Choose the plan that fits where you are right now.">
+      {showStatus && (
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-cream/70 px-4 py-3">
+          <div>
+            <p className="text-sm text-ink">
+              {props.status === "comp" ? "Complimentary access" : "Billing status"}:{" "}
+              <span className="font-semibold capitalize">{props.status}</span>
+            </p>
+            {props.entitlementUntil && (
+              <p className="mt-0.5 text-xs text-ink-soft">
+                {props.status === "canceled" ? "Access ends" : props.status === "past_due" ? "Was due" : "Renews"} on{" "}
+                {new Date(props.entitlementUntil).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+              </p>
+            )}
+          </div>
+          {hasPaidSub && (
+            <button
+              type="button"
+              onClick={manageBilling}
+              disabled={billing}
+              className="rounded-full border border-ink/15 px-4 py-1.5 text-sm font-medium text-ink transition hover:bg-ink/5 disabled:opacity-50"
+            >
+              {billing ? "Opening…" : "Manage billing"}
+            </button>
+          )}
+        </div>
+      )}
       <div className="mb-5 inline-flex items-center rounded-full bg-lavender p-1 text-sm font-semibold">
         <button
           type="button"
@@ -390,11 +443,17 @@ export function MembershipSection(props: {
               ) : (
                 <button
                   type="button"
-                  disabled={pending || isCurrent}
+                  disabled={pending || billing || isCurrent}
                   onClick={() => choose(plan)}
                   className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {pending && pendingKey === plan.key ? "Saving…" : isCurrent ? "Selected" : "Choose plan"}
+                  {(pending || billing) && pendingKey === plan.key
+                    ? "Please wait…"
+                    : isCurrent
+                      ? "Selected"
+                      : plan.price !== "free" && (annual ? plan.stripePriceAnnualId : plan.stripePriceMonthlyId)
+                        ? "Subscribe"
+                        : "Choose plan"}
                 </button>
               )}
             </div>
@@ -402,7 +461,7 @@ export function MembershipSection(props: {
         })}
       </div>
       <ErrorText>{error}</ErrorText>
-      <p className="mt-4 text-xs text-ink-soft">No payment is collected yet — we&rsquo;ll set up billing before any plan is charged.</p>
+      <ErrorText>{billingError}</ErrorText>
     </Card>
   );
 }

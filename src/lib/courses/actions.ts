@@ -1,13 +1,74 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getStripe } from "@/lib/stripe/server";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type ActionResult =
   | { ok: true; data?: any }
   | { ok: false; reason: "unauthenticated" | "forbidden" | "error"; message?: string };
+
+export type CourseCheckoutResult =
+  | { ok: true; url: string }
+  | { ok: false; reason: "unauthenticated" | "already_enrolled" | "free" | "error"; message?: string };
+
+/**
+ * Paid-course checkout. Re-reads price/is_free server-side; creates a Stripe
+ * Checkout (mode payment). Enrollment is granted by the webhook on success.
+ */
+export async function startCourseCheckout(courseId: string, slug: string): Promise<CourseCheckoutResult> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  const { data: course } = await supabase
+    .from("courses")
+    .select("id, title, price_cents, currency, is_free")
+    .eq("id", courseId)
+    .maybeSingle();
+  if (!course) return { ok: false, reason: "error", message: "Course not found" };
+  if (course.is_free || !course.price_cents) return { ok: false, reason: "free" };
+
+  const { data: existing } = await supabase
+    .from("course_enrollments")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("course_id", courseId)
+    .maybeSingle();
+  if (existing) return { ok: false, reason: "already_enrolled" };
+
+  const resolved = await getStripe();
+  if (!resolved) return { ok: false, reason: "error", message: "Payments are not configured yet." };
+
+  const currency = (course.currency as string) || "usd";
+  const base = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  try {
+    const session = await resolved.stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency,
+            unit_amount: course.price_cents as number,
+            product_data: { name: course.title as string },
+          },
+        },
+      ],
+      metadata: { kind: "course", courseId: course.id as string, userId: user.id, slug, courseName: course.title as string },
+      customer_email: user.email || undefined,
+      success_url: `${base}/courses/${slug}?payment=success`,
+      cancel_url: `${base}/courses/${slug}?payment=cancelled`,
+    });
+    if (!session.url) return { ok: false, reason: "error", message: "Stripe did not return a URL." };
+    return { ok: true, url: session.url };
+  } catch (e) {
+    return { ok: false, reason: "error", message: e instanceof Error ? e.message : "Checkout failed" };
+  }
+}
 
 async function getUserAndEnrollment(courseId: string) {
   const supabase = await createClient();
