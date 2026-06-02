@@ -189,9 +189,6 @@ create trigger event_resources_cap
   before insert on event_resources
   for each row execute function enforce_event_resource_cap();
 
--- NOTE: course/content access for events is intentionally DEFERRED. When the
--- courses schema exists we'll add an `event_course_links` join table here.
-
 -- ---------------------------------------------------------------------------
 -- Taxonomy : event_categories + map ("Types of events" matrix).
 -- ---------------------------------------------------------------------------
