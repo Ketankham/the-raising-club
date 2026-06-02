@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createAccount, completeStep } from "@/lib/onboarding/actions";
 import { StepHeading, ErrorText, Field, inputClass } from "./ui";
+import { PlacesAutocomplete } from "@/components/ui/places-autocomplete";
 import type { OnboardingState } from "@/lib/onboarding/state";
 
 const ROLE_TITLES = [
@@ -29,10 +30,14 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
     contactRoleOther: "",
     email: "",
     password: "",
-    zip_code: "",
     phone: "",
     child_term: "",
   });
+  const [location, setLocation] = useState<{
+    zip_code: string;
+    lat: number | null;
+    lng: number | null;
+  }>({ zip_code: "", lat: null, lng: null });
   const [agreed, setAgreed] = useState(false);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -53,7 +58,9 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
           last_name: form.last_name || undefined,
           preferred_name: form.preferred_name || undefined,
           phone: form.phone || undefined,
-          zip_code: form.zip_code || undefined,
+          zip_code: location.zip_code || undefined,
+          lat: location.lat ?? undefined,
+          lng: location.lng ?? undefined,
         },
       });
       if (!account.ok) {
@@ -120,8 +127,22 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={role === "organization" ? "ZIP code (program location)" : "ZIP code"}>
-            <input className={inputClass} value={form.zip_code} onChange={set("zip_code")} />
+          <Field
+            label={role === "organization" ? "Program location" : "Your area"}
+            hint="Start typing a city, neighborhood, or ZIP code"
+          >
+            <PlacesAutocomplete
+              placeholder={role === "organization" ? "e.g. Brooklyn, NY" : "e.g. Chicago, IL or 60601"}
+              types={["geocode"]}
+              className={inputClass}
+              onPlace={(p) =>
+                setLocation({
+                  zip_code: p.zipCode ?? p.city ?? p.formatted,
+                  lat: p.lat,
+                  lng: p.lng,
+                })
+              }
+            />
           </Field>
           <Field label="Phone number">
             <input className={inputClass} value={form.phone} onChange={set("phone")} />

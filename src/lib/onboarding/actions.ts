@@ -177,6 +177,8 @@ export async function createAccount(input: {
     preferred_name?: string;
     phone?: string;
     zip_code?: string;
+    lat?: number;
+    lng?: number;
   };
 }): Promise<ActionResult> {
   const supabase = await createClient();

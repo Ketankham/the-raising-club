@@ -27,6 +27,8 @@ export interface CaregiverCard {
   ageGroups: string[];     // age_group enum values
   careSettings: string[];  // care_setting enum values
   isSaved: boolean;
+  lat: number | null;
+  lng: number | null;
 }
 
 // --- Connect Families (Figma slide 3) --------------------------------------

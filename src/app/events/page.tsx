@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EventsFilters } from "@/components/events/events-filters";
-import { EventCard } from "@/components/events/event-card";
+import { EventsGrid } from "@/components/events/events-grid";
 import { listEvents, parseFilters } from "@/lib/events/queries";
 
 export const metadata: Metadata = {
@@ -63,27 +63,7 @@ export default async function EventsPage({
             <EventsFilters initial={filters} />
 
             <div className="flex-1">
-              <div className="mb-5 flex items-center gap-3">
-                <h2 className="font-display text-lg font-bold text-ink">Live Events</h2>
-                <span className="rounded-full bg-[#dcebbf] px-2.5 py-0.5 text-xs font-semibold text-[#5b7a2e]">
-                  {events.length} event{events.length === 1 ? "" : "s"}
-                </span>
-              </div>
-
-              {events.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-ink/15 bg-white/50 p-12 text-center">
-                  <p className="font-display text-lg font-bold text-ink">No events found</p>
-                  <p className="mt-1 text-sm text-ink-soft">
-                    Try adjusting your filters or check back soon for new gatherings.
-                  </p>
-                </div>
-              ) : (
-                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                  {events.map((ev) => (
-                    <EventCard key={ev.id} event={ev} />
-                  ))}
-                </div>
-              )}
+              <EventsGrid events={events} />
             </div>
           </div>
         </section>

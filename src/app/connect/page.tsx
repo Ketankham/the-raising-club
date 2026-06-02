@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { MarketplaceFilters } from "@/components/marketplace/marketplace-filters";
-import { CaregiverCard } from "@/components/marketplace/caregiver-card";
+import { CaregiverGrid } from "@/components/marketplace/caregiver-grid";
 import { listCaregivers } from "@/lib/marketplace/caregivers";
 import { getMyJobOptions } from "@/lib/marketplace/jobs";
 import { parseMarketplaceFilters } from "@/lib/marketplace/format";
@@ -57,25 +57,7 @@ export default async function ConnectPage({
         <MarketplaceFilters initial={filters} basePath="/connect" />
 
         <div className="min-w-0 flex-1">
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-ink-soft">
-              <span className="rounded-full bg-mint px-2.5 py-0.5 font-semibold text-ink">{caregivers.length}</span>{" "}
-              {caregivers.length === 1 ? "caregiver" : "caregivers"} · Matched to your search and filters
-            </p>
-          </div>
-
-          {caregivers.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-ink/15 bg-white/50 p-12 text-center">
-              <p className="font-display text-lg font-bold text-ink">No caregivers found</p>
-              <p className="mt-1 text-sm text-ink-soft">Try adjusting your filters or check back soon.</p>
-            </div>
-          ) : (
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {caregivers.map((c) => (
-                <CaregiverCard key={c.userId} c={c} canInvite={canInvite} jobs={jobs} />
-              ))}
-            </div>
-          )}
+          <CaregiverGrid caregivers={caregivers} canInvite={canInvite} jobs={jobs} />
         </div>
       </div>
     </div>

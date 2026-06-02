@@ -9,7 +9,7 @@ import { PARTICIPATION_TAGS, type EventListItem } from "@/lib/events/types";
 const PURPLE = "#baaae1";
 const PURPLE_ICON = "#a48fd6";
 
-export function EventCard({ event }: { event: EventListItem }) {
+export function EventCard({ event, distanceMiles }: { event: EventListItem; distanceMiles?: number }) {
   const href = `/events/${event.slug}`;
   const included = event.priceModel === "included" || event.priceCents === 0;
 
@@ -82,7 +82,9 @@ export function EventCard({ event }: { event: EventListItem }) {
           {event.location && (
             <li className="flex items-center gap-2">
               <MapPin size={15} className="shrink-0" style={{ color: PURPLE_ICON }} />
-              {locationLabel(event.location)}
+              {distanceMiles != null
+                ? `${distanceMiles < 10 ? distanceMiles.toFixed(1) : Math.round(distanceMiles)} mi away · ${locationLabel(event.location)}`
+                : locationLabel(event.location)}
             </li>
           )}
         </ul>

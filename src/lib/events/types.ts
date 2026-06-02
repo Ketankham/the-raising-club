@@ -20,6 +20,8 @@ export interface EventLocationSummary {
   kind: "physical" | "digital";
   neighborhood: string | null;
   address: string | null;
+  lat: number | null;
+  lng: number | null;
 }
 
 /** Shape used by the list/grid cards. */
@@ -252,6 +254,8 @@ export interface EventFormInput {
     arrivalNotes?: string;
     platform?: string;
     joinUrl?: string;
+    lat?: number | null;
+    lng?: number | null;
   };
   /** External link resources (max 5). */
   resources: { label: string; url: string; kind: string }[];
