@@ -4,7 +4,42 @@ import { useState, useTransition } from "react";
 import { AlertTriangle, Check, Mail, Phone, X } from "lucide-react";
 import { setAttendanceStatus, setRegistrationStatus } from "@/lib/events/admin-actions";
 import { SUPPORT_NEED_LABELS, type SupportNeed } from "@/lib/events/types";
-import type { RosterEntry } from "@/lib/events/admin";
+import type { RosterEntry, RosterPayment } from "@/lib/events/admin";
+
+const PAYMENT_STYLES: Record<string, string> = {
+  paid: "bg-[#eef6e3] text-[#5f8a36]",
+  pending: "bg-[#fdf2e2] text-[#a05014]",
+  refunded: "bg-lavender text-ink-soft",
+  failed: "bg-pink text-[#a02c4a]",
+};
+
+function money(cents: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: (currency || "usd").toUpperCase(),
+    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
+  }).format(cents / 100);
+}
+
+function PaymentChip({ payment }: { payment: RosterPayment }) {
+  const refunded = payment.refundedAmountCents > 0;
+  const label = refunded
+    ? `Refunded ${money(payment.refundedAmountCents, payment.currency)}`
+    : payment.status === "paid"
+      ? `Paid ${money(payment.amountCents, payment.currency)}`
+      : payment.status === "pending"
+        ? "Payment pending"
+        : payment.status;
+  return (
+    <span
+      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+        PAYMENT_STYLES[refunded ? "refunded" : payment.status] ?? "bg-lavender text-ink-soft"
+      }`}
+    >
+      {label}
+    </span>
+  );
+}
 
 const STATUS_STYLES: Record<string, string> = {
   confirmed: "bg-[#eef6e3] text-[#5f8a36]",
@@ -108,6 +143,7 @@ function RegistrationCard({ entry, eventId }: { entry: RosterEntry; eventId: str
               </button>
             </>
           )}
+          {entry.payment && <PaymentChip payment={entry.payment} />}
           <span
             className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
               STATUS_STYLES[status] ?? "bg-lavender text-ink-soft"
