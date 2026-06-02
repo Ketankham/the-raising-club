@@ -36,7 +36,8 @@ export function NotificationTypeEditor({ type }: { type: NotificationType }) {
   const [form, setForm] = useState({
     inappEnabled: type.inappEnabled,
     emailEnabled: type.emailEnabled,
-    ccAdmin: type.ccAdmin,
+    ccAllAdmins: type.ccAllAdmins,
+    ccEmailsText: type.ccEmails.join(", "),
     inappTitle: type.inappTitle,
     inappBody: type.inappBody,
     emailSubject: type.emailSubject,
@@ -83,8 +84,21 @@ export function NotificationTypeEditor({ type }: { type: NotificationType }) {
 
   function save() {
     setError(null);
+    const ccEmails = form.ccEmailsText
+      .split(/[\n,;]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
     start(async () => {
-      const res = await updateNotificationType(type.key, form);
+      const res = await updateNotificationType(type.key, {
+        inappEnabled: form.inappEnabled,
+        emailEnabled: form.emailEnabled,
+        ccAllAdmins: form.ccAllAdmins,
+        ccEmails,
+        inappTitle: form.inappTitle,
+        inappBody: form.inappBody,
+        emailSubject: form.emailSubject,
+        emailBody: form.emailBody,
+      });
       if (res.ok) setSaved(true);
       else setError(res.error);
     });
@@ -203,15 +217,38 @@ export function NotificationTypeEditor({ type }: { type: NotificationType }) {
             onChange={(e) => set("emailBody", e.target.value)}
             className={fieldCls}
           />
-          <label className="mt-3 flex items-center gap-2 text-sm text-ink-soft">
+          {/* CC recipients — the user always receives it as the primary "To".
+              These extra recipients are CC'd alongside them. */}
+          <div className="mt-4 rounded-xl border border-ink/10 bg-cream/40 p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
+              CC recipients
+            </p>
+            <p className="mt-1 text-xs text-ink-soft/80">
+              The user this notification is about always receives the email. Anyone added here is
+              CC&apos;d alongside them.
+            </p>
+            <label className="mt-3 flex items-center gap-2 text-sm text-ink-soft">
+              <input
+                type="checkbox"
+                checked={form.ccAllAdmins}
+                onChange={(e) => set("ccAllAdmins", e.target.checked)}
+                className="h-4 w-4 accent-[var(--color-primary,#e0466e)]"
+              />
+              CC all admins
+            </label>
+            <label className="mt-3 mb-1 block text-xs font-medium text-ink-soft">
+              Additional CC emails
+            </label>
             <input
-              type="checkbox"
-              checked={form.ccAdmin}
-              onChange={(e) => set("ccAdmin", e.target.checked)}
-              className="h-4 w-4 accent-[var(--color-primary,#e0466e)]"
+              value={form.ccEmailsText}
+              onChange={(e) => set("ccEmailsText", e.target.value)}
+              placeholder="ops@example.com, founder@example.com"
+              className={fieldCls}
             />
-            CC admin (theraisingclub.tech@gmail.com)
-          </label>
+            <p className="mt-1 text-xs text-ink-soft/70">
+              Comma-separated. Invalid addresses are dropped on save.
+            </p>
+          </div>
           <p className="mt-3 mb-1 text-xs font-medium text-ink-soft">Preview</p>
           <div className="rounded-xl border border-ink/10 bg-cream/40 p-3">
             <p className="text-sm font-semibold text-ink">

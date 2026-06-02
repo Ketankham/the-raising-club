@@ -36,7 +36,10 @@ export interface NotificationType {
   inappBody: string;
   emailSubject: string;
   emailBody: string;
-  ccAdmin: boolean;
+  /** CC every active admin on this type's email. */
+  ccAllAdmins: boolean;
+  /** Extra explicit addresses CC'd alongside the recipient. */
+  ccEmails: string[];
   availableVars: TemplateVar[];
   sortOrder: number;
   updatedAt: string;

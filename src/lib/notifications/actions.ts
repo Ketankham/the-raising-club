@@ -51,13 +51,31 @@ export async function toggleChannel(
   return { ok: true };
 }
 
+/** Loosely validate + normalize a list of CC email addresses. */
+function cleanCcEmails(raw: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const entry of raw) {
+    const addr = entry.trim();
+    if (!addr) continue;
+    // Basic shape check; the real gate is the user typing a valid address.
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(addr)) continue;
+    const key = addr.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(addr);
+  }
+  return out;
+}
+
 /** Update the editable fields of a notification type (bodies, toggles, cc). */
 export async function updateNotificationType(
   key: string,
   input: {
     inappEnabled: boolean;
     emailEnabled: boolean;
-    ccAdmin: boolean;
+    ccAllAdmins: boolean;
+    ccEmails: string[];
     inappTitle: string;
     inappBody: string;
     emailSubject: string;
@@ -71,7 +89,8 @@ export async function updateNotificationType(
     .update({
       inapp_enabled: input.inappEnabled,
       email_enabled: input.emailEnabled,
-      cc_admin: input.ccAdmin,
+      cc_all_admins: input.ccAllAdmins,
+      cc_emails: cleanCcEmails(input.ccEmails),
       inapp_title: input.inappTitle,
       inapp_body: input.inappBody,
       email_subject: input.emailSubject,
