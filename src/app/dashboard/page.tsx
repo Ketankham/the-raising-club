@@ -1,11 +1,16 @@
 import { redirect } from "next/navigation";
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireUserProfile } from "@/lib/guards";
 import { DashboardShell, type Role } from "@/components/dashboard/dashboard-shell";
 import { DashboardHome } from "@/components/dashboard/dashboard-home";
 
-/** Logged-in dashboard shell (sidebar + top bar), shared across non-admin roles. */
+/**
+ * Logged-in dashboard shell (sidebar + top bar), shared across non-admin roles.
+ * Onboarding is NOT required here ("register first, onboard later") — a user who
+ * registered for an event but hasn't onboarded lands here and is nudged by the
+ * site-wide onboarding banner instead of being force-redirected into onboarding.
+ */
 export default async function DashboardPage() {
-  const { user, profile } = await requireOnboardedProfile();
+  const { user, profile } = await requireUserProfile();
   if (profile.role === "admin") redirect("/admin");
 
   const role = profile.role as Role;

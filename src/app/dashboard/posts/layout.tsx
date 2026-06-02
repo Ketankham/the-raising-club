@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { DashboardShell, type Role } from "@/components/dashboard/dashboard-shell";
 
 /** My Care Posts (job posting) shares the dashboard shell. Caregivers don't
  *  post jobs — they're redirected to Find Jobs. */
 export default async function PostsLayout({ children }: { children: ReactNode }) {
-  const { profile } = await requireOnboardedProfile();
+  const { profile } = await requireOnboardedForMarketplace();
   if (profile.role === "admin") redirect("/admin");
   if (profile.role === "caregiver") redirect("/jobs");
 

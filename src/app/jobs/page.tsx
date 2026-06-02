@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { MarketplaceFilters } from "@/components/marketplace/marketplace-filters";
 import { JobCard } from "@/components/marketplace/job-card";
 import { listOpenJobs } from "@/lib/marketplace/jobs";
@@ -11,7 +11,7 @@ export default async function JobsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { profile } = await requireOnboardedProfile();
+  const { profile } = await requireOnboardedForMarketplace();
   const sp = await searchParams;
   const filters = parseMarketplaceFilters(sp);
   const jobs = await listOpenJobs(filters);

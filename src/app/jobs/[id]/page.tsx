@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MapPin, DollarSign, Clock, Users, CalendarDays } from "lucide-react";
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { getJobById } from "@/lib/marketplace/jobs";
 import { JobApplyPanel } from "@/components/marketplace/job-apply-panel";
 import { moneyRange, SCHEDULE_LABELS, AGE_GROUP_TAGS, CARE_TYPE_LABELS, type CareType } from "@/lib/marketplace/format";
 
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { profile } = await requireOnboardedProfile();
+  const { profile } = await requireOnboardedForMarketplace();
   const { id } = await params;
   const job = await getJobById(id);
   if (!job) notFound();

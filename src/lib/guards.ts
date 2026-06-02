@@ -29,6 +29,21 @@ export async function requireOnboardedProfile() {
   return ctx;
 }
 
+/**
+ * Marketplace gate ("register first, onboard later"): courses/events are open to
+ * everyone, but marketplace features (Find Caregivers / Connect / Jobs / Chat and
+ * the caregiver/job dashboard tools) require a completed onboarding. Instead of
+ * dumping the user straight into the flow, send them to the `/complete-onboarding`
+ * popup which explains why and offers the CTA. Admins are exempt.
+ */
+export async function requireOnboardedForMarketplace() {
+  const ctx = await requireUserProfile();
+  if (ctx.profile.role !== "admin" && !ctx.profile.onboarding_completed_at) {
+    redirect("/complete-onboarding");
+  }
+  return ctx;
+}
+
 /** Require an admin. */
 export async function requireAdmin() {
   const ctx = await requireUserProfile();

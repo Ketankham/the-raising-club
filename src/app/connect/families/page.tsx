@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Search, Pencil } from "lucide-react";
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { MarketplaceFilters } from "@/components/marketplace/marketplace-filters";
 import { FamilyCard } from "@/components/marketplace/family-card";
 import { listFamilies } from "@/lib/marketplace/family";
@@ -12,7 +12,7 @@ export default async function FamiliesPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { profile } = await requireOnboardedProfile();
+  const { profile } = await requireOnboardedForMarketplace();
   const sp = await searchParams;
   const filters = parseMarketplaceFilters(sp);
   const families = await listFamilies(filters);
