@@ -1,6 +1,7 @@
 import "server-only";
 import type Stripe from "stripe";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { emitRegistrationConfirmed } from "./notify";
 
 /**
  * Confirm a paid event registration from a completed Checkout session.
@@ -43,6 +44,8 @@ export async function fulfillEventPayment(admin: SupabaseClient, session: Stripe
   }
 
   // Notify the registrant (fail-soft; service-role create_notification).
+  // Always send the payment receipt; on a confirmed (non-approval) event also
+  // send the "You're registered" confirmation so paid + free flows match.
   try {
     await admin.rpc("create_notification", {
       p_user_id: reg.registrant_user_id,
@@ -52,5 +55,9 @@ export async function fulfillEventPayment(admin: SupabaseClient, session: Stripe
     });
   } catch (e) {
     console.error("[event fulfilment] notification failed", e);
+  }
+
+  if (nextStatus === "confirmed" && reg.status === "pending") {
+    await emitRegistrationConfirmed(admin, reg.event_id as string, reg.registrant_user_id as string);
   }
 }

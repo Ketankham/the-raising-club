@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe/server";
 import { createAccount } from "@/lib/onboarding/actions";
 import { FLOW_VERSION } from "@/lib/onboarding/flow";
+import { emitRegistrationConfirmed } from "./notify";
 import type { RegistrationPayload } from "./types";
 
 export type ToggleSaveResult =
@@ -195,6 +196,12 @@ export async function createRegistration(payload: RegistrationPayload): Promise<
   const detail = await writeRegistrationDetails(supabase, user.id, regId, payload);
   if (!detail.ok) return { ok: false, reason: "error", message: detail.error };
 
+  // Confirmation notification — only when actually confirmed (approval-required
+  // events stay "pending" and get notified on approval instead).
+  if (status === "confirmed") {
+    await emitRegistrationConfirmed(supabase, ev.id, user.id);
+  }
+
   revalidatePath("/events");
   return { ok: true, registrationId: regId, status };
 }
@@ -335,7 +342,9 @@ export async function startEventCheckout(payload: RegistrationPayload): Promise<
       ],
       metadata: { kind: "event", registrationId: regId, eventId: ev.id as string, userId: user.id },
       customer_email: payload.contactEmail || user.email || undefined,
-      success_url: `${base}/events/${ev.slug}?payment=success`,
+      // After paying, land on the dashboard; the webhook confirms the
+      // registration + fires the "You're registered" notification.
+      success_url: `${base}/dashboard?event=registered&slug=${ev.slug}`,
       cancel_url: `${base}/events/${ev.slug}/register?payment=cancelled`,
     });
     if (!session.url) return { ok: false, reason: "error", message: "Stripe did not return a URL." };
