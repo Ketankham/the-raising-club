@@ -177,6 +177,12 @@ export interface RosterChild {
   supportNote: string | null;
   attendanceStatus: string;
 }
+export interface RosterPayment {
+  status: string;
+  amountCents: number;
+  currency: string;
+  refundedAmountCents: number;
+}
 export interface RosterEntry {
   registrationId: string;
   status: string;
@@ -187,6 +193,8 @@ export interface RosterEntry {
   children: RosterChild[];
   emergencyContacts: { name: string; phone: string }[];
   pickups: { name: string; phone: string }[];
+  /** Payment record for paid events (null for free/included events). */
+  payment: RosterPayment | null;
 }
 
 export async function getRoster(eventId: string): Promise<RosterEntry[]> {
@@ -197,18 +205,29 @@ export async function getRoster(eventId: string): Promise<RosterEntry[]> {
       `id, status, adult_count, contact_email, contact_phone, registered_at,
        event_registration_children ( id, display_pet_name, birth_month, birth_year, support_needs, support_note, attendance_status ),
        emergency_contacts ( name, phone ),
-       authorized_pickups ( name, phone )`,
+       authorized_pickups ( name, phone ),
+       event_payments ( status, amount_cents, currency, refunded_amount_cents )`,
     )
     .eq("event_id", eventId)
     .order("registered_at", { ascending: true });
 
-  return (data ?? []).map((r: any): RosterEntry => ({
+  return (data ?? []).map((r: any): RosterEntry => {
+    const pay = Array.isArray(r.event_payments) ? r.event_payments[0] : r.event_payments;
+    return {
     registrationId: r.id,
     status: r.status,
     adultCount: r.adult_count,
     contactEmail: r.contact_email,
     contactPhone: r.contact_phone,
     registeredAt: r.registered_at,
+    payment: pay
+      ? {
+          status: pay.status,
+          amountCents: pay.amount_cents ?? 0,
+          currency: pay.currency ?? "usd",
+          refundedAmountCents: pay.refunded_amount_cents ?? 0,
+        }
+      : null,
     children: (r.event_registration_children ?? []).map((c: any) => ({
       id: c.id,
       petName: c.display_pet_name,
@@ -220,5 +239,6 @@ export async function getRoster(eventId: string): Promise<RosterEntry[]> {
     })),
     emergencyContacts: (r.emergency_contacts ?? []).map((x: any) => ({ name: x.name, phone: x.phone })),
     pickups: (r.authorized_pickups ?? []).map((x: any) => ({ name: x.name, phone: x.phone })),
-  }));
+    };
+  });
 }
