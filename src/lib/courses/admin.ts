@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type {
   CourseEditorInput,
   CourseTaxonomy,
@@ -6,6 +7,51 @@ import type {
 } from "./types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+export interface CourseEnrollee {
+  enrollmentId: string;
+  userId: string;
+  email: string | null;
+  name: string | null;
+  status: string;
+  amountCents: number | null;
+  currency: string | null;
+  refundedAmountCents: number;
+  paidAt: string | null;
+  startedAt: string;
+}
+
+/** Enrollees for a course (admin enrollee roster). Service-role: admin page. */
+export async function getCourseEnrollees(courseId: string): Promise<CourseEnrollee[]> {
+  const admin = createAdminClient();
+  if (!admin) return [];
+  const { data } = await admin
+    .from("course_enrollments")
+    .select(
+      `id, user_id, status, amount_cents, currency, refunded_amount_cents, paid_at, started_at,
+       profiles ( email, preferred_name, first_name, last_name )`,
+    )
+    .eq("course_id", courseId)
+    .order("started_at", { ascending: false });
+
+  return (data ?? []).map((e: any): CourseEnrollee => {
+    const p = e.profiles;
+    const name =
+      p?.preferred_name || [p?.first_name, p?.last_name].filter(Boolean).join(" ").trim() || null;
+    return {
+      enrollmentId: e.id,
+      userId: e.user_id,
+      email: p?.email ?? null,
+      name,
+      status: e.status,
+      amountCents: e.amount_cents,
+      currency: e.currency,
+      refundedAmountCents: e.refunded_amount_cents ?? 0,
+      paidAt: e.paid_at,
+      startedAt: e.started_at,
+    };
+  });
+}
 
 export interface ManagedCourseRow {
   id: string;

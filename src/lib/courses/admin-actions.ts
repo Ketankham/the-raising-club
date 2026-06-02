@@ -2,9 +2,40 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getStripe } from "@/lib/stripe/server";
+import { cancelCourseEnrollment } from "./refund";
 import type { CourseEditorInput, BundleInput, SaveResult } from "./types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+export type AdminCourseCancelResult =
+  | { ok: true; refunded: boolean; amountCents: number }
+  | { ok: false; message?: string };
+
+/**
+ * Admin cancels a learner's course purchase + refunds it. Admin-only; the cancel
+ * runs service-role (refund + enrollment → cancelled + course.cancelled notif).
+ */
+export async function adminCancelCourseEnrollment(
+  enrollmentId: string,
+  courseId: string,
+): Promise<AdminCourseCancelResult> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Not signed in" };
+  const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if ((me as any)?.role !== "admin") return { ok: false, message: "Forbidden" };
+
+  const admin = createAdminClient();
+  if (!admin) return { ok: false, message: "Refunds are not configured." };
+  const resolved = await getStripe();
+  const res = await cancelCourseEnrollment(admin, resolved?.stripe ?? null, enrollmentId);
+  if (!res.ok) return { ok: false, message: "Could not cancel (already cancelled?)." };
+
+  revalidatePath(`/admin/courses/${courseId}/enrollees`);
+  return { ok: true, refunded: res.refunded, amountCents: res.amountCents };
+}
 
 function slugify(title: string, fallback: string): string {
   const base = title

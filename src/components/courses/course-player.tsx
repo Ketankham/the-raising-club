@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { VideoEmbed } from "./video-embed";
+import { CancelPurchaseButton } from "./cancel-purchase-button";
 import { completeModule, answerRevision } from "@/lib/courses/actions";
 import { durationLabel } from "@/lib/courses/format";
 import { RESOURCE_KIND_LABELS } from "@/lib/courses/types";
@@ -228,6 +229,10 @@ export function CoursePlayer({ course }: { course: LearnerCourse }) {
                 </div>
               ))}
             </nav>
+
+            {course.purchaseCancelable && (
+              <CancelPurchaseButton courseId={course.id} slug={course.slug} />
+            )}
           </div>
         </aside>
       </div>
