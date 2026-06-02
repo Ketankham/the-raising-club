@@ -66,6 +66,10 @@ export interface LearnerCourse {
   completedModuleIds: string[];
   answeredQuestionIds: string[];
   certificate: LearnerCertificate | null;
+  /** Paid purchase still inside the 48h cancellation window. */
+  purchaseCancelable: boolean;
+  /** The user previously bought this course and cancelled (access revoked). */
+  purchaseWasCancelled: boolean;
 }
 
 export async function getCourseForLearner(slug: string): Promise<LearnerCourse | null> {
@@ -101,15 +105,20 @@ export async function getCourseForLearner(slug: string): Promise<LearnerCourse |
   let completedModuleIds: string[] = [];
   let answeredQuestionIds: string[] = [];
   let certificate: LearnerCertificate | null = null;
+  let purchaseCancelable = false;
+  let purchaseWasCancelled = false;
 
   if (user) {
     const { data: enr } = await supabase
       .from("course_enrollments")
-      .select("id, status")
+      .select("id, status, paid_at, created_at, stripe_payment_intent_id")
       .eq("user_id", user.id)
       .eq("course_id", c.id)
       .maybeSingle();
-    if (enr) {
+    if (enr && (enr as any).status === "cancelled") {
+      // Cancelled purchase: access revoked — treat as not enrolled.
+      purchaseWasCancelled = true;
+    } else if (enr) {
       isEnrolled = true;
       enrollmentStatus = enr.status;
       const [{ data: prog }, { data: ans }, { data: cert }] = await Promise.all([
@@ -120,6 +129,13 @@ export async function getCourseForLearner(slug: string): Promise<LearnerCourse |
       completedModuleIds = (prog ?? []).map((p: any) => p.module_id);
       answeredQuestionIds = (ans ?? []).map((a: any) => a.question_id);
       if (cert) certificate = { certificateId: cert.certificate_id, verifyToken: cert.verify_token };
+
+      // Paid + within the 48h window => self-cancel allowed.
+      if ((enr as any).stripe_payment_intent_id) {
+        const purchasedAt = (enr as any).paid_at ?? (enr as any).created_at;
+        purchaseCancelable =
+          !purchasedAt || Date.now() < +new Date(purchasedAt) + 48 * 3600 * 1000;
+      }
     }
   }
 
@@ -181,6 +197,8 @@ export async function getCourseForLearner(slug: string): Promise<LearnerCourse |
     completedModuleIds,
     answeredQuestionIds,
     certificate,
+    purchaseCancelable,
+    purchaseWasCancelled,
   };
 }
 
@@ -191,7 +209,7 @@ export interface MyCourseRow {
   slug: string;
   title: string;
   coverImageUrl: string | null;
-  status: "active" | "completed";
+  status: "active" | "completed" | "cancelled";
   startedAt: string;
   completedAt: string | null;
   totalModules: number;

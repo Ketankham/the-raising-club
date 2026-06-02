@@ -19,6 +19,7 @@ export default async function MyCoursesPage() {
   const rows = await getMyCourses();
   const inProgress = rows.filter((r) => r.status === "active");
   const completed = rows.filter((r) => r.status === "completed");
+  const cancelled = rows.filter((r) => r.status === "cancelled");
 
   return (
     <>
@@ -54,6 +55,11 @@ export default async function MyCoursesPage() {
               {completed.length > 0 && (
                 <Section title="Completed" subtitle="Celebrate your accomplishments.">
                   {completed.map((c) => <CompletedCard key={c.slug} c={c} />)}
+                </Section>
+              )}
+              {cancelled.length > 0 && (
+                <Section title="Cancelled" subtitle="Purchases you cancelled and were refunded.">
+                  {cancelled.map((c) => <CancelledCard key={c.slug} c={c} />)}
                 </Section>
               )}
             </div>
@@ -100,6 +106,26 @@ function InProgressCard({ c }: { c: MyCourseRow }) {
         </div>
         <Link href={`/courses/${c.slug}`} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90">
           Continue <ArrowRight size={15} />
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+function CancelledCard({ c }: { c: MyCourseRow }) {
+  return (
+    <article className="overflow-hidden rounded-2xl border border-black/5 bg-white opacity-90 shadow-sm">
+      <Cover url={c.coverImageUrl} title={c.title} />
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="line-clamp-2 font-display font-bold text-ink">{c.title}</h3>
+          <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-[0.65rem] font-semibold text-red-700">
+            Cancelled
+          </span>
+        </div>
+        <p className="mt-1 text-xs text-ink-soft">Purchase cancelled &amp; refunded</p>
+        <Link href={`/courses/${c.slug}`} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-ink/15 px-5 py-2.5 text-sm font-semibold text-ink-soft hover:text-ink">
+          View course
         </Link>
       </div>
     </article>

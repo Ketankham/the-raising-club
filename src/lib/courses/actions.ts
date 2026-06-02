@@ -3,9 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe/server";
+import { cancelCourseEnrollment } from "./refund";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+/** Paid courses can be cancelled (full refund) within this window of purchase. */
+const COURSE_CANCEL_WINDOW_HOURS = 48;
 
 export type ActionResult =
   | { ok: true; data?: any }
@@ -37,6 +42,7 @@ export async function startCourseCheckout(courseId: string, slug: string): Promi
     .select("id")
     .eq("user_id", user.id)
     .eq("course_id", courseId)
+    .neq("status", "cancelled")
     .maybeSingle();
   if (existing) return { ok: false, reason: "already_enrolled" };
 
@@ -70,6 +76,49 @@ export async function startCourseCheckout(courseId: string, slug: string): Promi
   }
 }
 
+export type CourseCancelResult =
+  | { ok: true; refunded: boolean; amountCents: number }
+  | { ok: false; reason: "unauthenticated" | "not_found" | "free" | "too_late" | "error"; message?: string };
+
+/**
+ * User self-cancel a PAID course purchase within 48h of buying it. Free courses
+ * cannot be cancelled. Refunds + revokes access (enrollment → cancelled) +
+ * notifies. The cancel write runs service-role inside cancelCourseEnrollment;
+ * ownership is enforced here by scoping the lookup to the current user.
+ */
+export async function cancelCoursePurchase(courseId: string, slug: string): Promise<CourseCancelResult> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  const { data: enr } = await supabase
+    .from("course_enrollments")
+    .select("id, status, paid_at, created_at, stripe_payment_intent_id, courses ( is_free )")
+    .eq("user_id", user.id)
+    .eq("course_id", courseId)
+    .maybeSingle();
+  if (!enr || (enr as any).status === "cancelled") return { ok: false, reason: "not_found" };
+
+  const course = Array.isArray((enr as any).courses) ? (enr as any).courses[0] : (enr as any).courses;
+  // Free / never-paid enrollments can't be cancelled (nothing to refund).
+  if (course?.is_free || !(enr as any).stripe_payment_intent_id) return { ok: false, reason: "free" };
+
+  const purchasedAt = (enr as any).paid_at ?? (enr as any).created_at;
+  if (purchasedAt && Date.now() > +new Date(purchasedAt) + COURSE_CANCEL_WINDOW_HOURS * 3600 * 1000) {
+    return { ok: false, reason: "too_late" };
+  }
+
+  const admin = createAdminClient();
+  if (!admin) return { ok: false, reason: "error", message: "Refunds are not configured." };
+  const resolved = await getStripe();
+  const res = await cancelCourseEnrollment(admin, resolved?.stripe ?? null, (enr as any).id);
+  if (!res.ok) return { ok: false, reason: "error", message: "Could not cancel. Please try again." };
+
+  revalidatePath(`/courses/${slug}`);
+  revalidatePath("/courses/my");
+  return { ok: true, refunded: res.refunded, amountCents: res.amountCents };
+}
+
 async function getUserAndEnrollment(courseId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -79,6 +128,7 @@ async function getUserAndEnrollment(courseId: string) {
     .select("id")
     .eq("user_id", user.id)
     .eq("course_id", courseId)
+    .neq("status", "cancelled")
     .maybeSingle();
   return { supabase, user, enrollmentId: data?.id ?? null };
 }

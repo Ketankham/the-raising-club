@@ -15,8 +15,25 @@ export async function fulfillCoursePurchase(admin: SupabaseClient, session: Stri
     return;
   }
 
+  const paymentIntentId =
+    typeof session.payment_intent === "string"
+      ? session.payment_intent
+      : session.payment_intent?.id ?? null;
+
+  // Persist the purchase so it can be refunded within the 48h window. status
+  // 'active' re-activates a previously-cancelled enrollment on re-purchase.
   await admin.from("course_enrollments").upsert(
-    { user_id: userId, course_id: courseId },
+    {
+      user_id: userId,
+      course_id: courseId,
+      status: "active",
+      amount_cents: session.amount_total ?? null,
+      currency: session.currency ?? null,
+      stripe_payment_intent_id: paymentIntentId,
+      paid_at: new Date().toISOString(),
+      cancelled_at: null,
+      refunded_amount_cents: 0,
+    },
     { onConflict: "user_id,course_id" },
   );
 

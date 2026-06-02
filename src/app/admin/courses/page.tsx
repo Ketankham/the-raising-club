@@ -62,7 +62,11 @@ export default async function AdminCoursesPage() {
                   </td>
                   <td className="px-4 py-3 text-ink-soft">{c.chapterCount}</td>
                   <td className="px-4 py-3 text-ink-soft">{c.moduleCount}</td>
-                  <td className="px-4 py-3 text-ink-soft">{c.enrollmentCount}</td>
+                  <td className="px-4 py-3 text-ink-soft">
+                    <Link href={`/admin/courses/${c.id}/enrollees`} className="font-semibold text-primary hover:underline">
+                      {c.enrollmentCount}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3 text-right whitespace-nowrap">
                     <a
                       href={`/admin/courses/${c.id}/preview`}
@@ -73,6 +77,10 @@ export default async function AdminCoursesPage() {
                     >
                       Preview
                     </a>
+                    <span className="mx-2 text-ink-soft/40">·</span>
+                    <Link href={`/admin/courses/${c.id}/enrollees`} className="font-semibold text-primary hover:underline">
+                      Enrollees
+                    </Link>
                     <span className="mx-2 text-ink-soft/40">·</span>
                     <Link href={`/admin/courses/${c.id}/edit`} className="font-semibold text-primary hover:underline">
                       Edit

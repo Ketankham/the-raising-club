@@ -71,6 +71,11 @@ export function CourseIntro({ course, signedIn }: { course: LearnerCourse; signe
             <div className="mt-5">
               <EnrollButton courseId={course.id} slug={course.slug} signedIn={signedIn} isFree={course.isFree} priceCents={course.priceCents} />
             </div>
+            {!course.isFree && course.priceCents > 0 && (
+              <p className="mt-3 text-center text-xs text-ink-soft">
+                Cancel within 48 hours of purchase for a full refund.
+              </p>
+            )}
             {course.hasQuiz && (
               <p className="mt-3 text-center text-xs text-ink-soft">Earn a certificate on completion.</p>
             )}
