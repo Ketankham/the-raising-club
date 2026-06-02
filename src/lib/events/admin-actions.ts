@@ -76,6 +76,8 @@ async function writeSessionAndLocation(
       neighborhood: loc.neighborhood || null,
       address: loc.address || null,
       arrival_notes: loc.arrivalNotes || null,
+      lat: loc.lat ?? null,
+      lng: loc.lng ?? null,
     });
   }
 

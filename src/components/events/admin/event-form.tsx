@@ -6,6 +6,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { createEvent, updateEvent } from "@/lib/events/admin-actions";
 import type { EditableEvent } from "@/lib/events/admin";
 import { utcToWallClock, wallClockToUtc } from "@/lib/events/format";
+import { PlacesAutocomplete } from "@/components/ui/places-autocomplete";
 import {
   EVENT_STYLE_LABELS,
   PARTICIPATION_LABELS,
@@ -73,6 +74,8 @@ export function EventForm({
       arrivalNotes: initial?.location?.arrivalNotes ?? "",
       platform: initial?.location?.platform ?? "zoom",
       joinUrl: initial?.location?.joinUrl ?? "",
+      lat: initial?.location?.lat ?? null,
+      lng: initial?.location?.lng ?? null,
     },
     resources: (initial?.resources ?? []).map((r) => ({
       label: r.label,
@@ -234,12 +237,22 @@ export function EventForm({
           ))}
         </div>
         {f.location.kind === "physical" ? (
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Neighborhood (shown first)">
-              <input className={input} value={f.location.neighborhood} onChange={(e) => setLoc({ neighborhood: e.target.value })} />
-            </Field>
-            <Field label="Address">
-              <input className={input} value={f.location.address} onChange={(e) => setLoc({ address: e.target.value })} />
+          <div className="grid gap-4">
+            <Field label="Address (search by street, neighborhood, or venue name)">
+              <PlacesAutocomplete
+                placeholder="e.g. 123 Main St, Brooklyn, NY"
+                types={[]}
+                className={input}
+                initialValue={f.location.address || f.location.neighborhood || ""}
+                onPlace={(p) =>
+                  setLoc({
+                    address: p.formatted,
+                    neighborhood: p.city ?? p.neighborhood ?? "",
+                    lat: p.lat,
+                    lng: p.lng,
+                  })
+                }
+              />
             </Field>
             <Field label="Arrival / parking notes">
               <input className={input} value={f.location.arrivalNotes} onChange={(e) => setLoc({ arrivalNotes: e.target.value })} />

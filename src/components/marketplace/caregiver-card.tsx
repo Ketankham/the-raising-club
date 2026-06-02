@@ -14,10 +14,12 @@ export function CaregiverCard({
   c,
   canInvite,
   jobs,
+  distanceMiles,
 }: {
   c: Caregiver;
   canInvite: boolean;
   jobs: OwnJobOption[];
+  distanceMiles?: number;
 }) {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -73,7 +75,10 @@ export function CaregiverCard({
           </span>
         )}
         <span className="flex items-center gap-1">
-          <MapPin className="h-3.5 w-3.5" /> {location}
+          <MapPin className="h-3.5 w-3.5" />
+          {distanceMiles != null
+            ? `${distanceMiles < 10 ? distanceMiles.toFixed(1) : Math.round(distanceMiles)} mi`
+            : location}
         </span>
       </div>
 

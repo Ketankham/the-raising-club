@@ -42,7 +42,7 @@ function mapRow(row: any, savedIds: Set<string>): EventListItem {
     isFeatured: row.is_featured,
     nextSession: pickNextSession(row.event_sessions),
     location: loc
-      ? { kind: loc.kind, neighborhood: loc.neighborhood, address: loc.address }
+      ? { kind: loc.kind, neighborhood: loc.neighborhood, address: loc.address, lat: loc.lat ?? null, lng: loc.lng ?? null }
       : null,
     isSaved: savedIds.has(row.id),
     hostName: row.host_name ?? null,
@@ -120,7 +120,7 @@ export async function listEvents(filters: EventFilters = {}): Promise<EventListI
        age_min_months, age_max_months, price_model, price_cents, currency, is_featured,
        status, visibility, host_name, host_type,
        event_sessions ( id, starts_at, ends_at ),
-       event_locations ( kind, neighborhood, address )`,
+       event_locations ( kind, neighborhood, address, lat, lng )`,
     )
     .eq("status", "published")
     .eq("visibility", "public");
@@ -167,7 +167,7 @@ export async function getEventBySlug(slug: string): Promise<EventDetail | null> 
        child_capacity, agenda, status, visibility, host_name, host_type, org_id,
        organizations ( id, is_published ),
        event_sessions ( id, starts_at, ends_at ),
-       event_locations ( kind, neighborhood, address, arrival_notes, platform, join_url, join_instructions ),
+       event_locations ( kind, neighborhood, address, lat, lng, arrival_notes, platform, join_url, join_instructions ),
        event_instructors ( id, name, bio, avatar_url, role_label ),
        event_resources ( id, label, url, file_path, kind )`,
     )
@@ -218,7 +218,7 @@ export async function getEventBySlug(slug: string): Promise<EventDetail | null> 
     isFeatured: row.is_featured,
     nextSession: pickNextSession(row.event_sessions),
     location: loc
-      ? { kind: loc.kind, neighborhood: loc.neighborhood, address: loc.address }
+      ? { kind: loc.kind, neighborhood: loc.neighborhood, address: loc.address, lat: loc.lat ?? null, lng: loc.lng ?? null }
       : null,
     isSaved,
     hostName: row.host_name ?? null,

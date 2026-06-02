@@ -25,6 +25,8 @@ function mapRow(r: any, savedIds: Set<string>): CaregiverCard {
     ageGroups: r.ageGroups ?? [],
     careSettings: r.careSettings ?? [],
     isSaved: savedIds.has(r.userId),
+    lat: r.lat ?? null,
+    lng: r.lng ?? null,
   };
 }
 

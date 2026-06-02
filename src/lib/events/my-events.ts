@@ -9,7 +9,7 @@ export interface MyEventRow {
   hostName: string | null;
   startsAt: string | null;
   endsAt: string | null;
-  location: { kind: "physical" | "digital"; neighborhood: string | null; address: string | null } | null;
+  location: { kind: "physical" | "digital"; neighborhood: string | null; address: string | null; lat: number | null; lng: number | null } | null;
   registrationStatus: string;
 }
 
@@ -32,7 +32,7 @@ export async function getMyEvents(): Promise<{ upcoming: MyEventRow[]; past: MyE
        events (
          slug, title, hero_image_url, host_name, status,
          event_sessions ( starts_at, ends_at ),
-         event_locations ( kind, neighborhood, address )
+         event_locations ( kind, neighborhood, address, lat, lng )
        )`,
     )
     .eq("registrant_user_id", user.id)
@@ -62,7 +62,7 @@ export async function getMyEvents(): Promise<{ upcoming: MyEventRow[]; past: MyE
       hostName: e.host_name,
       startsAt: chosen?.starts ?? null,
       endsAt: chosen?.ends ?? null,
-      location: loc ? { kind: loc.kind, neighborhood: loc.neighborhood, address: loc.address } : null,
+      location: loc ? { kind: loc.kind, neighborhood: loc.neighborhood, address: loc.address, lat: loc.lat ?? null, lng: loc.lng ?? null } : null,
       registrationStatus: (reg as any).status,
     };
 

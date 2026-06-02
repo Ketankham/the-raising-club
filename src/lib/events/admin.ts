@@ -103,6 +103,8 @@ export interface EditableEvent {
     arrivalNotes: string | null;
     platform: string | null;
     joinUrl: string | null;
+    lat: number | null;
+    lng: number | null;
   } | null;
   resources: { id: string; label: string; url: string | null; kind: string }[];
   instructors: { id: string; name: string | null; roleLabel: string | null; bio: string | null; avatarUrl: string | null }[];
@@ -114,7 +116,7 @@ export async function getEventForEdit(id: string): Promise<EditableEvent | null>
     .from("events")
     .select(
       `*, event_sessions ( id, starts_at, ends_at ),
-       event_locations ( kind, neighborhood, address, arrival_notes, platform, join_url ),
+       event_locations ( kind, neighborhood, address, lat, lng, arrival_notes, platform, join_url ),
        event_resources ( id, label, url, kind, position ),
        event_instructors ( id, name, role_label, bio, avatar_url, position )`,
     )
@@ -158,6 +160,8 @@ export async function getEventForEdit(id: string): Promise<EditableEvent | null>
           arrivalNotes: l.arrival_notes,
           platform: l.platform,
           joinUrl: l.join_url,
+          lat: l.lat ?? null,
+          lng: l.lng ?? null,
         }
       : null,
     resources: (e.event_resources ?? [])
