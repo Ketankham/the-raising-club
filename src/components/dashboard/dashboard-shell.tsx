@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 export type Role = "parent" | "caregiver" | "organization";
 
@@ -21,12 +22,13 @@ const TOP_NAV = [
  * (rendered by the root layout), so this only provides the top bar.
  */
 export function DashboardShell({
-  email, initials, children,
+  email, initials, unreadCount = 0, children,
 }: {
   role: Role;
   name: string;
   email: string | null;
   initials: string;
+  unreadCount?: number;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -45,7 +47,7 @@ export function DashboardShell({
         </nav>
         <div className="flex items-center gap-2">
           <button className="grid h-9 w-9 place-items-center rounded-full text-ink-soft hover:bg-white" aria-label="Search"><Search className="h-5 w-5" /></button>
-          {/* Notifications live in the global sidebar bell (NotificationBell). */}
+          <NotificationBell initialUnread={unreadCount} variant="header" />
           <span title={email ?? ""} className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">{initials}</span>
         </div>
       </header>

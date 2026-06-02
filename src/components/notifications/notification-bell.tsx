@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Bell, Check, X } from "lucide-react";
 import { getFeed, markAllRead, markRead } from "@/lib/notifications/actions";
@@ -30,10 +31,14 @@ function groupItems(items: UserNotification[]): Array<[NotificationCategory, Use
 
 export function NotificationBell({
   initialUnread,
-  expanded,
+  expanded = false,
+  variant = "sidebar",
 }: {
   initialUnread: number;
-  expanded: boolean;
+  /** Sidebar variant only: show the text label when the rail is expanded. */
+  expanded?: boolean;
+  /** "sidebar" = pill row in the left rail; "header" = round icon button. */
+  variant?: "sidebar" | "header";
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -76,8 +81,24 @@ export function NotificationBell({
   const grouped = groupItems(items);
   const labelCls = expanded ? "hidden lg:inline" : "hidden";
 
-  return (
-    <>
+  const badge =
+    unread > 0 ? (
+      <span className="absolute -right-1.5 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#e0466e] px-1 text-[0.6rem] font-bold text-white">
+        {unread > 9 ? "9+" : unread}
+      </span>
+    ) : null;
+
+  const trigger =
+    variant === "header" ? (
+      <button
+        onClick={toggle}
+        aria-label="Notifications"
+        className="relative grid h-9 w-9 place-items-center rounded-full text-ink-soft transition hover:bg-white hover:text-ink"
+      >
+        <Bell className="h-5 w-5" />
+        {badge}
+      </button>
+    ) : (
       <button
         onClick={toggle}
         aria-label="Notifications"
@@ -85,11 +106,7 @@ export function NotificationBell({
       >
         <span className="relative shrink-0">
           <Bell className="h-5 w-5" />
-          {unread > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#e0466e] px-1 text-[0.6rem] font-bold text-white">
-              {unread > 9 ? "9+" : unread}
-            </span>
-          )}
+          {badge}
         </span>
         <span className={`${labelCls} whitespace-nowrap`}>Notifications</span>
         {!expanded && (
@@ -98,17 +115,23 @@ export function NotificationBell({
           </span>
         )}
       </button>
+    );
 
-      {open && (
-        <>
-          {/* click-away backdrop */}
-          <button
-            aria-label="Close notifications"
-            onClick={() => setOpen(false)}
-            className="fixed inset-0 z-40 cursor-default"
-          />
-          <div className="fixed bottom-4 left-[76px] z-50 flex max-h-[70vh] w-[360px] max-w-[calc(100vw-92px)] flex-col overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-ink/5 px-4 py-3">
+  // Panel is portaled to <body> at a high z-index so it always renders ahead of
+  // page chrome (headers, sticky bars, sidebar) and is never clipped. Anchored
+  // top-right like a header dropdown.
+  const panel =
+    open && typeof document !== "undefined"
+      ? createPortal(
+          <>
+            {/* click-away backdrop */}
+            <button
+              aria-label="Close notifications"
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 z-[190] cursor-default bg-ink/10"
+            />
+            <div className="fixed right-3 top-[68px] z-[200] flex max-h-[min(72vh,560px)] w-[360px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-2xl">
+              <div className="flex items-center justify-between border-b border-ink/5 px-4 py-3">
               <h2 className="font-display text-base font-semibold text-ink">Notifications</h2>
               <div className="flex items-center gap-1">
                 {unread > 0 && (
@@ -169,8 +192,15 @@ export function NotificationBell({
               )}
             </div>
           </div>
-        </>
-      )}
+          </>,
+          document.body,
+        )
+      : null;
+
+  return (
+    <>
+      {trigger}
+      {panel}
     </>
   );
 }
