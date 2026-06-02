@@ -2,6 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getStripe } from "@/lib/stripe/server";
+import { refundEventRegistration } from "./refund";
+import { emitRegistrationCancelled } from "./notify";
 import type { EventFormInput } from "./types";
 
 export type SaveEventResult =
@@ -235,4 +239,47 @@ export async function setRegistrationStatus(
   if (error) return { ok: false, message: error.message };
   revalidatePath(`/manage/events/${eventId}/roster`);
   return { ok: true };
+}
+
+export type AdminCancelResult =
+  | { ok: true; refunded: boolean; amountCents: number }
+  | { ok: false; message?: string };
+
+/**
+ * Host/admin cancels a registration + issues a refund. RLS (event_can_manage on
+ * the UPDATE) ensures only a manager of the event can do this; the returned row
+ * confirms it was permitted. For paid registrations a Stripe refund is created
+ * and event_payments marked refunded (service-role), and the registrant is
+ * notified (event.cancelled). Cancelling removes the registrant's content access
+ * automatically (cancelled rows are excluded from their registration views).
+ */
+export async function adminCancelRegistration(
+  registrationId: string,
+  eventId: string,
+): Promise<AdminCancelResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Not signed in" };
+
+  const { data: updated, error } = await supabase
+    .from("event_registrations")
+    .update({ status: "cancelled", cancelled_at: new Date().toISOString() })
+    .eq("id", registrationId)
+    .select("registrant_user_id")
+    .maybeSingle();
+  if (error) return { ok: false, message: error.message };
+  if (!updated) return { ok: false, message: "Not allowed or not found" };
+
+  let refund = { refunded: false, amountCents: 0 };
+  const admin = createAdminClient();
+  if (admin) {
+    const resolved = await getStripe();
+    refund = await refundEventRegistration(admin, resolved?.stripe ?? null, registrationId);
+    await emitRegistrationCancelled(admin, eventId, (updated as { registrant_user_id: string }).registrant_user_id);
+  }
+
+  revalidatePath(`/manage/events/${eventId}/roster`);
+  return { ok: true, refunded: refund.refunded, amountCents: refund.amountCents };
 }
