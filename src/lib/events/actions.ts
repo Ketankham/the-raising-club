@@ -3,10 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe/server";
 import { createAccount } from "@/lib/onboarding/actions";
 import { FLOW_VERSION } from "@/lib/onboarding/flow";
-import { emitRegistrationConfirmed } from "./notify";
+import { emitRegistrationConfirmed, emitRegistrationCancelled } from "./notify";
+import { refundEventRegistration } from "./refund";
 import type { RegistrationPayload } from "./types";
 
 export type ToggleSaveResult =
@@ -391,7 +393,7 @@ export async function cancelRegistration(registrationId: string): Promise<Cancel
   if (!reg) return { ok: false, reason: "not_found" };
 
   const ev = (reg as any).events;
-  const cutoffH = ev?.cancellation_cutoff_hours ?? 12;
+  const cutoffH = ev?.cancellation_cutoff_hours ?? 48;
   const starts = (ev?.event_sessions ?? [])
     .map((s: any) => +new Date(s.starts_at))
     .filter((t: number) => t >= Date.now())
@@ -407,8 +409,21 @@ export async function cancelRegistration(registrationId: string): Promise<Cancel
     .eq("id", registrationId);
   if (error) return { ok: false, reason: "error", message: error.message };
 
+  // Refund (paid) + notify. event_payments is service-role-write only, so the
+  // refund + payment update run via the admin client; the registrant gets the
+  // cancellation notification. Cancelling already removes content access — the
+  // event drops out of getMyRegistration / "Your registration" (cancelled rows
+  // are excluded), so registrant-only resources/content are no longer visible.
+  const admin = createAdminClient();
+  if (admin) {
+    const resolved = await getStripe();
+    await refundEventRegistration(admin, resolved?.stripe ?? null, registrationId);
+  }
+  await emitRegistrationCancelled(admin ?? supabase, (reg as any).event_id, user.id);
+
   if (ev?.slug) revalidatePath(`/events/${ev.slug}`);
   revalidatePath("/events");
+  revalidatePath("/events/my");
   return { ok: true };
 }
 

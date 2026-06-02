@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { AlertTriangle, Check, Mail, Phone, X } from "lucide-react";
-import { setAttendanceStatus, setRegistrationStatus } from "@/lib/events/admin-actions";
+import { adminCancelRegistration, setAttendanceStatus, setRegistrationStatus } from "@/lib/events/admin-actions";
 import { SUPPORT_NEED_LABELS, type SupportNeed } from "@/lib/events/types";
 import type { RosterEntry, RosterPayment } from "@/lib/events/admin";
 
@@ -97,14 +98,30 @@ export function RosterView({ entries, eventId }: { entries: RosterEntry[]; event
 }
 
 function RegistrationCard({ entry, eventId }: { entry: RosterEntry; eventId: string }) {
+  const router = useRouter();
   const [status, setStatus] = useState(entry.status);
   const [pending, start] = useTransition();
+  const isCancelled = ["cancelled", "denied"].includes(status);
 
   const decide = (next: "confirmed" | "denied") =>
     start(async () => {
       const res = await setRegistrationStatus(entry.registrationId, next, eventId);
       if (res.ok) setStatus(next);
     });
+
+  const cancel = () => {
+    const msg = entry.payment
+      ? "Cancel this registration and refund the payment?"
+      : "Cancel this registration? This frees the spot(s).";
+    if (!confirm(msg)) return;
+    start(async () => {
+      const res = await adminCancelRegistration(entry.registrationId, eventId);
+      if (res.ok) {
+        setStatus("cancelled");
+        router.refresh(); // reflect the refunded payment chip
+      }
+    });
+  };
 
   return (
     <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
@@ -144,6 +161,16 @@ function RegistrationCard({ entry, eventId }: { entry: RosterEntry; eventId: str
             </>
           )}
           {entry.payment && <PaymentChip payment={entry.payment} />}
+          {!isCancelled && (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={cancel}
+              className="inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+            >
+              <X size={13} /> {entry.payment ? "Cancel & refund" : "Cancel"}
+            </button>
+          )}
           <span
             className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
               STATUS_STYLES[status] ?? "bg-lavender text-ink-soft"

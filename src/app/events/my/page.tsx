@@ -112,10 +112,15 @@ const STATUS_LABEL: Record<string, string> = {
   pending: "Pending approval",
   waitlisted: "Waitlisted",
   approved: "Approved",
+  cancelled: "Cancelled",
 };
 
 function EventRowCard({ e, upcoming }: { e: MyEventRow; upcoming?: boolean }) {
   const badge = STATUS_LABEL[e.registrationStatus];
+  const badgeCls =
+    e.registrationStatus === "cancelled"
+      ? "bg-red-100 text-red-700"
+      : "bg-yellow/60 text-ink";
   return (
     <Link
       href={`/events/${e.slug}`}
@@ -135,7 +140,7 @@ function EventRowCard({ e, upcoming }: { e: MyEventRow; upcoming?: boolean }) {
         <div className="flex items-start justify-between gap-2">
           <h3 className="line-clamp-2 font-display font-bold text-ink">{e.title}</h3>
           {badge && (
-            <span className="shrink-0 rounded-full bg-yellow/60 px-2 py-0.5 text-[0.65rem] font-semibold text-ink">
+            <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.65rem] font-semibold ${badgeCls}`}>
               {badge}
             </span>
           )}

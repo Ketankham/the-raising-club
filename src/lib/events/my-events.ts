@@ -36,7 +36,9 @@ export async function getMyEvents(): Promise<{ upcoming: MyEventRow[]; past: MyE
        )`,
     )
     .eq("registrant_user_id", user.id)
-    .not("status", "in", "(cancelled,denied)");
+    // Keep cancelled rows so the user still sees the event marked "Cancelled"
+    // (denied/never-approved stay hidden).
+    .neq("status", "denied");
 
   const now = Date.now();
   const upcoming: MyEventRow[] = [];
@@ -65,7 +67,9 @@ export async function getMyEvents(): Promise<{ upcoming: MyEventRow[]; past: MyE
     };
 
     const isPast =
-      ["completed", "cancelled", "archived"].includes(e.status) || !nextUpcoming;
+      (reg as any).status === "cancelled" ||
+      ["completed", "cancelled", "archived"].includes(e.status) ||
+      !nextUpcoming;
     (isPast ? past : upcoming).push(row);
   }
 
