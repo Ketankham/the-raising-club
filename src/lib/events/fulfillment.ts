@@ -61,10 +61,16 @@ export async function fulfillEventPayment(admin: SupabaseClient, session: Stripe
   // Always send the payment receipt; on a confirmed (non-approval) event also
   // send the "You're registered" confirmation so paid + free flows match.
   try {
+    const amount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: (session.currency ?? "usd").toUpperCase(),
+      minimumFractionDigits: (session.amount_total ?? 0) % 100 === 0 ? 0 : 2,
+    }).format((session.amount_total ?? 0) / 100);
     await admin.rpc("create_notification", {
       p_user_id: reg.registrant_user_id,
       p_type_key: "event.payment_received",
-      p_vars: { eventName: ev?.title ?? "your event" },
+      // Template tokens are `event_name` + `amount` (not `eventName`).
+      p_vars: { event_name: ev?.title ?? "your event", amount },
       p_link: ev?.slug ? `/events/${ev.slug}` : null,
     });
   } catch (e) {
