@@ -120,7 +120,10 @@ export function AppSidebar({
       </nav>
 
       <div className="mt-2">
-        <NotificationBell initialUnread={unreadCount} expanded={expanded} />
+        {/* The dashboard home renders the bell in its own header — avoid a dupe. */}
+        {pathname !== "/dashboard" && (
+          <NotificationBell initialUnread={unreadCount} expanded={expanded} />
+        )}
         {renderRow({ label: "Settings", href: "/dashboard/settings", icon: Settings })}
         <button onClick={() => signOut()}
           className="group relative mx-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-soft transition hover:bg-white/60 hover:text-ink">
