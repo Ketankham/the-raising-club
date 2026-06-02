@@ -26,7 +26,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ sl
           <Link href={`/courses/${slug}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink">
             <ArrowLeft size={16} /> Back to course
           </Link>
-          <CertificateActions verifyUrl={verifyUrl} />
+          <CertificateActions verifyUrl={verifyUrl} certificateId={cert.certificateId} />
         </div>
         <CertificateCard cert={cert} qrDataUrl={qrDataUrl} verifyHost={host} />
       </div>

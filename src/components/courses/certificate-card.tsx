@@ -21,7 +21,7 @@ export function CertificateCard({
   const learnTime = durationLabel(cert.estimatedLearningMinutes);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-[#fcf6ec] px-8 py-10 shadow-sm sm:px-14 sm:py-14 print:border print:shadow-none">
+    <div id="certificate-card" className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-[#fcf6ec] px-8 py-10 shadow-sm sm:px-14 sm:py-14 print:border print:shadow-none">
       {/* decorative blobs */}
       <div className="pointer-events-none absolute -left-10 top-8 h-40 w-40 rounded-full bg-mint/50 blur-2xl" aria-hidden />
       <div className="pointer-events-none absolute -right-8 bottom-10 h-44 w-44 rounded-full bg-purple/40 blur-2xl" aria-hidden />
