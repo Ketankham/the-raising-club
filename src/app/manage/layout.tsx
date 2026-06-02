@@ -13,7 +13,7 @@ export default async function ManageLayout({ children }: { children: ReactNode }
   const { profile, isAdmin } = await requireEventManager();
 
   if (!isAdmin) {
-    return <div className="mx-auto max-w-5xl px-4 py-6 pb-12 sm:px-6 lg:px-8">{children}</div>;
+    return <div className="px-4 py-6 pb-12 sm:px-6 lg:px-8">{children}</div>;
   }
 
   const name = profile.preferred_name || profile.first_name || "there";

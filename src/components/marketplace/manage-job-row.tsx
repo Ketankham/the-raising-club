@@ -16,8 +16,8 @@ const STATUS_STYLE: Record<string, string> = {
 };
 const STATUS_LABEL: Record<string, string> = { open: "Active", draft: "Draft", closed: "Closed", filled: "Filled" };
 
-/** A row in My Care Posts: meta + status badge + manage actions. */
-export function ManageJobRow({ job }: { job: JobCard }) {
+/** A row in My Care Posts / Org Open Roles: meta + status badge + manage actions. */
+export function ManageJobRow({ job, basePath = "/dashboard/posts" }: { job: JobCard; basePath?: string }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [menu, setMenu] = useState(false);
@@ -46,11 +46,11 @@ export function ManageJobRow({ job }: { job: JobCard }) {
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5">
-        <Link href={`/dashboard/posts/${job.id}/applicants`}
+        <Link href={`${basePath}/${job.id}/applicants`}
           className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-cream">
           <Users className="h-4 w-4" /> {job.applicantCount ?? 0}
         </Link>
-        <Link href={`/dashboard/posts/${job.id}/edit`}
+        <Link href={`${basePath}/${job.id}/edit`}
           className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-cream">
           <Pencil className="h-4 w-4" /> Edit
         </Link>

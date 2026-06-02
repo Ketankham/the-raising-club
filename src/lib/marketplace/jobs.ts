@@ -129,6 +129,21 @@ export async function getJobById(id: string): Promise<JobCard | null> {
   return job;
 }
 
+/** Jobs posted under an organization (org roles management page). */
+export async function listOrgJobPosts(orgId: string): Promise<JobCard[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("job_posts")
+    .select(`${JOB_SELECT}, job_applications ( id )`)
+    .eq("org_id", orgId)
+    .order("created_at", { ascending: false });
+
+  return (data ?? []).map((j: any) => ({
+    ...mapJob(j),
+    applicantCount: (j.job_applications ?? []).length,
+  }));
+}
+
 /** The current user's posted jobs (My Care Posts). */
 export async function listMyJobs(): Promise<JobCard[]> {
   const supabase = await createClient();

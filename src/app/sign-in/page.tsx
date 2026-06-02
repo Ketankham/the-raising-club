@@ -38,6 +38,9 @@ function SignInForm() {
           <input type="password" className={inputClass} value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
       </div>
+      <div className="mt-1 text-right">
+        <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">Forgot password?</Link>
+      </div>
       <ErrorText>{error}</ErrorText>
       <button
         type="button"
