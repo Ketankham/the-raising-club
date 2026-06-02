@@ -5,6 +5,7 @@ import "./globals.css";
 import { FeedbackWidget } from "@/components/feedback/feedback-widget";
 import { AppFrame } from "@/components/app/app-frame";
 import { BetaBanner } from "@/components/beta-banner";
+import { OnboardingBanner } from "@/components/onboarding-banner";
 import { isBetaLocked } from "@/lib/beta";
 import { createClient } from "@/lib/supabase/server";
 
@@ -51,14 +52,18 @@ export default async function RootLayout({
   const { data: { user } } = await supabase.auth.getUser();
   let role: string | null = null;
   let unreadCount = 0;
+  let onboardingIncomplete = false;
   if (user) {
     const { data } = await supabase
       .from("profiles")
-      .select("role, registered_at")
+      .select("role, registered_at, onboarding_completed_at")
       .eq("id", user.id)
       .maybeSingle();
     if (data && (!user.is_anonymous || data.registered_at)) {
       role = data.role ?? null;
+      // Registered but hasn't finished onboarding → nudge them (register-first).
+      onboardingIncomplete =
+        !!role && role !== "admin" && !!data.registered_at && !data.onboarding_completed_at;
     }
     // Unread badge for the sidebar bell (cheap count; RLS scopes it to this user).
     const { count } = await supabase
@@ -67,7 +72,10 @@ export default async function RootLayout({
       .is("read_at", null);
     unreadCount = count ?? 0;
   }
-  const expanded = (await cookies()).get("trc_sidebar")?.value !== "collapsed";
+  const cookieStore = await cookies();
+  const expanded = cookieStore.get("trc_sidebar")?.value !== "collapsed";
+  const showOnboardingBanner =
+    onboardingIncomplete && cookieStore.get("trc_onboarding_banner")?.value !== "dismissed";
 
   return (
     <html
@@ -76,6 +84,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
         {isBetaLocked() && !role && <BetaBanner />}
+        {showOnboardingBanner && <OnboardingBanner />}
         <AppFrame role={role} expanded={expanded} unreadCount={unreadCount}>
           {children}
         </AppFrame>

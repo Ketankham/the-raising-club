@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe/server";
+import { createAccount } from "@/lib/onboarding/actions";
+import { FLOW_VERSION } from "@/lib/onboarding/flow";
 import type { RegistrationPayload } from "./types";
 
 export type ToggleSaveResult =
@@ -46,6 +48,90 @@ export async function toggleSaveEvent(eventId: string): Promise<ToggleSaveResult
   if (error) return { ok: false, reason: "error" };
   revalidatePath("/events");
   return { ok: true, saved: true };
+}
+
+// ---------------------------------------------------------------------------
+// Guest registration: minimal account, defer onboarding ("register first")
+// ---------------------------------------------------------------------------
+export type GuestSessionResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * Ensure the visitor has *some* Supabase session so the register wizard can run
+ * with a real `auth.uid` (RLS + `getRegistrationContext` need one). Creates an
+ * anonymous user when signed out; a no-op for an existing (anon or permanent)
+ * session. Called by the guest bootstrapper on the register page before the
+ * wizard renders.
+ */
+export async function ensureGuestSession(): Promise<GuestSessionResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) return { ok: true };
+  const { error } = await supabase.auth.signInAnonymously();
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+export type RegistrationAccountResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * Inline "create account" step of the register wizard (register-first,
+ * onboard-later). Upgrades the anonymous visitor to a permanent parent/member
+ * account WITHOUT running the full onboarding flow, then seeds
+ * `onboarding_progress` so the site-wide "finish onboarding" banner can resume
+ * them straight into the remaining member steps (goals → children → complete)
+ * and never re-prompts for an account. `email already in use` bubbles up so the
+ * UI can point the visitor at sign-in.
+ */
+export async function startRegistrationAccount(input: {
+  name: string;
+  email: string;
+  password: string;
+}): Promise<RegistrationAccountResult> {
+  const supabase = await createClient();
+  let {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if (error || !data.user) return { ok: false, error: error?.message ?? "Could not start session" };
+    user = data.user;
+  }
+
+  // Reuse the onboarding anon→permanent upgrade (sets email, name, registered_at).
+  const name = input.name.trim();
+  const [first, ...rest] = name.split(/\s+/);
+  const res = await createAccount({
+    email: input.email,
+    password: input.password,
+    profile: {
+      first_name: first || undefined,
+      last_name: rest.length ? rest.join(" ") : undefined,
+      preferred_name: name || undefined,
+    },
+  });
+  if (!res.ok) return { ok: false, error: res.error };
+
+  // Member by default ("Member Onboarding") — role-select is skipped.
+  await supabase.from("profiles").update({ role: "parent" }).eq("id", user.id);
+
+  // Seed deferred onboarding so /onboarding/resume lands at `goals` (the account
+  // step is already done and must not be shown again).
+  await supabase.from("onboarding_progress").upsert(
+    {
+      user_id: user.id,
+      flow_version: FLOW_VERSION,
+      role: "parent",
+      current_step: "goals",
+      completed_steps: ["role-select", "ways-to-use", "profile"],
+      status: "in_progress",
+    },
+    { onConflict: "user_id" },
+  );
+
+  revalidatePath("/", "layout");
+  return { ok: true };
 }
 
 export type RegisterResult =

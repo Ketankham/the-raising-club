@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Check, Plus, Trash2 } from "lucide-react";
-import { createRegistration, startEventCheckout } from "@/lib/events/actions";
+import { createRegistration, startEventCheckout, startRegistrationAccount } from "@/lib/events/actions";
 import { priceLabel } from "@/lib/events/format";
 import {
   SUPPORT_NEED_LABELS,
@@ -26,11 +26,24 @@ interface NewChild {
   birthYear: number | "";
 }
 
-export function RegisterFlow({ context }: { context: RegistrationContext }) {
+export function RegisterFlow({
+  context,
+  needsAccount = false,
+}: {
+  context: RegistrationContext;
+  needsAccount?: boolean;
+}) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
+
+  // Step 0 for guests: create a minimal account (register-first, onboard-later).
+  const [accountDone, setAccountDone] = useState(!needsAccount);
+  const [acctName, setAcctName] = useState("");
+  const [acctEmail, setAcctEmail] = useState(context.contactEmail ?? "");
+  const [acctPassword, setAcctPassword] = useState("");
+  const [acctError, setAcctError] = useState<string | null>(null);
 
   const needsChildren = context.participationType !== "adults_only";
   const isDropoff = context.participationType === "children_dropoff";
@@ -144,7 +157,27 @@ export function RegisterFlow({ context }: { context: RegistrationContext }) {
     });
   }
 
-  const steps = ["Who's attending", "Consent", isFree ? "Confirm" : "Payment"];
+  function createAccountStep() {
+    setAcctError(null);
+    start(async () => {
+      const res = await startRegistrationAccount({
+        name: acctName,
+        email: acctEmail,
+        password: acctPassword,
+      });
+      if (res.ok) {
+        setContactEmail((e) => e || acctEmail);
+        setAccountDone(true);
+      } else {
+        setAcctError(res.error);
+      }
+    });
+  }
+
+  const flowSteps = ["Who's attending", "Consent", isFree ? "Confirm" : "Payment"];
+  const steps = needsAccount ? ["Account", ...flowSteps] : flowSteps;
+  // Index into `steps` for the progress bar (account step shifts the rest by one).
+  const currentIndex = needsAccount ? (accountDone ? step + 1 : 0) : step;
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-8 lg:px-8">
@@ -163,16 +196,16 @@ export function RegisterFlow({ context }: { context: RegistrationContext }) {
           <li key={label} className="flex flex-1 items-center gap-2">
             <span
               className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold ${
-                i < step
+                i < currentIndex
                   ? "bg-[#9cc766] text-white"
-                  : i === step
+                  : i === currentIndex
                     ? "bg-ink text-white"
                     : "bg-lavender text-ink-soft"
               }`}
             >
-              {i < step ? <Check size={14} /> : i + 1}
+              {i < currentIndex ? <Check size={14} /> : i + 1}
             </span>
-            <span className={`text-xs font-semibold ${i === step ? "text-ink" : "text-ink-soft"}`}>
+            <span className={`text-xs font-semibold ${i === currentIndex ? "text-ink" : "text-ink-soft"}`}>
               {label}
             </span>
             {i < steps.length - 1 && <span className="h-px flex-1 bg-black/10" />}
@@ -184,8 +217,78 @@ export function RegisterFlow({ context }: { context: RegistrationContext }) {
         <div className="mb-5 rounded-xl bg-pink px-4 py-3 text-sm text-ink">{error}</div>
       )}
 
+      {/* STEP 0 (guests only) — create a minimal account */}
+      {!accountDone && (
+        <div className="space-y-6">
+          <section>
+            <h2 className="mb-1 font-display text-lg font-bold text-ink">Create your account</h2>
+            <p className="mb-4 text-sm text-ink-soft">
+              You&apos;ll use this to manage your registration and get reminders. You can finish
+              setting up your profile later.
+            </p>
+            <div className="space-y-3">
+              <Field label="Your name" required>
+                <input
+                  value={acctName}
+                  onChange={(e) => setAcctName(e.target.value)}
+                  className="w-full rounded-lg border border-ink/15 px-3 py-2 text-sm"
+                />
+              </Field>
+              <Field label="Email" required>
+                <input
+                  type="email"
+                  autoComplete="email"
+                  value={acctEmail}
+                  onChange={(e) => setAcctEmail(e.target.value)}
+                  className="w-full rounded-lg border border-ink/15 px-3 py-2 text-sm"
+                />
+              </Field>
+              <Field label="Password (at least 6 characters)" required>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={acctPassword}
+                  onChange={(e) => setAcctPassword(e.target.value)}
+                  className="w-full rounded-lg border border-ink/15 px-3 py-2 text-sm"
+                />
+              </Field>
+            </div>
+
+            {acctError && (
+              <div className="mt-3 rounded-xl bg-pink px-4 py-3 text-sm text-ink">
+                {acctError}{" "}
+                <Link
+                  href={`/sign-in?next=/events/${context.slug}/register`}
+                  className="font-semibold underline"
+                >
+                  Sign in instead
+                </Link>
+              </div>
+            )}
+
+            <p className="mt-4 text-xs text-ink-soft">
+              Already a member?{" "}
+              <Link
+                href={`/sign-in?next=/events/${context.slug}/register`}
+                className="font-semibold text-[#7ba84f] hover:underline"
+              >
+                Sign in
+              </Link>
+            </p>
+          </section>
+
+          <StepNav
+            onNext={createAccountStep}
+            nextDisabled={
+              pending || !acctName.trim() || !acctEmail.trim() || acctPassword.length < 6
+            }
+            nextLabel={pending ? "Creating account…" : "Create account & continue"}
+          />
+        </div>
+      )}
+
       {/* STEP 1 */}
-      {step === 0 && (
+      {accountDone && step === 0 && (
         <div className="space-y-6">
           {needsChildren ? (
             <>
@@ -416,7 +519,7 @@ export function RegisterFlow({ context }: { context: RegistrationContext }) {
       )}
 
       {/* STEP 2 — consent */}
-      {step === 1 && (
+      {accountDone && step === 1 && (
         <div className="space-y-6">
           {participationWaiver && (
             <WaiverCard title={participationWaiver.title} body={participationWaiver.body}>
@@ -481,7 +584,7 @@ export function RegisterFlow({ context }: { context: RegistrationContext }) {
       )}
 
       {/* STEP 3 — confirm / payment */}
-      {step === 2 && (
+      {accountDone && step === 2 && (
         <div className="space-y-6">
           <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
