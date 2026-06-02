@@ -19,15 +19,29 @@ export async function fulfillEventPayment(admin: SupabaseClient, session: Stripe
   const paymentIntentId =
     typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id ?? null;
 
-  // Mark the payment paid.
-  await admin
+  // Mark the payment paid. event_payments is service-role-write only, so the
+  // user-context pending insert in startEventCheckout is RLS-blocked — create
+  // the row here if it's missing so the receipt/refund record always persists.
+  const paidFields = {
+    status: "paid",
+    stripe_payment_intent_id: paymentIntentId,
+    stripe_checkout_session_id: session.id,
+  };
+  const { data: existingPayment } = await admin
     .from("event_payments")
-    .update({
-      status: "paid",
-      stripe_payment_intent_id: paymentIntentId,
-      stripe_checkout_session_id: session.id,
-    })
-    .eq("registration_id", registrationId);
+    .select("id")
+    .eq("registration_id", registrationId)
+    .maybeSingle();
+  if (existingPayment) {
+    await admin.from("event_payments").update(paidFields).eq("registration_id", registrationId);
+  } else {
+    await admin.from("event_payments").insert({
+      registration_id: registrationId,
+      amount_cents: session.amount_total ?? 0,
+      currency: session.currency ?? "usd",
+      ...paidFields,
+    });
+  }
 
   // Confirm the registration (respect approval-required events).
   const { data: reg } = await admin
