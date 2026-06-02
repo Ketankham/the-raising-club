@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { DashboardShell, type Role } from "@/components/dashboard/dashboard-shell";
 
 /** Family listing editor shares the dashboard shell. Parents only. */
 export default async function FamilyListingLayout({ children }: { children: ReactNode }) {
-  const { profile } = await requireOnboardedProfile();
+  const { profile } = await requireOnboardedForMarketplace();
   if (profile.role === "admin") redirect("/admin");
   if (profile.role !== "parent") redirect("/connect/families");
 

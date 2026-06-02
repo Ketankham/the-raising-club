@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { DashboardShell, type Role } from "@/components/dashboard/dashboard-shell";
 
 /** Find Jobs + job detail share the dashboard shell. */
 export default async function JobsLayout({ children }: { children: ReactNode }) {
-  const { profile } = await requireOnboardedProfile();
+  const { profile } = await requireOnboardedForMarketplace();
   if (profile.role === "admin") redirect("/admin");
 
   const role = profile.role as Role;

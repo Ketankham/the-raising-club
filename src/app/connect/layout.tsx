@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { DashboardShell, type Role } from "@/components/dashboard/dashboard-shell";
 
 /** Marketplace browse surfaces (/connect, /connect/families) share the
  *  dashboard shell (sidebar + top nav) to match the Figma marketplace chrome. */
 export default async function ConnectLayout({ children }: { children: ReactNode }) {
-  const { profile } = await requireOnboardedProfile();
+  const { profile } = await requireOnboardedForMarketplace();
   if (profile.role === "admin") redirect("/admin");
 
   const role = profile.role as Role;

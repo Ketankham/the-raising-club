@@ -1,4 +1,4 @@
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { ChatWindow } from "@/components/marketplace/chat-window";
 import { listMyConversations, getThread } from "@/lib/marketplace/chat";
 
@@ -8,7 +8,7 @@ export default async function ChatPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { user } = await requireOnboardedProfile();
+  const { user } = await requireOnboardedForMarketplace();
   const sp = await searchParams;
   const selectedId = (Array.isArray(sp.c) ? sp.c[0] : sp.c) ?? null;
 

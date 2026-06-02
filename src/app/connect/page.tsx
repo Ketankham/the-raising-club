@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { requireOnboardedProfile } from "@/lib/guards";
+import { requireOnboardedForMarketplace } from "@/lib/guards";
 import { MarketplaceFilters } from "@/components/marketplace/marketplace-filters";
 import { CaregiverCard } from "@/components/marketplace/caregiver-card";
 import { listCaregivers } from "@/lib/marketplace/caregivers";
@@ -13,7 +13,7 @@ export default async function ConnectPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { profile } = await requireOnboardedProfile();
+  const { profile } = await requireOnboardedForMarketplace();
   const sp = await searchParams;
   const filters = parseMarketplaceFilters(sp);
 
