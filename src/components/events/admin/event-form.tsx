@@ -7,6 +7,7 @@ import { createEvent, updateEvent } from "@/lib/events/admin-actions";
 import type { EditableEvent } from "@/lib/events/admin";
 import { utcToWallClock, wallClockToUtc } from "@/lib/events/format";
 import { PlacesAutocomplete } from "@/components/ui/places-autocomplete";
+import { AgeInput } from "@/components/ui/age-input";
 import {
   EVENT_STYLE_LABELS,
   PARTICIPATION_LABELS,
@@ -197,12 +198,8 @@ export function EventForm({
             </select>
           </Field>
           <div className="grid grid-cols-2 gap-2">
-            <Field label="Min age (months)">
-              <input type="number" min={0} className={input} value={f.ageMinMonths ?? ""} onChange={(e) => set("ageMinMonths", e.target.value === "" ? null : Number(e.target.value))} />
-            </Field>
-            <Field label="Max age (months)">
-              <input type="number" min={0} className={input} value={f.ageMaxMonths ?? ""} onChange={(e) => set("ageMaxMonths", e.target.value === "" ? null : Number(e.target.value))} />
-            </Field>
+            <AgeInput label="Min age" valueMonths={f.ageMinMonths ?? null} onChange={(v) => set("ageMinMonths", v)} className={input} />
+            <AgeInput label="Max age" valueMonths={f.ageMaxMonths ?? null} onChange={(v) => set("ageMaxMonths", v)} className={input} />
           </div>
         </div>
       </Section>

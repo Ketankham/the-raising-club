@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { CoursesFilters } from "@/components/courses/courses-filters";
 import { CatalogCard } from "@/components/courses/course-card";
 import { listCatalog, getPublicTaxonomy, parseCourseFilters } from "@/lib/courses/queries";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Browse Courses — The Raising Club",
@@ -18,6 +19,9 @@ export default async function CoursesPage({
 }) {
   const sp = await searchParams;
   const filters = parseCourseFilters(sp);
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isLoggedIn = !!user && !user.is_anonymous;
   const [items, taxonomy] = await Promise.all([listCatalog(filters), getPublicTaxonomy()]);
 
   const hidden: { name: string; value: string }[] = [];
@@ -29,7 +33,7 @@ export default async function CoursesPage({
 
   return (
     <>
-      <SiteHeader />
+      {!isLoggedIn && <SiteHeader />}
       <main className="flex-1">
         <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8 lg:py-14">
           <header className="mb-8">

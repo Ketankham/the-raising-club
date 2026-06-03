@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { RichTextEditor } from "./rich-text-editor";
 import { saveCourseStructure } from "@/lib/courses/admin-actions";
+import { AgeInput } from "@/components/ui/age-input";
 import {
   CARE_TYPE_LABELS,
   RESOURCE_KIND_LABELS,
@@ -228,12 +229,8 @@ export function CourseEditor({ initial, taxonomy }: { initial: CourseEditorInput
                 </Labeled>
               </div>
               <div className="grid gap-4 sm:grid-cols-4">
-                <Labeled label="Age min (months)">
-                  <input type="number" min={0} className={inputCls} value={course.ageMinMonths ?? ""} onChange={(e) => patch({ ageMinMonths: e.target.value ? Number(e.target.value) : null })} />
-                </Labeled>
-                <Labeled label="Age max (months)">
-                  <input type="number" min={0} className={inputCls} value={course.ageMaxMonths ?? ""} onChange={(e) => patch({ ageMaxMonths: e.target.value ? Number(e.target.value) : null })} />
-                </Labeled>
+                <AgeInput label="Age min" valueMonths={course.ageMinMonths ?? null} onChange={(v) => patch({ ageMinMonths: v ?? undefined })} className={inputCls} />
+                <AgeInput label="Age max" valueMonths={course.ageMaxMonths ?? null} onChange={(v) => patch({ ageMaxMonths: v ?? undefined })} className={inputCls} />
                 <Labeled label="Est. learning (min)">
                   <input type="number" min={0} className={inputCls} value={course.estimatedLearningMinutes ?? ""} onChange={(e) => patch({ estimatedLearningMinutes: e.target.value ? Number(e.target.value) : null })} />
                 </Labeled>

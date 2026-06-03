@@ -81,22 +81,16 @@ export function OrgProfile({ data, isOwner }: { data: OrgProfileData; isOwner: b
   return (
     <div className="min-h-screen bg-[#faf6f1] font-[family-name:var(--font-dm-sans)] text-[#1e2a23]">
       <nav className="flex items-center justify-between border-b border-[#ede5d8] bg-white px-6 py-4 sm:px-10">
-        <Link href="/" className="font-serif text-xl text-[#3a5a45]">The Raising <span className="italic text-[#c4724a]">Club</span></Link>
-        {isOwner ? (
-          <Link href="/dashboard" className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-[#3a5a45] px-4 py-2 text-[.85rem] font-medium text-[#3a5a45] transition hover:bg-[#3a5a45] hover:text-white">
-            <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
-          </Link>
-        ) : (
+        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-[.85rem] font-medium text-[#6b7c72] transition hover:text-[#1e2a23]">
+          <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
+        </Link>
+        {!isOwner && (
           <Link href="/onboarding" className="rounded-full bg-[#c4724a] px-4 py-2 text-[.85rem] font-medium text-white transition hover:bg-[#b06240]">Join free</Link>
         )}
       </nav>
 
-      <div className="relative h-[180px] overflow-hidden" style={{ background: "linear-gradient(135deg,#3a5a45 0%,#2d4a36 50%,#4a6e52 100%)" }}>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 80% at 80% 50%, rgba(196,114,74,.35) 0%, transparent 60%)" }} />
-      </div>
-
-      <div className="mx-auto max-w-[900px] px-6 pb-20">
-        <div className="-mt-[52px] mb-6 flex flex-wrap items-end gap-5">
+      <div className="mx-auto max-w-[900px] px-6 pb-20 pt-8">
+        <div className="mb-6 flex flex-wrap items-center gap-5">
           <div className="flex h-[104px] w-[104px] shrink-0 items-center justify-center rounded-2xl border-4 border-white bg-[#e8c9b4] font-serif text-[2.2rem] text-[#c4724a] shadow-[0_4px_24px_rgba(30,42,35,.08)]">{initials(data.name)}</div>
           <div className="flex-1 pb-2">
             <h1 className="font-serif text-[1.85rem] font-semibold leading-tight text-[#1e2a23]">{data.name}</h1>

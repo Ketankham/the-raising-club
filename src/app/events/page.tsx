@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { EventsFilters } from "@/components/events/events-filters";
 import { EventsGrid } from "@/components/events/events-grid";
 import { listEvents, parseFilters } from "@/lib/events/queries";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Upcoming Events — The Raising Club",
@@ -18,6 +19,9 @@ export default async function EventsPage({
 }) {
   const sp = await searchParams;
   const filters = parseFilters(sp);
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isLoggedIn = !!user && !user.is_anonymous;
   const events = await listEvents(filters);
 
   // Preserve active filters when submitting the search form (no-JS friendly).
@@ -30,7 +34,7 @@ export default async function EventsPage({
 
   return (
     <>
-      <SiteHeader />
+      {!isLoggedIn && <SiteHeader />}
       <main className="flex-1">
         <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8 lg:py-14">
           <header className="mb-8">
