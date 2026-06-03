@@ -6,6 +6,8 @@ import { FeedbackWidget } from "@/components/feedback/feedback-widget";
 import { AppFrame } from "@/components/app/app-frame";
 import { BetaBanner } from "@/components/beta-banner";
 import { OnboardingBanner } from "@/components/onboarding-banner";
+import { ErrorBoundary } from "@/components/error-boundary";
+import { GlobalErrorHandler } from "@/components/global-error-handler";
 import { isBetaLocked } from "@/lib/beta";
 import { createClient } from "@/lib/supabase/server";
 
@@ -83,11 +85,14 @@ export default async function RootLayout({
       className={`${dmSans.variable} ${playfair.variable} ${albertSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
+        <GlobalErrorHandler />
         {isBetaLocked() && !role && <BetaBanner />}
         {showOnboardingBanner && <OnboardingBanner />}
-        <AppFrame role={role} expanded={expanded} unreadCount={unreadCount}>
-          {children}
-        </AppFrame>
+        <ErrorBoundary>
+          <AppFrame role={role} expanded={expanded} unreadCount={unreadCount}>
+            {children}
+          </AppFrame>
+        </ErrorBoundary>
         <FeedbackWidget />
       </body>
     </html>
