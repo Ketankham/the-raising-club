@@ -129,6 +129,28 @@ export async function getJobById(id: string): Promise<JobCard | null> {
   return job;
 }
 
+/** All job posts for the admin marketplace panel (no owner filter). */
+export async function listAllJobPosts(): Promise<(JobCard & { ownerName: string | null; orgName: string | null })[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("job_posts")
+    .select(`${JOB_SELECT}, job_applications ( id ),
+             profiles ( first_name, last_name, preferred_name ),
+             organizations ( name )`)
+    .order("created_at", { ascending: false });
+
+  return (data ?? []).map((j: any) => {
+    const p = j.profiles;
+    const ownerName = p ? (p.preferred_name || `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim() || null) : null;
+    return {
+      ...mapJob(j),
+      applicantCount: (j.job_applications ?? []).length,
+      ownerName,
+      orgName: j.organizations?.name ?? null,
+    };
+  });
+}
+
 /** Jobs posted under an organization (org roles management page). */
 export async function listOrgJobPosts(orgId: string): Promise<JobCard[]> {
   const supabase = await createClient();
