@@ -133,3 +133,38 @@ export async function inviteUser(input: { email: string; role: string }): Promis
   revalidatePath("/admin");
   return { ok: true, data: { link, emailed } };
 }
+
+/** Send a password-reset email to a user (admin only). Falls back to a reset
+ *  link that the admin can copy and share if email isn't configured. */
+export async function adminSendPasswordReset(
+  email: string,
+): Promise<{ ok: true; emailed: boolean; link?: string } | { ok: false; error: string }> {
+  const { isAdmin } = await asAdmin();
+  if (!isAdmin) return { ok: false, error: "Admins only" };
+
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://theraisingclub.com";
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (serviceKey && process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    try {
+      const { createClient: createAdminClient } = await import("@supabase/supabase-js");
+      const admin = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL, serviceKey);
+      const { data, error } = await admin.auth.admin.generateLink({
+        type: "recovery",
+        email,
+        options: { redirectTo: `${base}/auth/reset-password` },
+      });
+      if (!error && data?.properties?.action_link) {
+        return { ok: true, emailed: false, link: data.properties.action_link };
+      }
+    } catch {}
+  }
+
+  // Fallback: trigger standard reset email (works if SMTP is configured)
+  const { supabase } = await asAdmin();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${base}/auth/reset-password`,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, emailed: true };
+}

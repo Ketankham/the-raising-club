@@ -3,10 +3,10 @@
 import { useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check, UserX, UserCheck } from "lucide-react";
+import { ArrowLeft, Check, UserX, UserCheck, KeyRound, Copy } from "lucide-react";
 import type { AdminUserDetail } from "@/lib/admin";
 import type { Plan } from "@/lib/plans/types";
-import { adminUpdatePersonalDetails, adminUpdatePlan, deactivateUser, reactivateUser } from "@/lib/admin-actions";
+import { adminUpdatePersonalDetails, adminUpdatePlan, deactivateUser, reactivateUser, adminSendPasswordReset } from "@/lib/admin-actions";
 
 type Result = { ok: true } | { ok: false; error: string };
 
@@ -107,6 +107,11 @@ export function AdminUserDetailView({ user, plans }: { user: AdminUserDetail; pl
   // Activation
   const activation = useSave();
 
+  // Password reset
+  const [resetLink, setResetLink] = useState<string | null>(null);
+  const [resetMsg, setResetMsg] = useState<string | null>(null);
+  const [, startReset] = useTransition();
+
   return (
     <div className="mx-auto max-w-3xl">
       <Link href="/admin" className="mb-5 inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink">
@@ -121,21 +126,56 @@ export function AdminUserDetailView({ user, plans }: { user: AdminUserDetail; pl
             {user.deactivated && <span className="ml-2 font-medium text-red-600">Deactivated</span>}
           </p>
         </div>
-        {user.role !== "admin" && (
-          <button
-            type="button"
-            disabled={activation.pending}
-            onClick={() =>
-              activation.run(() => (user.deactivated ? reactivateUser(user.id) : deactivateUser(user.id)))
-            }
-            className={`inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition disabled:opacity-50 ${
-              user.deactivated
-                ? "border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-                : "border-red-200 text-red-600 hover:bg-red-50"
-            }`}
-          >
-            {user.deactivated ? <><UserCheck className="h-4 w-4" /> Reactivate</> : <><UserX className="h-4 w-4" /> Deactivate</>}
-          </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {user.email && (
+            <button
+              type="button"
+              onClick={() => {
+                startReset(async () => {
+                  const res = await adminSendPasswordReset(user.email!);
+                  if (!res.ok) { setResetMsg(`Error: ${res.error}`); return; }
+                  if (res.link) { setResetLink(res.link); setResetMsg("Copy the link below and share with the user."); }
+                  else setResetMsg("Password reset email sent.");
+                });
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 transition hover:bg-amber-50"
+            >
+              <KeyRound className="h-4 w-4" /> Send password reset
+            </button>
+          )}
+          {user.role !== "admin" && (
+            <button
+              type="button"
+              disabled={activation.pending}
+              onClick={() =>
+                activation.run(() => (user.deactivated ? reactivateUser(user.id) : deactivateUser(user.id)))
+              }
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition disabled:opacity-50 ${
+                user.deactivated
+                  ? "border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                  : "border-red-200 text-red-600 hover:bg-red-50"
+              }`}
+            >
+              {user.deactivated ? <><UserCheck className="h-4 w-4" /> Reactivate</> : <><UserX className="h-4 w-4" /> Deactivate</>}
+            </button>
+          )}
+        </div>
+        {resetMsg && (
+          <div className="mt-3 w-full rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {resetMsg}
+            {resetLink && (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="truncate rounded bg-white px-2 py-1 font-mono text-xs text-amber-700">{resetLink}</span>
+                <button
+                  type="button"
+                  onClick={() => navigator.clipboard?.writeText(resetLink).then(() => setResetMsg("Copied!"))}
+                  className="shrink-0"
+                >
+                  <Copy className="h-4 w-4 text-amber-600" />
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </header>
 

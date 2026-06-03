@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarPlus, Star } from "lucide-react";
+import { CalendarPlus, Search, Star } from "lucide-react";
 import { requireEventManager } from "@/lib/guards";
 import { listManagedEvents } from "@/lib/events/admin";
 import { priceLabel, shortDateLabel } from "@/lib/events/format";
@@ -14,20 +14,32 @@ export default async function AdminEventsPage() {
       <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="font-display text-2xl font-bold text-ink">Events</h1>
-            <p className="text-sm text-ink-soft">Create and manage your events.</p>
+            <p className="text-sm text-ink-soft">Create and manage your events, or browse and attend community events.</p>
           </div>
-          <Link
-            href="/manage/events/new"
-            className="inline-flex items-center gap-2 rounded-full bg-[#9cc766] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#8bb957]"
-          >
-            <CalendarPlus size={16} /> Create event
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/events"
+              className="inline-flex items-center gap-2 rounded-full border border-ink/15 px-5 py-2.5 text-sm font-semibold text-ink-soft hover:border-ink/30 hover:text-ink"
+            >
+              <Search size={16} /> Browse Events
+            </Link>
+            <Link
+              href="/manage/events/new"
+              className="inline-flex items-center gap-2 rounded-full bg-[#9cc766] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#8bb957]"
+            >
+              <CalendarPlus size={16} /> Create event
+            </Link>
+          </div>
         </div>
 
         {events.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-ink/15 bg-white/50 p-12 text-center">
-            <p className="font-display text-lg font-bold text-ink">No events yet</p>
-            <p className="mt-1 text-sm text-ink-soft">Create your first event to get started.</p>
+            <p className="font-display text-lg font-bold text-ink">No events created yet</p>
+            <p className="mt-1 text-sm text-ink-soft">Create your first event, or browse community events to attend.</p>
+            <div className="mt-4 flex justify-center gap-3">
+              <Link href="/events" className="rounded-full border border-ink/20 px-4 py-2 text-sm font-semibold text-ink-soft hover:text-ink">Browse Events</Link>
+              <Link href="/manage/events/new" className="rounded-full bg-[#9cc766] px-4 py-2 text-sm font-semibold text-white">Create event</Link>
+            </div>
           </div>
         ) : (
           <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
