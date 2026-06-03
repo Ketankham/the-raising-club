@@ -64,7 +64,7 @@ export default async function AdminJobDetailPage({ params }: { params: Promise<{
       ) : (
         <div className="space-y-3">
           {data.applicants.map((a) => (
-            <ApplicantRow key={a.applicationId} a={a} />
+            <ApplicantRow key={a.applicationId} a={a} jobId={id} />
           ))}
         </div>
       )}

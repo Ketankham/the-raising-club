@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { createClient } from "@/lib/supabase/server";
@@ -13,6 +13,14 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
   // Enrolled learners get the player; everyone else sees the intro / enrol page.
   if (course.isEnrolled) {
+    // If all modules are done, quiz exists, and cert not yet issued → send straight to quiz.
+    if (course.hasQuiz && !course.certificate) {
+      const allModuleIds = course.chapters.flatMap((ch) => ch.modules.map((m) => m.id));
+      const completedSet = new Set(course.completedModuleIds);
+      const allComplete = allModuleIds.length > 0 && allModuleIds.every((id) => completedSet.has(id));
+      if (allComplete) redirect(`/courses/${slug}/quiz`);
+    }
+
     return (
       <main className="min-h-screen bg-cream/30">
         <CoursePlayer course={course} />
