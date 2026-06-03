@@ -281,17 +281,43 @@ export async function getQuizForTaker(courseId: string): Promise<TakerQuiz | nul
 export interface QuizReviewQuestion {
   id: string;
   prompt: string;
-  options: { id: string; body: string; isCorrect: boolean; explanation: string | null }[];
+  options: { id: string; body: string; isCorrect: boolean; explanation: string | null; userChosen: boolean }[];
 }
 
 export async function getQuizReview(courseId: string): Promise<QuizReviewQuestion[] | null> {
   const supabase = await createClient();
   const { data } = await supabase.rpc("course_quiz_review", { target_course: courseId });
   if (!data) return null;
+
+  // Fetch the user's answers from their last passed attempt for this course.
+  let userAnswers: Record<string, string> = {};
+  const { data: enrollment } = await supabase
+    .from("course_enrollments")
+    .select("id")
+    .eq("course_id", courseId)
+    .maybeSingle();
+  if (enrollment) {
+    const { data: attempt } = await supabase
+      .from("course_quiz_attempts")
+      .select("answers")
+      .eq("enrollment_id", enrollment.id)
+      .eq("passed", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    userAnswers = (attempt?.answers as Record<string, string>) ?? {};
+  }
+
   return (data as any[]).map((q) => ({
     id: q.id,
     prompt: q.prompt,
-    options: (q.options ?? []).map((o: any) => ({ id: o.id, body: o.body, isCorrect: o.is_correct, explanation: o.explanation })),
+    options: (q.options ?? []).map((o: any) => ({
+      id: o.id,
+      body: o.body,
+      isCorrect: o.is_correct,
+      explanation: o.explanation,
+      userChosen: userAnswers[q.id] === o.id,
+    })),
   }));
 }
 

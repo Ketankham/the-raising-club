@@ -11,6 +11,7 @@ import {
   FileText,
   Award,
   Sparkles,
+  PartyPopper,
 } from "lucide-react";
 import { VideoEmbed } from "./video-embed";
 import { CancelPurchaseButton } from "./cancel-purchase-button";
@@ -32,6 +33,7 @@ export function CoursePlayer({ course }: { course: LearnerCourse }) {
   const firstIncomplete = allModules.find((m) => !completed.has(m.id)) ?? allModules[0];
   const [currentId, setCurrentId] = useState<string>(firstIncomplete?.id ?? "");
   const [popup, setPopup] = useState<LearnerRevisionQuestion | null>(null);
+  const [showCompletionPopup, setShowCompletionPopup] = useState(false);
 
   const current = allModules.find((m) => m.id === currentId) ?? allModules[0];
   const currentIndex = allModules.findIndex((m) => m.id === current?.id);
@@ -43,6 +45,11 @@ export function CoursePlayer({ course }: { course: LearnerCourse }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const isLastModuleCompletion = (m: LearnerModule, currentCompleted: Set<string>) => {
+    const willBeAllComplete = allModules.every((mod) => mod.id === m.id || currentCompleted.has(mod.id));
+    return willBeAllComplete && !course.hasQuiz;
+  };
+
   const markCompleteAndContinue = (m: LearnerModule) => {
     // If there's an unanswered Pause & Notice, surface it first.
     if (m.revisionQuestion && !answered.has(m.revisionQuestion.id)) {
@@ -51,8 +58,13 @@ export function CoursePlayer({ course }: { course: LearnerCourse }) {
     }
     start(async () => {
       await completeModule(course.id, course.slug, m.id);
-      setCompleted((s) => new Set(s).add(m.id));
-      advance();
+      const next_completed = new Set(completed).add(m.id);
+      setCompleted(next_completed);
+      if (isLastModuleCompletion(m, completed)) {
+        setShowCompletionPopup(true);
+      } else {
+        advance();
+      }
     });
   };
 
@@ -65,8 +77,13 @@ export function CoursePlayer({ course }: { course: LearnerCourse }) {
     if (!current) return;
     start(async () => {
       await completeModule(course.id, course.slug, current.id);
-      setCompleted((s) => new Set(s).add(current.id));
-      advance();
+      const next_completed = new Set(completed).add(current.id);
+      setCompleted(next_completed);
+      if (isLastModuleCompletion(current, completed)) {
+        setShowCompletionPopup(true);
+      } else {
+        advance();
+      }
     });
   };
 
@@ -160,6 +177,12 @@ export function CoursePlayer({ course }: { course: LearnerCourse }) {
                   >
                     <Award size={16} /> See your certificate
                   </Link>
+                  <Link
+                    href={`/courses/${course.slug}/quiz`}
+                    className="text-sm text-ink-soft underline decoration-ink-soft/40 underline-offset-2 hover:text-ink"
+                  >
+                    Review your quiz answers
+                  </Link>
                 </div>
               ) : course.hasQuiz ? (
                 <div className="flex flex-col items-start gap-3">
@@ -247,6 +270,32 @@ export function CoursePlayer({ course }: { course: LearnerCourse }) {
           onContinue={closePopupAndContinue}
           onClose={() => setPopup(null)}
         />
+      )}
+
+      {showCompletionPopup && (
+        <div className="fixed inset-0 z-50 grid place-items-center p-4">
+          <div className="absolute inset-0 bg-ink/50" onClick={() => setShowCompletionPopup(false)} />
+          <div className="relative w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl text-center">
+            <div className="flex justify-center mb-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <PartyPopper size={32} className="text-primary" />
+              </div>
+            </div>
+            <p className="font-display text-2xl font-bold text-ink">Congratulations! 🎉</p>
+            <p className="mt-1 text-sm font-medium text-primary">{course.title}</p>
+            <p className="mt-3 text-ink-soft">
+              You&apos;ve completed every module in this course. Amazing work investing in your caregiving journey!
+            </p>
+            <div className="mt-6 flex flex-col gap-3">
+              <button
+                onClick={() => setShowCompletionPopup(false)}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary/90"
+              >
+                <Award size={16} /> Awesome, thanks!
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
