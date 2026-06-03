@@ -51,6 +51,8 @@ export async function createJob(input: JobFormInput): Promise<JobSaveResult> {
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, reason: "unauthenticated" };
   if (!input.title.trim()) return { ok: false, reason: "validation", message: "Title is required." };
+  if (!input.locationLabel?.trim()) return { ok: false, reason: "validation", message: "Location is required." };
+  if (!input.careType) return { ok: false, reason: "validation", message: "Care type is required." };
 
   const { data, error } = await supabase
     .from("job_posts")
@@ -73,6 +75,8 @@ export async function updateJob(id: string, input: JobFormInput): Promise<JobSav
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, reason: "unauthenticated" };
   if (!input.title.trim()) return { ok: false, reason: "validation", message: "Title is required." };
+  if (!input.locationLabel?.trim()) return { ok: false, reason: "validation", message: "Location is required." };
+  if (!input.careType) return { ok: false, reason: "validation", message: "Care type is required." };
 
   const row = toRow(input, user.id);
   // don't reassign ownership on edit

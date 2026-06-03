@@ -60,7 +60,15 @@ export function JobForm({
   function submit(status: "draft" | "open") {
     setError(null);
     if (!f.title.trim()) {
-      setError("Please add a job title.");
+      setError("Job title is required.");
+      return;
+    }
+    if (!f.locationLabel?.trim()) {
+      setError("Location is required.");
+      return;
+    }
+    if (!f.careType) {
+      setError("Care type is required.");
       return;
     }
     start(async () => {
@@ -107,7 +115,7 @@ export function JobForm({
         </Field>
       )}
 
-      <Field label="Care type">
+      <Field label="Care type" required>
         <div className="flex flex-wrap gap-2">
           {CARE_TYPES.map((t) => (
             <Chip key={t} on={f.careType === t} onClick={() => set("careType", f.careType === t ? null : (t as CareType))}>
@@ -175,7 +183,7 @@ export function JobForm({
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Location">
+        <Field label="Location" required>
           <input value={f.locationLabel} onChange={(e) => set("locationLabel", e.target.value)} placeholder="e.g. Brooklyn, NY"
             className="w-full rounded-xl border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink outline-none focus:border-olive" />
         </Field>

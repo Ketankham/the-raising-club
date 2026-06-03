@@ -30,7 +30,7 @@ export default async function OrgRoleApplicantsPage({ params }: { params: Promis
             </p>
           </div>
         ) : (
-          data.applicants.map((a) => <ApplicantRow key={a.applicationId} a={a} />)
+          data.applicants.map((a) => <ApplicantRow key={a.applicationId} a={a} jobId={id} />)
         )}
       </div>
     </div>
