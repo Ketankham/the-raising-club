@@ -157,7 +157,14 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
 
         <label className="flex items-center gap-2 text-sm text-ink-soft">
           <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-          I agree to the Terms &amp; Conditions and Privacy Policy.
+          I agree to the{" "}
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
+            Terms &amp; Conditions
+          </a>{" "}
+          and{" "}
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
+            Privacy Policy
+          </a>.
         </label>
       </div>
 
