@@ -156,3 +156,46 @@ session/refresh bug. It was actually #1. Useful debugging recipe regardless:
   isolation: `npm run build` then `npx next start -p 3100` and point the browser
   at :3100. Server-only file changes (e.g. `lib/supabase/server.ts`) are picked
   up reliably by a fresh build, less reliably by dev HMR.
+
+---
+
+## 8. Component refactoring mid-commit causes partial state and build failures
+
+**Symptom**
+- A component is partially refactored for i18n (code structure changed but references
+  not fully updated). Local build passes but Vercel deployment fails with type errors.
+- Error: `Cannot find name 'FEATURES_CONFIG'. Did you mean 'FEATURES'?` even though
+  the component was supposedly "reverted" with `git checkout`.
+- The component has both old (hardcoded FEATURES array) and new (FEATURES_CONFIG)
+  code simultaneously, causing undefined references.
+
+**Root cause**
+- Started refactoring `src/components/landing/features.tsx` for i18n support:
+  renamed `FEATURES` → `FEATURES_CONFIG`, added `useTranslations()`, updated rendering.
+- Realized translation keys weren't ready; tried to revert with `git checkout` but
+  the file wasn't fully reverted — the changes remained partially applied.
+- Committed code with both old and new state mixed together, breaking references.
+- `npm run build` (possibly cached) passed locally but Vercel's fresh build caught it.
+
+**Fix**
+- Fully revert the component to its last known-good state using:
+  ```bash
+  git show HEAD~N:src/components/landing/features.tsx > /tmp/original.tsx
+  cat /tmp/original.tsx  # Verify it's correct
+  cp /tmp/original.tsx src/components/landing/features.tsx
+  npm run build  # Verify build passes
+  git add && git commit
+  ```
+- Do NOT partially commit refactored components. If you refactor, complete the refactor
+  OR fully revert. No half-finished state.
+
+**Guardrail / checklist**
+- [ ] When refactoring a component structure (imports, exports, prop names), do NOT
+      commit until the entire refactoring is complete and all references are updated.
+- [ ] If starting a major refactor (e.g. adding i18n to a component), ensure all
+      translation keys are ready BEFORE you start changing code.
+- [ ] After any component refactoring, run `npm run build` locally BEFORE pushing.
+      Trust the build output, not the dev server (HMR may mask issues).
+- [ ] If reverting a component with `git checkout`, verify the result with:
+      `cat src/components/foo.tsx` to confirm the old code is actually there.
+- [ ] Use `git diff` before committing refactored components to spot mixed old/new code.
