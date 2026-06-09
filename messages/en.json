@@ -1,0 +1,31 @@
+{
+  "sidebar": {
+    "home": "Home",
+    "learn": "Learn",
+    "events": "Events",
+    "messages": "Messages",
+    "settings": "Settings",
+    "logout": "Log out",
+    "collapse": "Collapse sidebar",
+    "expand": "Open sidebar"
+  },
+  "languageSwitcher": {
+    "en": "English",
+    "es": "Español"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot your password?"
+  }
+}

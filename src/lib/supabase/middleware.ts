@@ -10,8 +10,8 @@ import { SUPABASE_URL, SUPABASE_KEY } from "./env";
  * Keep this free of heavy DB queries — authorization that needs the database
  * belongs in server layouts (per Next 16 Proxy guidance).
  */
-export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request });
+export async function updateSession(request: NextRequest, baseResponse?: NextResponse) {
+  let response = baseResponse || NextResponse.next({ request });
 
   // Fail open: if Supabase isn't configured (or a transient error occurs) we
   // must never take the whole site down — just skip session refresh.

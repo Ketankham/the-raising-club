@@ -1,0 +1,31 @@
+{
+  "sidebar": {
+    "home": "Inicio",
+    "learn": "Aprender",
+    "events": "Eventos",
+    "messages": "Mensajes",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión",
+    "collapse": "Contraer barra lateral",
+    "expand": "Abrir barra lateral"
+  },
+  "languageSwitcher": {
+    "en": "English",
+    "es": "Español"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "back": "Atrás",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?"
+  }
+}

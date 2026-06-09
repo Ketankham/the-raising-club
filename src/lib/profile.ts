@@ -10,6 +10,7 @@ export interface CaregiverProfileData {
   zip: string | null;
   avatarUrl: string | null;
   registeredAt: string | null;
+  locale: string;
   headline: string | null;
   about: string | null;
   experienceLevel: string | null;
@@ -73,6 +74,7 @@ export async function getPublicCaregiverProfile(userId: string): Promise<Caregiv
     zip: pub.zip,
     avatarUrl: pub.avatarUrl,
     registeredAt: pub.registeredAt,
+    locale: pub.locale ?? "en",
     headline: pub.headline,
     about: pub.about,
     experienceLevel: pub.experienceLevel,
@@ -125,6 +127,7 @@ export async function getCaregiverProfile(userId: string): Promise<CaregiverProf
     zip: p.zip_code,
     avatarUrl: p.avatar_url,
     registeredAt: p.registered_at,
+    locale: p.locale ?? "en",
     headline: c?.headline ?? null,
     about: c?.about ?? null,
     experienceLevel: c?.experience_level ?? null,
