@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import {
   ShieldCheck,
   Sparkles,
@@ -7,42 +10,36 @@ import {
   LifeBuoy,
 } from "lucide-react";
 
-const FEATURES = [
+const FEATURES_CONFIG = [
   {
     Icon: ShieldCheck,
     color: "bg-olive/30",
-    title: "Layered Safety & Screening",
-    body: "We verify IDs and references, offer optional background checks, and surface practical safety guidance—so families can feel confident and at peace.",
+    key: "safety",
   },
   {
     Icon: Sparkles,
     color: "bg-purple/30",
-    title: "Smart Matching",
-    body: "We match families, caregivers, and programs—including families with families and caregivers with caregivers—so each child’s circle of care fits their needs.",
+    key: "matching",
   },
   {
     Icon: Users,
     color: "bg-pink",
-    title: "Nanny Shares & Micro-Programs",
-    body: "Create or join nanny shares, learning pods, and after-school care with families who share your neighborhood, schedule, and priorities.",
+    key: "shares",
   },
   {
     Icon: GraduationCap,
     color: "bg-yellow/40",
-    title: "TRC Training & Badges",
-    body: "Educators bring degrees & certifications; TRC adds science-backed training and badges that make all expertise visible to families and programs at a glance.",
+    key: "training",
   },
   {
     Icon: Building2,
     color: "bg-primary-soft/30",
-    title: "Staffing for Daycares & Programs",
-    body: "Daycares, preschools, and after-school programs use TRC to hire new educators and upskill existing teams, keeping classrooms and activities reliably staffed.",
+    key: "staffing",
   },
   {
     Icon: LifeBuoy,
     color: "bg-mint",
-    title: "Support & Simple Logistics",
-    body: "Access TRC guidance when questions come up, and manage payments in one place with clear rates and fewer awkward money talks.",
+    key: "support",
   },
 ];
 

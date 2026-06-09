@@ -114,5 +114,53 @@
     "browseOurCourseLibrary": "Browse our course library and enroll in something that fits your goals. Short, practical lessons you can apply today.",
     "noCourses": "No courses yet",
     "browseAndEnroll": "Browse and enroll in a course to get started"
+  },
+  "landing": {
+    "hero": {
+      "title": "More Than Childcare:",
+      "subtitle": "The club for everyone raising children.",
+      "description": "Trusted care for families, real careers for caregivers, and reliable staffing and training for the programs that serve them—all inside one club.",
+      "highlight1": "Smart, AI-Powered Matching",
+      "highlight2": "Layered Safety & Screening",
+      "highlight3": "TRC Training & Professional Development"
+    },
+    "joinCards": {
+      "parent": "Join as a Parent",
+      "caregiver": "Join as a Caregiver",
+      "organization": "Join as an Organization"
+    },
+    "howItWorks": {
+      "title": "How it Works",
+      "step1Title": "Find Your Match",
+      "step1Desc": "Use our AI-powered matching to find the perfect fit for your family's needs.",
+      "step2Title": "Verify & Screen",
+      "step2Desc": "We conduct thorough background checks and verification for everyone.",
+      "step3Title": "Build Relationships",
+      "step3Desc": "Connect with vetted professionals and build lasting relationships of trust."
+    },
+    "features": {
+      "title": "Why The Raising Club?",
+      "feature1": "Smart Matching",
+      "feature2": "Safety First",
+      "feature3": "Training & Growth",
+      "feature4": "Community Support"
+    },
+    "audiences": {
+      "forParents": "For Parents",
+      "parentDesc": "Find trusted caregivers and educational resources for your family.",
+      "forCaregivers": "For Caregivers",
+      "caregiverDesc": "Build your career with professional development and real opportunities.",
+      "forOrganizations": "For Organizations",
+      "organizationDesc": "Staffing solutions and training programs for your programs."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "We believe that quality childcare should be accessible, affordable, and empowering for everyone. The Raising Club is building the infrastructure to make that possible."
+    },
+    "cta": {
+      "title": "Ready to Join?",
+      "description": "Start your journey with The Raising Club today.",
+      "button": "Get Started"
+    }
   }
 }

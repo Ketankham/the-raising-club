@@ -114,5 +114,53 @@
     "browseOurCourseLibrary": "Explora nuestra biblioteca de cursos e inscríbete en algo que se ajuste a tus objetivos. Lecciones prácticas y cortas que puedes aplicar hoy.",
     "noCourses": "Sin cursos aún",
     "browseAndEnroll": "Explora e inscríbete en un curso para comenzar"
+  },
+  "landing": {
+    "hero": {
+      "title": "Más que cuidado infantil:",
+      "subtitle": "El club para todos los que crían niños.",
+      "description": "Cuidado de confianza para familias, carreras reales para cuidadores, y personal confiable y capacitación para los programas que los sirven—todo dentro de un club.",
+      "highlight1": "Emparejamiento Impulsado por IA",
+      "highlight2": "Seguridad y Verificación en Capas",
+      "highlight3": "Capacitación y Desarrollo Profesional de TRC"
+    },
+    "joinCards": {
+      "parent": "Únete como Padre/Madre",
+      "caregiver": "Únete como Cuidador",
+      "organization": "Únete como Organización"
+    },
+    "howItWorks": {
+      "title": "Cómo funciona",
+      "step1Title": "Encuentra tu pareja",
+      "step1Desc": "Usa nuestro emparejamiento impulsado por IA para encontrar la pareja perfecta para las necesidades de tu familia.",
+      "step2Title": "Verifica y Examina",
+      "step2Desc": "Realizamos verificaciones de antecedentes exhaustivas para todos.",
+      "step3Title": "Construye Relaciones",
+      "step3Desc": "Conéctate con profesionales verificados y construye relaciones duraderas de confianza."
+    },
+    "features": {
+      "title": "¿Por qué The Raising Club?",
+      "feature1": "Emparejamiento Inteligente",
+      "feature2": "Seguridad Primero",
+      "feature3": "Capacitación y Crecimiento",
+      "feature4": "Apoyo Comunitario"
+    },
+    "audiences": {
+      "forParents": "Para Padres",
+      "parentDesc": "Encuentra cuidadores de confianza y recursos educativos para tu familia.",
+      "forCaregivers": "Para Cuidadores",
+      "caregiverDesc": "Construye tu carrera con desarrollo profesional y oportunidades reales.",
+      "forOrganizations": "Para Organizaciones",
+      "organizationDesc": "Soluciones de personal y programas de capacitación para tus programas."
+    },
+    "mission": {
+      "title": "Nuestra Misión",
+      "description": "Creemos que el cuidado infantil de calidad debe ser accesible, asequible y empoderante para todos. The Raising Club está construyendo la infraestructura para que eso sea posible."
+    },
+    "cta": {
+      "title": "¿Listo para unirte?",
+      "description": "Comienza tu viaje con The Raising Club hoy.",
+      "button": "Comenzar"
+    }
   }
 }

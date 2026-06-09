@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Flower, StarBurst } from "@/components/about/star-burst";
 
 type Step = {
@@ -9,52 +12,53 @@ type Step = {
   body: ReactNode;
 };
 
-const STEPS: Step[] = [
-  {
-    kicker: "Join",
-    title: "the Club",
-    card: "bg-purple",
-    deco: (
-      <>
-        <Flower className="pointer-events-none absolute -left-8 -top-8 h-28 w-28 text-primary/70" />
-        <StarBurst className="pointer-events-none absolute bottom-4 right-4 h-5 w-5 text-white/70" />
-      </>
-    ),
-    body: (
-      <>
-        <strong className="font-semibold text-ink">Parents:</strong> share your
-        children&rsquo;s ages, schedule, budget, and what matters most at home.{" "}
-        <strong className="font-semibold text-ink">Caregivers:</strong> highlight
-        your skills, experience, training, languages, and specialties.{" "}
-        <strong className="font-semibold text-ink">Programs:</strong> add your
-        open roles, age groups, and staffing needs.
-      </>
-    ),
-  },
-  {
-    kicker: "Find",
-    title: "Your Match",
-    card: "bg-olive",
-    deco: (
-      <Flower className="pointer-events-none absolute -right-7 -top-9 h-32 w-32 text-white/85" />
-    ),
-    body: "Our matching system connects families, caregivers, and programs by location, schedule, age, languages, and values—and for nanny shares, we pair children with similar ages and routines so days run smoothly.",
-  },
-  {
-    kicker: "Grow",
-    title: "Together",
-    card: "bg-primary",
-    deco: (
-      <>
-        <Flower className="pointer-events-none absolute -right-9 -top-7 h-28 w-28 text-purple/80" />
-        <Flower className="pointer-events-none absolute -right-5 -top-10 h-28 w-28 text-white/85" />
-      </>
-    ),
-    body: "Caregivers build skills and badges through TRC training, programs upskill their teams, and families access guidance—so every adult around each child keeps growing with evidence-based care.",
-  },
-];
-
 export function HowItWorks() {
+  const t = useTranslations("landing.howItWorks");
+
+  const STEPS: Step[] = [
+    {
+      kicker: "Join",
+      title: "the Club",
+      card: "bg-purple",
+      deco: (
+        <>
+          <Flower className="pointer-events-none absolute -left-8 -top-8 h-28 w-28 text-primary/70" />
+          <StarBurst className="pointer-events-none absolute bottom-4 right-4 h-5 w-5 text-white/70" />
+        </>
+      ),
+      body: (
+        <>
+          <strong className="font-semibold text-ink">Parents:</strong> share your
+          children&rsquo;s ages, schedule, budget, and what matters most at home.{" "}
+          <strong className="font-semibold text-ink">Caregivers:</strong> highlight
+          your skills, experience, training, languages, and specialties.{" "}
+          <strong className="font-semibold text-ink">Programs:</strong> add your
+          open roles, age groups, and staffing needs.
+        </>
+      ),
+    },
+    {
+      kicker: "Find",
+      title: t("step2Title"),
+      card: "bg-olive",
+      deco: (
+        <Flower className="pointer-events-none absolute -right-7 -top-9 h-32 w-32 text-white/85" />
+      ),
+      body: t("step2Desc"),
+    },
+    {
+      kicker: "Grow",
+      title: "Together",
+      card: "bg-primary",
+      deco: (
+        <>
+          <Flower className="pointer-events-none absolute -right-9 -top-7 h-28 w-28 text-purple/80" />
+          <Flower className="pointer-events-none absolute -right-5 -top-10 h-28 w-28 text-white/85" />
+        </>
+      ),
+      body: "Caregivers build skills and badges through TRC training, programs upskill their teams, and families access guidance—so every adult around each child keeps growing with evidence-based care.",
+    },
+  ];
   return (
     <section id="how-it-works" className="bg-cream py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">

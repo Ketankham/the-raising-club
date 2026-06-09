@@ -1,33 +1,36 @@
+"use client";
+
 import Image from "next/image";
 import { Sparkles, ShieldCheck, GraduationCap } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { JoinCards } from "./join-cards";
 
-const HIGHLIGHTS = [
-  { Icon: Sparkles, label: "Smart, AI-Powered Matching" },
-  { Icon: ShieldCheck, label: "Layered Safety & Screening" },
-  { Icon: GraduationCap, label: "TRC Training & Professional Development" },
-];
-
 export function Hero() {
+  const t = useTranslations("landing.hero");
+
+  const HIGHLIGHTS = [
+    { Icon: Sparkles, label: t("highlight1") },
+    { Icon: ShieldCheck, label: t("highlight2") },
+    { Icon: GraduationCap, label: t("highlight3") },
+  ];
   return (
     <section className="bg-cream">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 lg:grid-cols-2 lg:px-8 lg:py-20">
         <div>
           <h1 className="text-4xl leading-[1.14] sm:text-5xl">
             <span className="font-display font-extrabold text-primary">
-              More Than Childcare:
+              {t("title")}
             </span>{" "}
             <span className="font-serif font-medium text-ink/90">
-              The club for{" "}
+              {t("subtitle").split("everyone")[0]}
               <span className="rounded-md bg-primary-soft/40 px-2 py-0.5 text-ink">
                 everyone
               </span>{" "}
-              raising children.
+              {t("subtitle").split("everyone")[1]}
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-lg text-ink/75">
-            Trusted care for families, real careers for caregivers, and reliable
-            staffing and training for the programs that serve them—
+            {t("description").split("all inside one club.")[0]}
             <strong className="font-semibold text-ink">
               all inside one club.
             </strong>

@@ -1,24 +1,29 @@
-import Link from "next/link";
+"use client";
 
-export const JOIN_OPTIONS = [
-  {
-    label: "Join as a Family",
-    sub: "Find care and learn with TRC.",
-    href: "/get-started?role=family",
-  },
-  {
-    label: "Join as a Caregiver",
-    sub: "Build your career and training.",
-    href: "/get-started?role=caregiver",
-  },
-  {
-    label: "Join as an Organization",
-    sub: "Hire and upskill your team.",
-    href: "/get-started?role=organization",
-  },
-];
+import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export function JoinCards({ className = "" }: { className?: string }) {
+  const t = useTranslations("landing.joinCards");
+
+  const JOIN_OPTIONS = [
+    {
+      label: "Join as a Parent",
+      sub: "Find care and learn with TRC.",
+      href: "/onboarding?role=parent",
+    },
+    {
+      label: t("caregiver"),
+      sub: "Build your career and training.",
+      href: "/onboarding?role=caregiver",
+    },
+    {
+      label: t("organization"),
+      sub: "Hire and upskill your team.",
+      href: "/onboarding?role=organization",
+    },
+  ];
+
   return (
     <div className={`flex flex-wrap gap-x-6 gap-y-5 ${className}`}>
       {JOIN_OPTIONS.map((opt) => (
