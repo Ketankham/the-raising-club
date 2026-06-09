@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./logo";
+import { PublicLanguageSwitcher } from "./public-language-switcher";
 
 const NAV = [
   { label: "About Us", href: "/about-us" },
@@ -37,6 +38,7 @@ export function SiteHeader() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <PublicLanguageSwitcher />
           <Link
             href="/sign-in"
             className="rounded-full border border-ink/15 px-5 py-2 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
@@ -78,6 +80,9 @@ export function SiteHeader() {
             ))}
           </div>
           <div className="mt-4 flex flex-col gap-3">
+            <div className="flex justify-center">
+              <PublicLanguageSwitcher />
+            </div>
             <Link
               href="/sign-in"
               className="rounded-full border border-ink/15 px-5 py-2.5 text-center text-sm font-semibold text-ink"

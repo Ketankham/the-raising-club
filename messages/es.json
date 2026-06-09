@@ -9,6 +9,15 @@
     "collapse": "Contraer barra lateral",
     "expand": "Abrir barra lateral"
   },
+  "navigation": {
+    "aboutUs": "Acerca de nosotros",
+    "membership": "Membresía",
+    "training": "Capacitación",
+    "events": "Eventos",
+    "marketplace": "Mercado",
+    "signIn": "Iniciar sesión",
+    "getStarted": "Comenzar"
+  },
   "languageSwitcher": {
     "en": "English",
     "es": "Español"

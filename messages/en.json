@@ -9,6 +9,15 @@
     "collapse": "Collapse sidebar",
     "expand": "Open sidebar"
   },
+  "navigation": {
+    "aboutUs": "About Us",
+    "membership": "Membership",
+    "training": "Training",
+    "events": "Events",
+    "marketplace": "Marketplace",
+    "signIn": "Sign in",
+    "getStarted": "Get Started"
+  },
   "languageSwitcher": {
     "en": "English",
     "es": "Español"
