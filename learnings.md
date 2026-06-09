@@ -199,3 +199,40 @@ session/refresh bug. It was actually #1. Useful debugging recipe regardless:
 - [ ] If reverting a component with `git checkout`, verify the result with:
       `cat src/components/foo.tsx` to confirm the old code is actually there.
 - [ ] Use `git diff` before committing refactored components to spot mixed old/new code.
+
+---
+
+## 9. Untracked imported files cause silent local-only build failures
+
+**Symptom**
+- Local build passes (`npm run build` succeeds)
+- Vercel production build fails with `Module not found` or `Cannot find module`
+- Error only appears on Vercel, never locally
+- The missing file IS on disk locally (so local builds work) but was never committed to git
+
+**Root cause**
+- A component file or module was created but left untracked in git (not in `git add` or `.gitignore`)
+- Another file (already committed) imports from this untracked file
+- Local build succeeds because the file exists on disk
+- Vercel's build fails because it only has the committed git tree (no untracked files)
+- Example: committed `marketplace/applicants/[applicationId]/page.tsx` which imports
+  `@/components/marketplace/applicant-actions.tsx`, but the component file was never staged/committed
+
+**Fix**
+```bash
+# Check for untracked files that should be in git
+git status  # Look for "Untracked files"
+
+# Stage and commit the missing files
+git add src/components/marketplace/applicant-actions.tsx
+git commit -m "Add missing imported component file"
+git push origin main
+```
+
+**Guardrail / checklist**
+- [ ] Before pushing/deploying, run `git status` and ensure no imported files are untracked
+- [ ] Pay special attention to newly created component files — they must be `git add`-ed
+- [ ] If a file exists on disk but not in git, the build will pass locally but fail on Vercel
+- [ ] Use `npm run build` before committing to catch missing imports (though local files may mask the issue)
+- [ ] A good CI check: `git ls-files | grep -c .` and `find . -type f -name "*.tsx" | wc -l` 
+  should be similar (files on disk ≈ tracked files, allowing for .gitignore)
