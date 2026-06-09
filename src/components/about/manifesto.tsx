@@ -15,7 +15,7 @@ function Paragraph({ lead, rest }: { lead: string; rest: string }) {
 }
 
 export function Manifesto() {
-  const t = useTranslations("landing.manifesto");
+  const t = useTranslations("about.manifesto");
 
   return (
     <>
