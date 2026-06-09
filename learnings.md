@@ -202,6 +202,41 @@ session/refresh bug. It was actually #1. Useful debugging recipe regardless:
 
 ---
 
+## 10. i18n namespace path must match JSON structure exactly
+
+**Symptom**
+- Page shows untranslated key paths as literal text (e.g., `about.manifesto.heroTitle`)
+- Keys exist in messages files but aren't resolved
+- useTranslations() doesn't error, just returns the key path as fallback
+
+**Root cause**
+- Used wrong namespace path: `useTranslations("landing.manifesto")`
+- Actual JSON structure has manifesto under top-level `about`, not `landing`
+- next-intl doesn't throw errors for missing namespaces — it returns the key path as the translated string
+
+Example:
+```json
+{
+  "landing": { "hero": {...}, "cta": {...} },
+  "about": { "hero": {...}, "manifesto": {...} }
+}
+```
+✗ **Wrong**: `useTranslations("landing.manifesto")` → shows `landing.manifesto.heroTitle`
+✅ **Correct**: `useTranslations("about.manifesto")` → shows translated value
+
+**Fix**
+- Use Node.js to validate JSON structure: `node -e "const j = JSON.parse(require('fs').readFileSync('messages/en.json', 'utf8')); console.log(Object.keys(j))"`
+- Verify namespace hierarchy before calling useTranslations()
+- After adding keys to messages file, verify they're in the expected location with JSON parsing
+
+**Guardrail / checklist**
+- [ ] When wiring a new component for i18n, first validate the JSON structure contains your namespace
+- [ ] Don't assume nested structure from code organization — follow the actual JSON hierarchy
+- [ ] Test with `node -e` to verify keys exist at the path you're using in useTranslations()
+- [ ] Remember: next-intl returns the key path itself as the "translation" when namespace/key doesn't exist (no error thrown)
+
+---
+
 ## 9. Untracked imported files cause silent local-only build failures
 
 **Symptom**
