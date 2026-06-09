@@ -63,6 +63,47 @@
     "lastName": "Last Name",
     "phone": "Phone",
     "zip": "Zip Code",
-    "saveChanges": "Save Changes"
+    "zipCodeDescription": "Used to find nearby families and care",
+    "saveChanges": "Save Changes",
+    "yourNameAndContact": "Your name and contact information",
+    "preferredName": "Preferred Name",
+    "whatChildrenCall": "What children and families call you",
+    "manageYourAccount": "Manage your personal details, account, and membership"
+  },
+  "pages": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "courses": "Courses",
+    "events": "Events",
+    "jobs": "Jobs",
+    "profile": "Profile",
+    "marketplace": "Marketplace",
+    "connect": "Connect",
+    "membership": "Membership",
+    "aboutUs": "About Us",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact"
+  },
+  "buttons": {
+    "browseCourses": "Browse Courses",
+    "myCourses": "My courses",
+    "findJobs": "Find jobs",
+    "startCourse": "Start a Course",
+    "viewEvent": "View Event",
+    "findCaregivers": "Find Caregivers",
+    "save": "Save",
+    "viewProfile": "View Profile",
+    "editProfile": "Edit Profile",
+    "manageAccount": "Manage Account"
+  },
+  "messages": {
+    "welcomeBack": "Welcome back",
+    "nextBestStep": "Your next best step",
+    "manageDetails": "Manage your personal details, account, and membership",
+    "startYourFirstCourse": "Start your first course",
+    "browseOurCourseLibrary": "Browse our course library and enroll in something that fits your goals. Short, practical lessons you can apply today.",
+    "noCourses": "No courses yet",
+    "browseAndEnroll": "Browse and enroll in a course to get started"
   }
 }

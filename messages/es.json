@@ -63,6 +63,47 @@
     "lastName": "Apellido",
     "phone": "Teléfono",
     "zip": "Código postal",
-    "saveChanges": "Guardar cambios"
+    "zipCodeDescription": "Se utiliza para encontrar familias y cuidadores cercanos",
+    "saveChanges": "Guardar cambios",
+    "yourNameAndContact": "Tu nombre e información de contacto",
+    "preferredName": "Nombre preferido",
+    "whatChildrenCall": "Cómo te llaman los niños y familias",
+    "manageYourAccount": "Administra tus detalles personales, cuenta y membresía"
+  },
+  "pages": {
+    "home": "Inicio",
+    "dashboard": "Panel de control",
+    "courses": "Cursos",
+    "events": "Eventos",
+    "jobs": "Trabajos",
+    "profile": "Perfil",
+    "marketplace": "Mercado",
+    "connect": "Conectar",
+    "membership": "Membresía",
+    "aboutUs": "Acerca de nosotros",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "contact": "Contacto"
+  },
+  "buttons": {
+    "browseCourses": "Explorar cursos",
+    "myCourses": "Mis cursos",
+    "findJobs": "Encontrar trabajos",
+    "startCourse": "Iniciar un curso",
+    "viewEvent": "Ver evento",
+    "findCaregivers": "Encontrar cuidadores",
+    "save": "Guardar",
+    "viewProfile": "Ver perfil",
+    "editProfile": "Editar perfil",
+    "manageAccount": "Gestionar cuenta"
+  },
+  "messages": {
+    "welcomeBack": "Bienvenido de vuelta",
+    "nextBestStep": "Tu siguiente mejor paso",
+    "manageDetails": "Administra tus detalles personales, cuenta y membresía",
+    "startYourFirstCourse": "Inicia tu primer curso",
+    "browseOurCourseLibrary": "Explora nuestra biblioteca de cursos e inscríbete en algo que se ajuste a tus objetivos. Lecciones prácticas y cortas que puedes aplicar hoy.",
+    "noCourses": "Sin cursos aún",
+    "browseAndEnroll": "Explora e inscríbete en un curso para comenzar"
   }
 }
