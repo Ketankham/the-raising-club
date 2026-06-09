@@ -1,66 +1,66 @@
 {
   "sidebar": {
-    "home": "Inicio",
+    "home": "Hogar",
     "learn": "Aprender",
     "events": "Eventos",
     "messages": "Mensajes",
-    "settings": "Configuración",
-    "logout": "Cerrar sesión",
-    "collapse": "Contraer barra lateral",
+    "settings": "Ajustes",
+    "logout": "Finalizar la sesión",
+    "collapse": "Contraer la barra lateral",
     "expand": "Abrir barra lateral"
   },
   "navigation": {
-    "aboutUs": "Acerca de nosotros",
-    "membership": "Membresía",
+    "aboutUs": "Sobre nosotros",
+    "membership": "Afiliación",
     "training": "Capacitación",
     "events": "Eventos",
     "marketplace": "Mercado",
     "signIn": "Iniciar sesión",
-    "getStarted": "Comenzar"
+    "getStarted": "Comience"
   },
   "languageSwitcher": {
-    "en": "English",
+    "en": "Inglés",
     "es": "Español"
   },
   "common": {
-    "save": "Guardar",
+    "save": "Ahorrar",
     "cancel": "Cancelar",
     "back": "Atrás",
     "loading": "Cargando...",
     "error": "Error",
     "success": "Éxito",
-    "delete": "Eliminar",
+    "delete": "Borrar",
     "edit": "Editar",
     "add": "Agregar",
-    "close": "Cerrar",
+    "close": "Cerca",
     "confirm": "Confirmar",
     "search": "Buscar",
     "filter": "Filtrar",
-    "sort": "Ordenar",
+    "sort": "Clasificar",
     "noResults": "No se encontraron resultados",
     "loading_ellipsis": "Cargando..."
   },
   "auth": {
     "signIn": "Iniciar sesión",
-    "signOut": "Cerrar sesión",
+    "signOut": "desconectar",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "forgotPassword": "¿Olvidaste tu contraseña?",
-    "welcomeBack": "Bienvenido de vuelta",
+    "welcomeBack": "Bienvenido de nuevo",
     "newHere": "¿Eres nuevo aquí?",
-    "getStarted": "Comenzar",
+    "getStarted": "Comience",
     "or": "o"
   },
   "dashboard": {
-    "title": "Panel de control",
+    "title": "Panel",
     "welcome": "Bienvenido",
     "recentActivity": "Actividad reciente",
-    "noActivity": "Sin actividad aún"
+    "noActivity": "Aún no hay actividad."
   },
   "settings": {
-    "title": "Configuración",
+    "title": "Ajustes",
     "profile": "Perfil",
-    "personalDetails": "Detalles personales",
+    "personalDetails": "Datos personales",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "language": "Idioma",
@@ -68,28 +68,28 @@
     "privacy": "Privacidad",
     "account": "Cuenta",
     "deactivateAccount": "Desactivar cuenta",
-    "firstName": "Nombre",
+    "firstName": "Nombre de pila",
     "lastName": "Apellido",
     "phone": "Teléfono",
     "zip": "Código postal",
-    "zipCodeDescription": "Se utiliza para encontrar familias y cuidadores cercanos",
+    "zipCodeDescription": "Se utiliza para encontrar familias y cuidados cercanos.",
     "saveChanges": "Guardar cambios",
-    "yourNameAndContact": "Tu nombre e información de contacto",
+    "yourNameAndContact": "Su nombre e información de contacto",
     "preferredName": "Nombre preferido",
-    "whatChildrenCall": "Cómo te llaman los niños y familias",
-    "manageYourAccount": "Administra tus detalles personales, cuenta y membresía"
+    "whatChildrenCall": "Cómo te llaman los niños y las familias",
+    "manageYourAccount": "Gestiona tus datos personales, tu cuenta y tu membresía."
   },
   "pages": {
-    "home": "Inicio",
-    "dashboard": "Panel de control",
+    "home": "Hogar",
+    "dashboard": "Panel",
     "courses": "Cursos",
     "events": "Eventos",
-    "jobs": "Trabajos",
+    "jobs": "Empleos",
     "profile": "Perfil",
     "marketplace": "Mercado",
     "connect": "Conectar",
-    "membership": "Membresía",
-    "aboutUs": "Acerca de nosotros",
+    "membership": "Afiliación",
+    "aboutUs": "Sobre nosotros",
     "privacy": "Privacidad",
     "terms": "Términos",
     "contact": "Contacto"
@@ -97,70 +97,70 @@
   "buttons": {
     "browseCourses": "Explorar cursos",
     "myCourses": "Mis cursos",
-    "findJobs": "Encontrar trabajos",
-    "startCourse": "Iniciar un curso",
+    "findJobs": "Encuentra empleos",
+    "startCourse": "Comienza un curso",
     "viewEvent": "Ver evento",
-    "findCaregivers": "Encontrar cuidadores",
-    "save": "Guardar",
+    "findCaregivers": "Encuentra cuidadores",
+    "save": "Ahorrar",
     "viewProfile": "Ver perfil",
     "editProfile": "Editar perfil",
-    "manageAccount": "Gestionar cuenta"
+    "manageAccount": "Administrar cuenta"
   },
   "messages": {
-    "welcomeBack": "Bienvenido de vuelta",
-    "nextBestStep": "Tu siguiente mejor paso",
-    "manageDetails": "Administra tus detalles personales, cuenta y membresía",
-    "startYourFirstCourse": "Inicia tu primer curso",
-    "browseOurCourseLibrary": "Explora nuestra biblioteca de cursos e inscríbete en algo que se ajuste a tus objetivos. Lecciones prácticas y cortas que puedes aplicar hoy.",
-    "noCourses": "Sin cursos aún",
-    "browseAndEnroll": "Explora e inscríbete en un curso para comenzar"
+    "welcomeBack": "Bienvenido de nuevo",
+    "nextBestStep": "Tu próximo mejor paso",
+    "manageDetails": "Gestiona tus datos personales, tu cuenta y tu membresía.",
+    "startYourFirstCourse": "Comienza tu primer curso",
+    "browseOurCourseLibrary": "Explora nuestra biblioteca de cursos e inscríbete en el que mejor se adapte a tus objetivos. Lecciones breves y prácticas que puedes aplicar hoy mismo.",
+    "noCourses": "Aún no hay cursos disponibles.",
+    "browseAndEnroll": "Explora y regístrate en un curso para comenzar."
   },
   "landing": {
     "hero": {
       "title": "Más que cuidado infantil:",
-      "subtitle": "El club para todos los que crían niños.",
-      "description": "Cuidado de confianza para familias, carreras reales para cuidadores, y personal confiable y capacitación para los programas que los sirven—todo dentro de un club.",
-      "highlight1": "Emparejamiento Impulsado por IA",
-      "highlight2": "Seguridad y Verificación en Capas",
-      "highlight3": "Capacitación y Desarrollo Profesional de TRC"
+      "subtitle": "El club para todos aquellos que crían hijos.",
+      "description": "Atención de confianza para las familias, carreras profesionales reales para los cuidadores y personal y formación fiables para los programas que les prestan servicio: todo ello dentro de un mismo club.",
+      "highlight1": "Emparejamiento inteligente impulsado por IA",
+      "highlight2": "Seguridad y detección por capas",
+      "highlight3": "Formación y desarrollo profesional de TRC"
     },
     "joinCards": {
-      "parent": "Únete como Padre/Madre",
-      "caregiver": "Únete como Cuidador",
-      "organization": "Únete como Organización"
+      "parent": "Únete como padre/madre",
+      "caregiver": "Únete como cuidador",
+      "organization": "Únete como organización"
     },
     "howItWorks": {
       "title": "Cómo funciona",
-      "step1Title": "Encuentra tu pareja",
-      "step1Desc": "Usa nuestro emparejamiento impulsado por IA para encontrar la pareja perfecta para las necesidades de tu familia.",
-      "step2Title": "Verifica y Examina",
-      "step2Desc": "Realizamos verificaciones de antecedentes exhaustivas para todos.",
-      "step3Title": "Construye Relaciones",
-      "step3Desc": "Conéctate con profesionales verificados y construye relaciones duraderas de confianza."
+      "step1Title": "Encuentra tu pareja ideal",
+      "step1Desc": "Utilice nuestro sistema de emparejamiento basado en inteligencia artificial para encontrar la opción perfecta que se adapte a las necesidades de su familia.",
+      "step2Title": "Verificar y examinar",
+      "step2Desc": "Realizamos comprobaciones y verificaciones exhaustivas de todos los solicitantes.",
+      "step3Title": "Construir relaciones",
+      "step3Desc": "Conéctate con profesionales cualificados y construye relaciones de confianza duraderas."
     },
     "features": {
       "title": "¿Por qué The Raising Club?",
-      "feature1": "Emparejamiento Inteligente",
-      "feature2": "Seguridad Primero",
-      "feature3": "Capacitación y Crecimiento",
-      "feature4": "Apoyo Comunitario"
+      "feature1": "Emparejamiento inteligente",
+      "feature2": "Seguridad ante todo",
+      "feature3": "Formación y crecimiento",
+      "feature4": "Apoyo de la comunidad"
     },
     "audiences": {
-      "forParents": "Para Padres",
-      "parentDesc": "Encuentra cuidadores de confianza y recursos educativos para tu familia.",
-      "forCaregivers": "Para Cuidadores",
-      "caregiverDesc": "Construye tu carrera con desarrollo profesional y oportunidades reales.",
-      "forOrganizations": "Para Organizaciones",
-      "organizationDesc": "Soluciones de personal y programas de capacitación para tus programas."
+      "forParents": "Para padres",
+      "parentDesc": "Encuentre cuidadores de confianza y recursos educativos para su familia.",
+      "forCaregivers": "Para cuidadores",
+      "caregiverDesc": "Desarrolla tu carrera profesional con formación continua y oportunidades reales.",
+      "forOrganizations": "Para organizaciones",
+      "organizationDesc": "Soluciones de personal y programas de capacitación para sus programas."
     },
     "mission": {
-      "title": "Nuestra Misión",
-      "description": "Creemos que el cuidado infantil de calidad debe ser accesible, asequible y empoderante para todos. The Raising Club está construyendo la infraestructura para que eso sea posible."
+      "title": "Nuestra misión",
+      "description": "Creemos que el cuidado infantil de calidad debe ser accesible, asequible y empoderador para todos. The Raising Club está construyendo la infraestructura necesaria para hacerlo posible."
     },
     "cta": {
       "title": "¿Listo para unirte?",
-      "description": "Comienza tu viaje con The Raising Club hoy.",
-      "button": "Comenzar"
+      "description": "Comienza hoy mismo tu aventura con The Raising Club.",
+      "button": "Comience"
     }
   }
 }
