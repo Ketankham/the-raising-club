@@ -98,7 +98,12 @@
     "monthly": "Monthly",
     "annual": "Annual",
     "save15": "Save 15%",
-    "allInclude": "All TRC Programs Include"
+    "allInclude": "All TRC Programs Include",
+    "priceFree": "Free",
+    "priceFreeSub": "Free forever",
+    "priceCustom": "Custom",
+    "priceBilledMonthly": "Billed monthly",
+    "priceBilledAnnually": "Billed annually"
   },
   "buttons": {
     "browseCourses": "Browse Courses",

@@ -7,10 +7,10 @@ import { useTranslations } from "next-intl";
 import { Flower } from "@/components/about/star-burst";
 import type { Plan, Tab } from "@/lib/plans/types";
 
-function priceView(plan: Plan, annual: boolean) {
-  if (plan.price === "free") return { big: "Free", unit: "", sub: "Free forever" };
+function priceView(plan: Plan, annual: boolean, t: any) {
+  if (plan.price === "free") return { big: t("priceFree"), unit: "", sub: t("priceFreeSub") };
   if (plan.price === "custom")
-    return { big: "Custom", unit: "", sub: plan.customLabel ?? "" };
+    return { big: t("priceCustom"), unit: "", sub: plan.customLabel ?? "" };
   const unit = `/month${plan.unit ? ` ${plan.unit}` : ""}`;
   if (annual) {
     // Prefer the admin-set annual price; fall back to the 15%-off computation.
@@ -18,9 +18,9 @@ function priceView(plan: Plan, annual: boolean) {
       ? Math.round(plan.priceAnnualCents / 100)
       : Math.round(plan.price * 12 * 0.85);
     const per = Math.round(yearly / 12);
-    return { big: `$${per}`, unit, sub: `Billed annually ($${yearly}${plan.unit ? " per site" : ""}/yr)` };
+    return { big: `$${per}`, unit, sub: `${t("priceBilledAnnually")} ($${yearly}${plan.unit ? " per site" : ""}/yr)` };
   }
-  return { big: `$${plan.price}`, unit, sub: "Billed monthly" };
+  return { big: `$${plan.price}`, unit, sub: t("priceBilledMonthly") };
 }
 
 // Plan name: first word in serif italic, the remainder in bold sans —
@@ -117,7 +117,7 @@ export function Membership({ tabs }: { tabs: Tab[] }) {
         {/* plan cards */}
         <div className="mt-10 grid items-start gap-6 lg:grid-cols-3">
           {tab.plans.map((plan) => {
-            const p = priceView(plan, annual && showToggle);
+            const p = priceView(plan, annual && showToggle, t);
             const nm = planName(plan.name);
             return (
               <div
