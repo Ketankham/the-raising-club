@@ -8,7 +8,7 @@ export function JoinCards({ className = "" }: { className?: string }) {
 
   const JOIN_OPTIONS = [
     {
-      label: "Join as a Parent",
+      label: t("parent"),
       sub: "Find care and learn with TRC.",
       href: "/onboarding?role=parent",
     },

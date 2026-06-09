@@ -26,16 +26,7 @@ export function HowItWorks() {
           <StarBurst className="pointer-events-none absolute bottom-4 right-4 h-5 w-5 text-white/70" />
         </>
       ),
-      body: (
-        <>
-          <strong className="font-semibold text-ink">Parents:</strong> share your
-          children&rsquo;s ages, schedule, budget, and what matters most at home.{" "}
-          <strong className="font-semibold text-ink">Caregivers:</strong> highlight
-          your skills, experience, training, languages, and specialties.{" "}
-          <strong className="font-semibold text-ink">Programs:</strong> add your
-          open roles, age groups, and staffing needs.
-        </>
-      ),
+      body: t("step1Desc"),
     },
     {
       kicker: "Find",
@@ -56,7 +47,7 @@ export function HowItWorks() {
           <Flower className="pointer-events-none absolute -right-5 -top-10 h-28 w-28 text-white/85" />
         </>
       ),
-      body: "Caregivers build skills and badges through TRC training, programs upskill their teams, and families access guidance—so every adult around each child keeps growing with evidence-based care.",
+      body: t("step3Desc"),
     },
   ];
   return (

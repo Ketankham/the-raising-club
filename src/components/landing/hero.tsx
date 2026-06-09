@@ -22,18 +22,11 @@ export function Hero() {
               {t("title")}
             </span>{" "}
             <span className="font-serif font-medium text-ink/90">
-              {t("subtitle").split("everyone")[0]}
-              <span className="rounded-md bg-primary-soft/40 px-2 py-0.5 text-ink">
-                everyone
-              </span>{" "}
-              {t("subtitle").split("everyone")[1]}
+              {t("subtitle")}
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-lg text-ink/75">
-            {t("description").split("all inside one club.")[0]}
-            <strong className="font-semibold text-ink">
-              all inside one club.
-            </strong>
+            {t("description")}
           </p>
 
           <JoinCards className="mt-9" />
