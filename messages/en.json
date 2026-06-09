@@ -127,7 +127,10 @@
     "joinCards": {
       "parent": "Join as a Parent",
       "caregiver": "Join as a Caregiver",
-      "organization": "Join as an Organization"
+      "organization": "Join as an Organization",
+      "parentSub": "Find care and learn with TRC.",
+      "caregiverSub": "Build your career and training.",
+      "organizationSub": "Hire and upskill your team."
     },
     "howItWorks": {
       "title": "How it Works",
@@ -136,7 +139,14 @@
       "step2Title": "Verify & Screen",
       "step2Desc": "We conduct thorough background checks and verification for everyone.",
       "step3Title": "Build Relationships",
-      "step3Desc": "Connect with vetted professionals and build lasting relationships of trust."
+      "step3Desc": "Connect with vetted professionals and build lasting relationships of trust.",
+      "heading": "How It Works",
+      "intro": "Getting started with <b>The Raising Club</b> is simple. In three steps, families, caregivers, and programs connect inside one club for trusted care, real careers, and better-staffed programs.",
+      "kicker1": "Join",
+      "title1": "the Club",
+      "kicker2": "Find",
+      "kicker3": "Grow",
+      "title3": "Together"
     },
     "features": {
       "sectionTitle": "Everything You Need",
@@ -161,16 +171,170 @@
       "forCaregivers": "For Caregivers",
       "caregiverTagline": "Raise children with purpose, and build a real career in early childhood while you do it.",
       "forOrganizations": "For Centers & Programs",
-      "organizationTagline": "Solve staffing and training for your daycare, preschool, and after-school programs in one place."
+      "organizationTagline": "Solve staffing and training for your daycare, preschool, and after-school programs in one place.",
+      "sectionHeading": "Built for everyone raising children",
+      "sectionSubtitle": "One club where the adults around each child connect, collaborate, and grow together.",
+      "parentCta": "Get Started As A Family",
+      "caregiverCta": "Become A TRC Caregiver",
+      "organizationCta": "Hire & Train Educators",
+      "parentPoints": [
+        {
+          "heading": "Care You Can Feel Confident In",
+          "body": "See caregivers vetted for safety and experience, then use smart filters to find someone who fits your child and your family—not just your schedule."
+        },
+        {
+          "heading": "Learn & Grow Together with TRC",
+          "body": "Learn about child development with TRC, and invite the nanny you already love into TRC training so you share the same approach."
+        },
+        {
+          "heading": "The Kind of Help Your Family Actually Needs",
+          "body": "Choose caregivers whose strengths match your priorities—whether that’s early learning support, tutoring, home organization, or family meals."
+        },
+        {
+          "heading": "Build Your Small Village",
+          "body": "Connect with nearby families for nanny shares, shared care, and micro-programs, so your child has a stable circle of care and friendship."
+        }
+      ],
+      "caregiverPoints": [
+        {
+          "heading": "Stand Out as a Professional",
+          "body": "Create a profile that highlights your experience, training, and specialties so families and programs know you’re the right hire."
+        },
+        {
+          "heading": "Grow with TRC Training & Badges",
+          "body": "Earn TRC badges in child development and specialized family support to unlock premium, higher-paying roles."
+        },
+        {
+          "heading": "Fair Pay, Clear Expectations",
+          "body": "Find roles where pay, hours, and responsibilities are transparent from the start."
+        },
+        {
+          "heading": "Families, Programs & Community That Fit You",
+          "body": "Connect with families, daycares, centers, and fellow TRC caregivers—for roles, playdates, and a professional community that respects your work and shares your values."
+        }
+      ],
+      "organizationPoints": [
+        {
+          "heading": "Trained & Credentialed Educators from Day One",
+          "body": "Hire early childhood and out-of-school educators and caregivers with verified degrees, certifications, or TRC training."
+        },
+        {
+          "heading": "Build a Reliable Staffing Bench with TRC Filters",
+          "body": "Use TRC filters to keep a ready pool of floaters, substitutes, and out-of-school staff matched to your age groups and hours, so you don’t have to cancel classes or close rooms at the last minute."
+        },
+        {
+          "heading": "Upskill the Team You Already Have",
+          "body": "Enroll your classroom, after-school, and enrichment staff in TRC training and badges to raise quality in every setting."
+        },
+        {
+          "heading": "A Program Parents Brag About",
+          "body": "Show families a stable, trained team grounded in child development and out-of-school learning that sets you apart."
+        }
+      ]
     },
     "mission": {
       "title": "Our Mission",
-      "description": "We believe that quality childcare should be accessible, affordable, and empowering for everyone. The Raising Club is building the infrastructure to make that possible."
+      "description": "We believe that quality childcare should be accessible, affordable, and empowering for everyone. The Raising Club is building the infrastructure to make that possible.",
+      "quote": "When families rise, society rises.",
+      "weAreLabel": "At The Raising Club, we are:",
+      "raisingPrefix": "Raising ",
+      "pillars": [
+        {
+          "accent": "Children",
+          "body": "Children need more than supervision; they need emotionally steady, well-prepared adults who build deep self-trust and competence—so they can grow into their fullest selves."
+        },
+        {
+          "accent": "Families",
+          "body": "Families deserve an upgrade to their whole ecosystem—where quality care and real understanding of children are the norm, not the exception—so raising children feels shared, not lonely."
+        },
+        {
+          "accent": "Caregivers",
+          "body": "Nannies, professional caregivers, and educators deserve respect, training, and real careers—so they can build stable, dignified lives."
+        },
+        {
+          "accent": "Society",
+          "body": "Care for children must be treated as essential infrastructure—so work and opportunity aren’t limited by who can afford care, and the next generation grows up ready to lead."
+        }
+      ]
     },
     "cta": {
       "title": "Ready to Join?",
       "description": "Start your journey with The Raising Club today.",
-      "button": "Get Started"
+      "button": "Get Started",
+      "storeGetItOn": "GET IT ON",
+      "storeDownloadOn": "Download on the"
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "About Us",
+      "titleLead": "We’re building the ",
+      "titleHighlight": "modern village",
+      "titleTail": " for families.",
+      "description": "The Raising Club brings families, caregivers, and programs together with evidence-based guidance—so raising children feels less overwhelming and grounded in what helps them thrive.",
+      "cta": "Join the Club"
+    },
+    "founder": {
+      "eyebrow": "Meet Our Founder",
+      "name": "Ara V.",
+      "role": "Founder & Montessori Educator",
+      "p1": "Araceli “Ara” Vazquez is an entrepreneur and educator transforming how childcare and early education are understood, delivered, and valued. Raised in Mexico in a family shaped by resilience and entrepreneurship—one that saw education as a path to opportunity—she brings both personal conviction and strategic vision to her work.",
+      "p2": "As the founder of The Raising Club, she is building modern infrastructure for childhood, connecting families, caregivers, and organizations around a higher standard of care. With a background in Business Administration, a certification in Montessori education, and more than eight years of experience building a successful bilingual education program for children in New York City, Ara brings together an entrepreneurial mind and deep expertise in child development.",
+      "p3": "Through her work, she is raising both the standard and the economics of childcare—helping caregivers earn more, families access better options, and organizations operate with stronger, more efficient models. She is helping redefine childcare as a high-value sector with the power to drive meaningful economic and social progress at scale.",
+      "joinCta": "Join the Club",
+      "manifestoCta": "Read our Manifesto"
+    },
+    "values": {
+      "headingLead": "Built on values that put ",
+      "headingAccent": "children first",
+      "items": [
+        {
+          "lead": "Evidence",
+          "accent": "Based",
+          "body": "Every recommendation is grounded in child development science."
+        },
+        {
+          "lead": "Community",
+          "accent": "first",
+          "body": "A real village: parents, caregivers, grandparents, and educators."
+        },
+        {
+          "lead": "Built for",
+          "accent": "Access",
+          "body": "Designed for minorities, women, and disabled communities."
+        }
+      ]
+    },
+    "cta": {
+      "headingLead": "Care shouldn’t be improvised—",
+      "headingAccent": "and nobody should do it alone.",
+      "description": "Join a growing community of intentional families, trained caregivers, and programs building something better—together.",
+      "joinCta": "Join the Club",
+      "manifestoCta": "Read our Manifesto"
+    },
+    "quoteLead": "When families rise, ",
+    "quoteAccent": "society rises.",
+    "manifesto": {
+      "backToAbout": "Back to about",
+      "label": "Our Manifesto",
+      "heroTitle": "A new standard, where ",
+      "heroTitleHighlight": "care is education.",
+      "heroDescription": "We're not building just an app. We're building modern infrastructure for childhood—a global club where every adult around a child belongs.",
+      "joinButton": "Join the Club",
+      "columnOneP1Lead": "Raising a child",
+      "columnOneP1Rest": " shouldn't feel improvised and lonely. But families are being asked to do everything—work, logistics, the mental load—while childcare still runs on patches.",
+      "columnOneP2Lead": "The Raising Club",
+      "columnOneP2Rest": " is building modern infrastructure for childhood: a membership platform where education, connection, and community live in one experience. Every adult around a child has a place here—parents, caregivers, grandparents, educators, and extended family.",
+      "columnOneP3Lead": "",
+      "columnOneP3Rest": "We take the best of child development science—brain development, learning, nutrition, language, and mental health—and turn it into guidance rooted in skills, regulation, and repair. That becomes daily practice: consistent routines, clear boundaries without yelling, environments that prevent chaos, and communication tools that reduce frustration.",
+      "columnTwoP1Lead": "",
+      "columnTwoP1Rest": "We also rebuild the \"village\" for real life. TRC connects families with screened, trained caregivers and supports care setups that actually work: one-on-one care, nanny shares, pods, playdates, and local networks—made easier with clear agreements, defined roles, and a path that adapts as life changes.",
+      "columnTwoP2Lead": "",
+      "columnTwoP2Rest": "When you raise the standard of care, you change more than childhood. You professionalize caregiving careers, reduce parental anxiety, and sustain workforce participation—especially for mothers—because raising a child stops being a private problem and becomes shared infrastructure.",
+      "quote": "Change childhood, and the future gets built differently.",
+      "ctaTitle": "Are you ready to build ",
+      "ctaTitleEmphasis": "the future with us?",
+      "memberButton": "Become a Member"
     }
   }
 }

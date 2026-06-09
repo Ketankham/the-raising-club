@@ -17,8 +17,8 @@ export function HowItWorks() {
 
   const STEPS: Step[] = [
     {
-      kicker: "Join",
-      title: "the Club",
+      kicker: t("kicker1"),
+      title: t("title1"),
       card: "bg-purple",
       deco: (
         <>
@@ -29,7 +29,7 @@ export function HowItWorks() {
       body: t("step1Desc"),
     },
     {
-      kicker: "Find",
+      kicker: t("kicker2"),
       title: t("step2Title"),
       card: "bg-olive",
       deco: (
@@ -38,8 +38,8 @@ export function HowItWorks() {
       body: t("step2Desc"),
     },
     {
-      kicker: "Grow",
-      title: "Together",
+      kicker: t("kicker3"),
+      title: t("title3"),
       card: "bg-primary",
       deco: (
         <>
@@ -56,14 +56,12 @@ export function HowItWorks() {
         <div className="rounded-[2.5rem] bg-lavender px-6 py-14 lg:px-12 lg:py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl lg:text-5xl">
-              How It Works
+              {t("heading")}
             </h2>
             <p className="mt-5 text-lg text-ink/75">
-              Getting started with{" "}
-              <strong className="font-semibold text-ink">The Raising Club</strong>{" "}
-              is simple. In three steps, families, caregivers, and programs
-              connect inside one club for trusted care, real careers, and
-              better-staffed programs.
+              {t.rich("intro", {
+                b: (chunks) => <strong className="font-semibold text-ink">{chunks}</strong>,
+              })}
             </p>
           </div>
 

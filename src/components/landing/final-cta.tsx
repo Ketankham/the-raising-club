@@ -41,8 +41,8 @@ export function FinalCta() {
           <JoinCards className="mt-9" />
 
           <div className="mt-10 flex flex-wrap gap-3">
-            <StoreBadge top="GET IT ON" bottom="Google Play" />
-            <StoreBadge top="Download on the" bottom="App Store" />
+            <StoreBadge top={t("storeGetItOn")} bottom="Google Play" />
+            <StoreBadge top={t("storeDownloadOn")} bottom="App Store" />
           </div>
         </div>
 

@@ -2,20 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./logo";
 import { PublicLanguageSwitcher } from "./public-language-switcher";
 
-const NAV = [
-  { label: "About Us", href: "/about-us" },
-  { label: "Membership", href: "/membership" },
-  { label: "Training", href: "/courses" },
-  { label: "Events", href: "/events" },
-  { label: "Marketplace", href: "/marketplace" },
-];
-
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("navigation");
+
+  const NAV = [
+    { label: t("aboutUs"), href: "/about-us" },
+    { label: t("membership"), href: "/membership" },
+    { label: t("training"), href: "/courses" },
+    { label: t("events"), href: "/events" },
+    { label: t("marketplace"), href: "/marketplace" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-black/5 bg-white">
@@ -43,13 +45,13 @@ export function SiteHeader() {
             href="/sign-in"
             className="rounded-full border border-ink/15 px-5 py-2 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
           >
-            Sign in
+            {t("signIn")}
           </Link>
           <Link
             href="/onboarding"
             className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
           >
-            Get Started
+            {t("getStarted")}
           </Link>
         </div>
 
@@ -87,13 +89,13 @@ export function SiteHeader() {
               href="/sign-in"
               className="rounded-full border border-ink/15 px-5 py-2.5 text-center text-sm font-semibold text-ink"
             >
-              Sign in
+              {t("signIn")}
             </Link>
             <Link
               href="/onboarding"
               className="rounded-full bg-primary px-5 py-2.5 text-center text-sm font-semibold text-white"
             >
-              Get Started
+              {t("getStarted")}
             </Link>
           </div>
         </div>

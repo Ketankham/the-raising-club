@@ -127,7 +127,10 @@
     "joinCards": {
       "parent": "Únete como padre/madre",
       "caregiver": "Únete como cuidador",
-      "organization": "Únete como organización"
+      "organization": "Únete como organización",
+      "parentSub": "Encuentra cuidado y aprende con TRC.",
+      "caregiverSub": "Desarrolla tu carrera y tu formación.",
+      "organizationSub": "Contrata y capacita a tu equipo."
     },
     "howItWorks": {
       "title": "Cómo funciona",
@@ -136,7 +139,14 @@
       "step2Title": "Verificar y examinar",
       "step2Desc": "Realizamos comprobaciones y verificaciones exhaustivas de todos los solicitantes.",
       "step3Title": "Construir relaciones",
-      "step3Desc": "Conéctate con profesionales cualificados y construye relaciones de confianza duraderas."
+      "step3Desc": "Conéctate con profesionales cualificados y construye relaciones de confianza duraderas.",
+      "heading": "Cómo funciona",
+      "intro": "Empezar con <b>The Raising Club</b> es muy sencillo. En tres pasos, las familias, los cuidadores y los programas se conectan dentro de un mismo club para lograr cuidado de confianza, carreras reales y programas mejor dotados de personal.",
+      "kicker1": "Únete",
+      "title1": "al Club",
+      "kicker2": "Encuentra",
+      "kicker3": "Crece",
+      "title3": "Juntos"
     },
     "features": {
       "sectionTitle": "Todo lo que necesitas",
@@ -161,16 +171,170 @@
       "forCaregivers": "Para Cuidadores",
       "caregiverTagline": "Cría niños con propósito y construye una carrera real en la primera infancia mientras lo haces.",
       "forOrganizations": "Para Centros y Programas",
-      "organizationTagline": "Resuelve personal y capacitación para tus guarderías, preescolares y programas después de la escuela en un solo lugar."
+      "organizationTagline": "Resuelve personal y capacitación para tus guarderías, preescolares y programas después de la escuela en un solo lugar.",
+      "sectionHeading": "Diseñado para todos los que crían niños",
+      "sectionSubtitle": "Un solo club donde los adultos que rodean a cada niño se conectan, colaboran y crecen juntos.",
+      "parentCta": "Empieza como familia",
+      "caregiverCta": "Conviértete en cuidador de TRC",
+      "organizationCta": "Contrata y forma educadores",
+      "parentPoints": [
+        {
+          "heading": "Cuidado en el que puedes confiar",
+          "body": "Conoce cuidadores verificados en seguridad y experiencia, y usa filtros inteligentes para encontrar a alguien que encaje con tu hijo y tu familia, no solo con tu horario."
+        },
+        {
+          "heading": "Aprende y crece junto a TRC",
+          "body": "Aprende sobre el desarrollo infantil con TRC e invita a la niñera que ya adoras a la formación de TRC para que compartan el mismo enfoque."
+        },
+        {
+          "heading": "La ayuda que tu familia realmente necesita",
+          "body": "Elige cuidadores cuyas fortalezas coincidan con tus prioridades: apoyo al aprendizaje temprano, tutorías, organización del hogar o comidas en familia."
+        },
+        {
+          "heading": "Construye tu pequeña aldea",
+          "body": "Conéctate con familias cercanas para compartir niñera, cuidado compartido y microprogramas, para que tu hijo tenga un círculo estable de cuidado y amistad."
+        }
+      ],
+      "caregiverPoints": [
+        {
+          "heading": "Destaca como profesional",
+          "body": "Crea un perfil que resalte tu experiencia, formación y especialidades para que las familias y los programas sepan que eres la persona ideal."
+        },
+        {
+          "heading": "Crece con la formación y las insignias de TRC",
+          "body": "Obtén insignias de TRC en desarrollo infantil y apoyo familiar especializado para acceder a puestos premium y mejor pagados."
+        },
+        {
+          "heading": "Pago justo, expectativas claras",
+          "body": "Encuentra puestos donde el pago, las horas y las responsabilidades son transparentes desde el principio."
+        },
+        {
+          "heading": "Familias, programas y comunidad que encajan contigo",
+          "body": "Conéctate con familias, guarderías, centros y otros cuidadores de TRC, para encontrar empleos, citas de juego y una comunidad profesional que respeta tu trabajo y comparte tus valores."
+        }
+      ],
+      "organizationPoints": [
+        {
+          "heading": "Educadores formados y acreditados desde el primer día",
+          "body": "Contrata educadores y cuidadores de primera infancia y de actividades extraescolares con títulos, certificaciones o formación de TRC verificados."
+        },
+        {
+          "heading": "Crea un equipo de reemplazo confiable con los filtros de TRC",
+          "body": "Usa los filtros de TRC para mantener un grupo disponible de personal flotante, sustitutos y personal extraescolar adaptado a tus grupos de edad y horarios, para que no tengas que cancelar clases ni cerrar aulas a último momento."
+        },
+        {
+          "heading": "Capacita al equipo que ya tienes",
+          "body": "Inscribe a tu personal de aula, extraescolar y de enriquecimiento en la formación e insignias de TRC para elevar la calidad en cada entorno."
+        },
+        {
+          "heading": "Un programa del que los padres presumen",
+          "body": "Muestra a las familias un equipo estable y capacitado, basado en el desarrollo infantil y el aprendizaje extraescolar, que te distingue."
+        }
+      ]
     },
     "mission": {
       "title": "Nuestra misión",
-      "description": "Creemos que el cuidado infantil de calidad debe ser accesible, asequible y empoderador para todos. The Raising Club está construyendo la infraestructura necesaria para hacerlo posible."
+      "description": "Creemos que el cuidado infantil de calidad debe ser accesible, asequible y empoderador para todos. The Raising Club está construyendo la infraestructura necesaria para hacerlo posible.",
+      "quote": "Cuando las familias se elevan, la sociedad se eleva.",
+      "weAreLabel": "En The Raising Club, somos:",
+      "raisingPrefix": "Criando ",
+      "pillars": [
+        {
+          "accent": "Niños",
+          "body": "Los niños necesitan más que supervisión; necesitan adultos emocionalmente estables y bien preparados que construyan una profunda confianza en sí mismos y competencia, para que puedan crecer y alcanzar su máximo potencial."
+        },
+        {
+          "accent": "Familias",
+          "body": "Las familias merecen una mejora en todo su ecosistema, donde el cuidado de calidad y la comprensión real de los niños sean la norma y no la excepción, para que criar hijos se sienta compartido y no solitario."
+        },
+        {
+          "accent": "Cuidadores",
+          "body": "Las niñeras, los cuidadores profesionales y los educadores merecen respeto, formación y carreras reales, para que puedan construir vidas estables y dignas."
+        },
+        {
+          "accent": "la Sociedad",
+          "body": "El cuidado de los niños debe tratarse como infraestructura esencial, para que el trabajo y las oportunidades no estén limitados por quién puede pagar el cuidado, y la próxima generación crezca lista para liderar."
+        }
+      ]
     },
     "cta": {
       "title": "¿Listo para unirte?",
       "description": "Comienza hoy mismo tu aventura con The Raising Club.",
-      "button": "Comience"
+      "button": "Comience",
+      "storeGetItOn": "DISPONIBLE EN",
+      "storeDownloadOn": "Descárgala en"
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "Quiénes somos",
+      "titleLead": "Estamos construyendo la ",
+      "titleHighlight": "aldea moderna",
+      "titleTail": " para las familias.",
+      "description": "The Raising Club reúne a familias, cuidadores y programas con orientación basada en evidencia, para que criar hijos se sienta menos abrumador y esté fundamentado en lo que les ayuda a prosperar.",
+      "cta": "Únete al Club"
+    },
+    "founder": {
+      "eyebrow": "Conoce a nuestra fundadora",
+      "name": "Ara V.",
+      "role": "Fundadora y educadora Montessori",
+      "p1": "Araceli «Ara» Vázquez es una emprendedora y educadora que está transformando la forma en que se entiende, se brinda y se valora el cuidado infantil y la educación temprana. Criada en México en una familia marcada por la resiliencia y el espíritu emprendedor —una que veía la educación como un camino hacia las oportunidades—, aporta convicción personal y visión estratégica a su trabajo.",
+      "p2": "Como fundadora de The Raising Club, está construyendo una infraestructura moderna para la infancia, conectando a familias, cuidadores y organizaciones en torno a un estándar de cuidado más alto. Con formación en Administración de Empresas, una certificación en educación Montessori y más de ocho años de experiencia creando un exitoso programa de educación bilingüe para niños en la ciudad de Nueva York, Ara combina una mente emprendedora con un profundo conocimiento del desarrollo infantil.",
+      "p3": "A través de su trabajo, está elevando tanto el estándar como la economía del cuidado infantil, ayudando a los cuidadores a ganar más, a las familias a acceder a mejores opciones y a las organizaciones a operar con modelos más sólidos y eficientes. Está ayudando a redefinir el cuidado infantil como un sector de alto valor con el poder de impulsar un progreso económico y social significativo a gran escala.",
+      "joinCta": "Únete al Club",
+      "manifestoCta": "Lee nuestro manifiesto"
+    },
+    "values": {
+      "headingLead": "Construido sobre valores que ponen a los ",
+      "headingAccent": "niños primero",
+      "items": [
+        {
+          "lead": "Basado en",
+          "accent": "Evidencia",
+          "body": "Cada recomendación se basa en la ciencia del desarrollo infantil."
+        },
+        {
+          "lead": "La comunidad",
+          "accent": "primero",
+          "body": "Una verdadera aldea: padres, cuidadores, abuelos y educadores."
+        },
+        {
+          "lead": "Diseñado para el",
+          "accent": "Acceso",
+          "body": "Diseñado para minorías, mujeres y comunidades con discapacidad."
+        }
+      ]
+    },
+    "cta": {
+      "headingLead": "El cuidado no debería improvisarse—",
+      "headingAccent": "y nadie debería hacerlo solo.",
+      "description": "Únete a una comunidad creciente de familias intencionales, cuidadores capacitados y programas que construyen algo mejor, juntos.",
+      "joinCta": "Únete al Club",
+      "manifestoCta": "Lee nuestro manifiesto"
+    },
+    "quoteLead": "Cuando las familias se elevan, ",
+    "quoteAccent": "la sociedad se eleva.",
+    "manifesto": {
+      "backToAbout": "Volver a acerca de",
+      "label": "Nuestro Manifiesto",
+      "heroTitle": "Un nuevo estándar, donde ",
+      "heroTitleHighlight": "el cuidado es educación.",
+      "heroDescription": "No estamos construyendo solo una aplicación. Estamos construyendo una infraestructura moderna para la infancia: un club global donde pertenece cada adulto alrededor de un niño.",
+      "joinButton": "Únete al Club",
+      "columnOneP1Lead": "Criar a un niño",
+      "columnOneP1Rest": " no debería sentirse improvisado y solitario. Pero se les pide a las familias que hagan todo—trabajo, logística, la carga mental—mientras que el cuidado infantil sigue funcionando con parches.",
+      "columnOneP2Lead": "The Raising Club",
+      "columnOneP2Rest": " está construyendo una infraestructura moderna para la infancia: una plataforma de membresía donde la educación, la conexión y la comunidad conviven en una sola experiencia. Cada adulto alrededor de un niño tiene un lugar aquí: padres, cuidadores, abuelos, educadores y familia extendida.",
+      "columnOneP3Lead": "",
+      "columnOneP3Rest": "Tomamos lo mejor de la ciencia del desarrollo infantil—desarrollo cerebral, aprendizaje, nutrición, idioma y salud mental—y lo convertimos en orientación enraizada en habilidades, regulación y reparación. Eso se convierte en práctica diaria: rutinas consistentes, límites claros sin gritos, ambientes que previenen el caos y herramientas de comunicación que reducen la frustración.",
+      "columnTwoP1Lead": "",
+      "columnTwoP1Rest": "También reconstruimos el \"pueblo\" para la vida real. TRC conecta a las familias con cuidadores seleccionados y capacitados y apoya arreglos de cuidado que realmente funcionan: cuidado uno a uno, compartición de niñeras, grupos, playdates y redes locales, facilitado con acuerdos claros, roles definidos y un camino que se adapta a medida que la vida cambia.",
+      "columnTwoP2Lead": "",
+      "columnTwoP2Rest": "Cuando elevas el estándar del cuidado, cambias más que la infancia. Profesionalizas carreras de cuidado, reduces la ansiedad parental y sustens la participación en la fuerza laboral, especialmente para las madres, porque criar a un niño deja de ser un problema privado y se convierte en infraestructura compartida.",
+      "quote": "Cambia la infancia, y el futuro se construye diferente.",
+      "ctaTitle": "¿Estás listo para construir ",
+      "ctaTitleEmphasis": "el futuro con nosotros?",
+      "memberButton": "Conviértete en Miembro"
     }
   }
 }

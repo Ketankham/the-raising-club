@@ -3,31 +3,20 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-const PILLARS = [
-  {
-    title: "Raising Children",
-    image: "/images/raising-children.png",
-    body: "Children need more than supervision; they need emotionally steady, well-prepared adults who build deep self-trust and competence—so they can grow into their fullest selves.",
-  },
-  {
-    title: "Raising Families",
-    image: "/images/raising-families.png",
-    body: "Families deserve an upgrade to their whole ecosystem—where quality care and real understanding of children are the norm, not the exception—so raising children feels shared, not lonely.",
-  },
-  {
-    title: "Raising Caregivers",
-    image: "/images/raising-caregivers.png",
-    body: "Nannies, professional caregivers, and educators deserve respect, training, and real careers—so they can build stable, dignified lives.",
-  },
-  {
-    title: "Raising Society",
-    image: "/images/raising-society.png",
-    body: "Care for children must be treated as essential infrastructure—so work and opportunity aren’t limited by who can afford care, and the next generation grows up ready to lead.",
-  },
+const PILLAR_IMAGES = [
+  "/images/raising-children.png",
+  "/images/raising-families.png",
+  "/images/raising-caregivers.png",
+  "/images/raising-society.png",
 ];
 
 export function Mission() {
   const t = useTranslations("landing.mission");
+  const raisingPrefix = t("raisingPrefix");
+  const pillars = (t.raw("pillars") as { accent: string; body: string }[]).map((p, i) => ({
+    ...p,
+    image: PILLAR_IMAGES[i],
+  }));
 
   return (
     <>
@@ -44,7 +33,7 @@ export function Mission() {
         <div className="px-5 py-12 sm:py-16">
           <div className="cloud-banner mx-auto max-w-3xl bg-cream px-8 py-10 text-center sm:px-12">
             <p className="font-serif text-2xl font-medium leading-snug text-ink sm:text-3xl lg:text-[2.5rem]">
-              &ldquo;When families rise, society rises.&rdquo;
+              &ldquo;{t("quote")}&rdquo;
             </p>
           </div>
         </div>
@@ -65,21 +54,19 @@ export function Mission() {
                 {t("description")}
               </p>
               <p className="mt-6 font-display text-base font-semibold text-ink">
-                At The Raising Club, we are:
+                {t("weAreLabel")}
               </p>
             </div>
 
             <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {PILLARS.map((p) => (
+              {pillars.map((p) => (
                 <div
-                  key={p.title}
+                  key={p.accent}
                   className="flex flex-col rounded-3xl bg-white/70 p-5"
                 >
                   <h3 className="text-xl leading-tight text-ink">
-                    <span className="font-display font-extrabold">Raising </span>
-                    <span className="font-serif italic font-semibold">
-                      {p.title.replace("Raising ", "")}
-                    </span>
+                    <span className="font-display font-extrabold">{raisingPrefix}</span>
+                    <span className="font-serif italic font-semibold">{p.accent}</span>
                   </h3>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-ink/75">
                     {p.body}
@@ -87,7 +74,7 @@ export function Mission() {
                   <div className="relative mt-5 aspect-[5/4] w-full overflow-hidden rounded-2xl">
                     <Image
                       src={p.image}
-                      alt={p.title}
+                      alt={`${raisingPrefix}${p.accent}`}
                       fill
                       sizes="(max-width: 1024px) 50vw, 25vw"
                       className="object-cover"

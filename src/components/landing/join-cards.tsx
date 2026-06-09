@@ -9,17 +9,17 @@ export function JoinCards({ className = "" }: { className?: string }) {
   const JOIN_OPTIONS = [
     {
       label: t("parent"),
-      sub: "Find care and learn with TRC.",
+      sub: t("parentSub"),
       href: "/onboarding?role=parent",
     },
     {
       label: t("caregiver"),
-      sub: "Build your career and training.",
+      sub: t("caregiverSub"),
       href: "/onboarding?role=caregiver",
     },
     {
       label: t("organization"),
-      sub: "Hire and upskill your team.",
+      sub: t("organizationSub"),
       href: "/onboarding?role=organization",
     },
   ];
