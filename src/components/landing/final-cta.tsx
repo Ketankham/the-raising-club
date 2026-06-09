@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { JoinCards } from "./join-cards";
 
 const CAREGIVERS = [
@@ -23,20 +26,17 @@ function StoreBadge({ top, bottom }: { top: string; bottom: string }) {
 }
 
 export function FinalCta() {
+  const t = useTranslations("landing.cta");
+
   return (
     <section className="bg-lavender/60">
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:px-8 lg:py-24">
         <div>
           <h2 className="text-3xl leading-tight text-ink sm:text-4xl lg:text-5xl">
-            <span className="font-display font-medium">Start your </span>
-            <span className="font-display font-extrabold text-primary">
-              Raising Club
-            </span>{" "}
-            <span className="font-serif italic">journey today</span>
+            {t("title")}
           </h2>
           <p className="mt-5 max-w-xl text-lg text-ink/75">
-            Join for free and be part of a club where everyone raising children
-            connects, works, and learns together.
+            {t("description")}
           </p>
           <JoinCards className="mt-9" />
 
