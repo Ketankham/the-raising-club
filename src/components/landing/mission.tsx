@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 const PILLARS = [
@@ -24,6 +27,8 @@ const PILLARS = [
 ];
 
 export function Mission() {
+  const t = useTranslations("landing.mission");
+
   return (
     <>
       {/* Quote band — sage with white flowers (asset) + cream cloud banner */}
@@ -51,15 +56,13 @@ export function Mission() {
           <div className="rounded-[2.5rem] bg-pink px-6 py-14 lg:px-12">
             <div className="mx-auto max-w-3xl text-center">
               <p className="font-display text-sm font-bold uppercase tracking-[0.2em] text-primary">
-                Our Mission
+                {t("title")}
               </p>
               <h2 className="mt-4 font-display text-3xl font-extrabold text-ink sm:text-4xl lg:text-5xl">
-                Why The Raising Club
+                {t("title")}
               </h2>
               <p className="mt-5 text-lg text-ink/75">
-                Because raising a child isn&rsquo;t the job of one parent or one
-                caregiver—it takes families, caregivers, and programs working
-                together inside one club.
+                {t("description")}
               </p>
               <p className="mt-6 font-display text-base font-semibold text-ink">
                 At The Raising Club, we are:

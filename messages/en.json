@@ -139,19 +139,29 @@
       "step3Desc": "Connect with vetted professionals and build lasting relationships of trust."
     },
     "features": {
-      "title": "Why The Raising Club?",
-      "feature1": "Smart Matching",
-      "feature2": "Safety First",
-      "feature3": "Training & Growth",
-      "feature4": "Community Support"
+      "sectionTitle": "Everything You Need",
+      "sectionDesc": "Our platform brings together everything needed to build safe, stable, high-quality care around each child.",
+      "feature1Title": "Layered Safety & Screening",
+      "feature1Body": "We verify IDs and references, offer optional background checks, and surface practical safety guidance—so families can feel confident and at peace.",
+      "feature2Title": "Smart Matching",
+      "feature2Body": "We match families, caregivers, and programs—including families with families and caregivers with caregivers—so each child's circle of care fits their needs.",
+      "feature3Title": "Nanny Shares & Micro-Programs",
+      "feature3Body": "Create or join nanny shares, learning pods, and after-school care with families who share your neighborhood, schedule, and priorities.",
+      "feature4Title": "TRC Training & Badges",
+      "feature4Body": "Educators bring degrees & certifications; TRC adds science-backed training and badges that make all expertise visible to families and programs at a glance.",
+      "feature5Title": "Staffing for Daycares & Programs",
+      "feature5Body": "Daycares, preschools, and after-school programs use TRC to hire new educators and upskill existing teams, keeping classrooms and activities reliably staffed.",
+      "feature6Title": "Support & Simple Logistics",
+      "feature6Body": "Access TRC guidance when questions come up, and manage payments in one place with clear rates and fewer awkward money talks."
     },
     "audiences": {
+      "audienceTitle": "Who We Serve",
       "forParents": "For Parents",
-      "parentDesc": "Find trusted caregivers and educational resources for your family.",
+      "parentTagline": "Find caregivers and other families who feel like part of your parenting team—so you're supported in raising your child, not juggling it all alone.",
       "forCaregivers": "For Caregivers",
-      "caregiverDesc": "Build your career with professional development and real opportunities.",
-      "forOrganizations": "For Organizations",
-      "organizationDesc": "Staffing solutions and training programs for your programs."
+      "caregiverTagline": "Raise children with purpose, and build a real career in early childhood while you do it.",
+      "forOrganizations": "For Centers & Programs",
+      "organizationTagline": "Solve staffing and training for your daycare, preschool, and after-school programs in one place."
     },
     "mission": {
       "title": "Our Mission",

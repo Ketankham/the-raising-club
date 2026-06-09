@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { Check } from "lucide-react";
@@ -11,11 +14,13 @@ type Audience = {
   points: { heading: string; body: string }[];
 };
 
-const AUDIENCES: Audience[] = [
+export function Audiences() {
+  const t = useTranslations("landing.audiences");
+
+  const AUDIENCES: Audience[] = [
   {
-    title: "For Parents",
-    tagline:
-      "Find caregivers and other families who feel like part of your parenting team—so you’re supported in raising your child, not juggling it all alone.",
+    title: t("forParents"),
+    tagline: t("parentTagline"),
     image: "/images/for-parents.png",
     cardBg: "bg-lavender/60",
     cta: { label: "Get Started As A Family", href: "/get-started?role=family" },
@@ -39,14 +44,13 @@ const AUDIENCES: Audience[] = [
     ],
   },
   {
-    title: "For Caregivers",
-    tagline:
-      "Raise children with purpose, and build a real career in early childhood while you do it.",
+    title: t("forCaregivers"),
+    tagline: t("caregiverTagline"),
     image: "/images/for-caregivers.png",
     cardBg: "bg-olive/20",
     cta: {
       label: "Become A TRC Caregiver",
-      href: "/get-started?role=caregiver",
+      href: "/onboarding?role=caregiver",
     },
     points: [
       {
@@ -68,14 +72,13 @@ const AUDIENCES: Audience[] = [
     ],
   },
   {
-    title: "For Centers & Programs",
-    tagline:
-      "Solve staffing and training for your daycare, preschool, and after-school programs in one place.",
+    title: t("forOrganizations"),
+    tagline: t("organizationTagline"),
     image: "/images/for-centers.png",
     cardBg: "bg-primary-soft/20",
     cta: {
       label: "Hire & Train Educators",
-      href: "/get-started?role=organization",
+      href: "/onboarding?role=organization",
     },
     points: [
       {
@@ -98,7 +101,6 @@ const AUDIENCES: Audience[] = [
   },
 ];
 
-export function Audiences() {
   return (
     <section id="built-for-everyone" className="bg-cream py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">

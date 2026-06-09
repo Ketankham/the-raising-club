@@ -139,19 +139,29 @@
       "step3Desc": "Conéctate con profesionales cualificados y construye relaciones de confianza duraderas."
     },
     "features": {
-      "title": "¿Por qué The Raising Club?",
-      "feature1": "Emparejamiento inteligente",
-      "feature2": "Seguridad ante todo",
-      "feature3": "Formación y crecimiento",
-      "feature4": "Apoyo de la comunidad"
+      "sectionTitle": "Todo lo que necesitas",
+      "sectionDesc": "Nuestra plataforma reúne todo lo necesario para crear cuidado seguro, estable y de alta calidad alrededor de cada niño.",
+      "feature1Title": "Seguridad y verificación en capas",
+      "feature1Body": "Verificamos identificaciones y referencias, ofrecemos verificaciones de antecedentes opcionales y proporcionamos orientación práctica de seguridad para que las familias se sientan confiadas y tranquilas.",
+      "feature2Title": "Emparejamiento inteligente",
+      "feature2Body": "Emparejamos familias, cuidadores y programas, incluyendo familias con familias y cuidadores con cuidadores, para que el círculo de cuidado de cada niño se ajuste a sus necesidades.",
+      "feature3Title": "Compartir niñeras y microprogramas",
+      "feature3Body": "Crea o únete a comparticiones de niñeras, grupos de aprendizaje y cuidado después de la escuela con familias que comparten tu vecindario, horario y prioridades.",
+      "feature4Title": "Capacitación y badges de TRC",
+      "feature4Body": "Los educadores traen títulos y certificaciones; TRC añade capacitación respaldada por ciencia y badges que hacen que toda la experiencia sea visible para familias y programas de un vistazo.",
+      "feature5Title": "Personal para guarderías y programas",
+      "feature5Body": "Guarderías, preescolares y programas después de la escuela usan TRC para contratar nuevos educadores y mejorar los equipos existentes, manteniendo las aulas y actividades confiablemente atendidas.",
+      "feature6Title": "Apoyo y logística simple",
+      "feature6Body": "Accede a orientación de TRC cuando surjan preguntas y administra pagos en un solo lugar con tarifas claras y conversaciones menos incómodas sobre dinero."
     },
     "audiences": {
-      "forParents": "Para padres",
-      "parentDesc": "Encuentre cuidadores de confianza y recursos educativos para su familia.",
-      "forCaregivers": "Para cuidadores",
-      "caregiverDesc": "Desarrolla tu carrera profesional con formación continua y oportunidades reales.",
-      "forOrganizations": "Para organizaciones",
-      "organizationDesc": "Soluciones de personal y programas de capacitación para sus programas."
+      "audienceTitle": "A quién servimos",
+      "forParents": "Para Padres",
+      "parentTagline": "Encuentra cuidadores y otras familias que se sientan parte de tu equipo de crianza, para que estés apoyado en criar a tu hijo, no intentando hacer todo solo.",
+      "forCaregivers": "Para Cuidadores",
+      "caregiverTagline": "Cría niños con propósito y construye una carrera real en la primera infancia mientras lo haces.",
+      "forOrganizations": "Para Centros y Programas",
+      "organizationTagline": "Resuelve personal y capacitación para tus guarderías, preescolares y programas después de la escuela en un solo lugar."
     },
     "mission": {
       "title": "Nuestra misión",
