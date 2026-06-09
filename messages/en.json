@@ -94,6 +94,12 @@
     "terms": "Terms",
     "contact": "Contact"
   },
+  "membership": {
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "save15": "Save 15%",
+    "allInclude": "All TRC Programs Include"
+  },
   "buttons": {
     "browseCourses": "Browse Courses",
     "myCourses": "My courses",

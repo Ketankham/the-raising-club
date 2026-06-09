@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Check, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Flower } from "@/components/about/star-burst";
 import type { Plan, Tab } from "@/lib/plans/types";
 
@@ -31,6 +32,7 @@ function planName(name: string) {
 }
 
 export function Membership({ tabs }: { tabs: Tab[] }) {
+  const t = useTranslations("membership");
   const [tabId, setTabId] = useState<string>(tabs[0]?.id ?? "caregiver");
   const [annual, setAnnual] = useState(false);
   const tab = tabs.find((t) => t.id === tabId) ?? tabs[0];
@@ -77,7 +79,7 @@ export function Membership({ tabs }: { tabs: Tab[] }) {
                   !annual ? "bg-white text-ink shadow-sm" : "text-ink/60"
                 }`}
               >
-                Monthly
+                {t("monthly")}
               </button>
               <button
                 onClick={() => setAnnual(true)}
@@ -85,8 +87,8 @@ export function Membership({ tabs }: { tabs: Tab[] }) {
                   annual ? "bg-white text-ink shadow-sm" : "text-ink/60"
                 }`}
               >
-                Annual
-                <span className="text-xs font-bold text-olive">Save 15%</span>
+                {t("annual")}
+                <span className="text-xs font-bold text-olive">{t("save15")}</span>
               </button>
             </div>
           </div>
@@ -96,7 +98,7 @@ export function Membership({ tabs }: { tabs: Tab[] }) {
         {tab.includes && (
           <div className="mt-10 rounded-3xl bg-[#faf1e4] px-6 py-6">
             <p className="font-display text-sm font-bold uppercase tracking-wide text-ink">
-              All TRC Programs Include
+              {t("allInclude")}
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               {tab.includes.map((inc) => (
