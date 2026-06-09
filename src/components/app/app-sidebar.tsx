@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { signOut } from "@/lib/auth";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { LanguageSwitcher } from "@/components/app/language-switcher";
 
 export type SidebarRole = "parent" | "caregiver" | "organization";
 
@@ -118,11 +119,14 @@ export function AppSidebar({
         {items.map((it) => renderRow(it))}
       </nav>
 
-      <div className="mt-2">
+      <div className="mt-2 space-y-2">
         {/* The dashboard home renders the bell in its own header — avoid a dupe. */}
         {pathname !== "/dashboard" && (
           <NotificationBell initialUnread={unreadCount} expanded={expanded} />
         )}
+        <div className={expanded ? "hidden lg:block px-2" : "px-2"}>
+          <LanguageSwitcher />
+        </div>
         {renderRow({ label: t("settings"), href: "/dashboard/settings", icon: Settings })}
         <button onClick={() => signOut()}
           className="group relative mx-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-soft transition hover:bg-white/60 hover:text-ink">

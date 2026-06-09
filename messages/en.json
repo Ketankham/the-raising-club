@@ -19,13 +19,50 @@
     "back": "Back",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "confirm": "Confirm",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "noResults": "No results found",
+    "loading_ellipsis": "Loading..."
   },
   "auth": {
     "signIn": "Sign in",
     "signOut": "Sign out",
     "email": "Email",
     "password": "Password",
-    "forgotPassword": "Forgot your password?"
+    "forgotPassword": "Forgot your password?",
+    "welcomeBack": "Welcome back",
+    "newHere": "New here?",
+    "getStarted": "Get started",
+    "or": "or"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No activity yet"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "personalDetails": "Personal Details",
+    "email": "Email",
+    "password": "Password",
+    "language": "Language",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "account": "Account",
+    "deactivateAccount": "Deactivate Account",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "zip": "Zip Code",
+    "saveChanges": "Save Changes"
   }
 }
