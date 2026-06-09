@@ -450,5 +450,56 @@
     "joinCtaOrganizationPerks3": "Ver credenciales verificadas y badges de cursos",
     "joinCtaOrganizationPerks4": "Aloja eventos y recluta en ferias comunitarias",
     "joinCtaOrganizationBtn": "Comienza como Organización"
+  },
+  "coursesPage": {
+    "title": "Explorar Cursos",
+    "description": "Descubre e inscríbete en cursos profesionales de cuidado infantil",
+    "searchPlaceholder": "Buscar cursos...",
+    "noResults": "No se encontraron cursos",
+    "noResultsHint": "Intenta ajustar tus filtros o vuelve más tarde.",
+    "filters": {
+      "label": "Filtros",
+      "clearAll": "Limpiar todo",
+      "contentType": "Tipo de contenido",
+      "contentTypeAll": "Todos",
+      "contentTypeCourse": "Cursos",
+      "contentTypeBundle": "Paquetes",
+      "careType": "Tipo de cuidado",
+      "age": "Edad (hasta)",
+      "ageMonths": "0 meses",
+      "ageYears": "12 años",
+      "category": "Categoría",
+      "categoryAll": "Todas las categorías",
+      "approach": "Enfoque",
+      "approachAll": "Todos los enfoques",
+      "skills": "Habilidades"
+    }
+  },
+  "eventsPage": {
+    "title": "Próximos Eventos",
+    "description": "Espacios para reunirse y crecer juntos",
+    "searchPlaceholder": "Buscar eventos...",
+    "filters": {
+      "label": "Filtros",
+      "clearAll": "Limpiar todo",
+      "childAge": "Edad del niño",
+      "ageMonths": "0 meses",
+      "ageYears": "12 años",
+      "joinHow": "Cómo participarás",
+      "joinOnline": "En línea",
+      "joinInPerson": "Presencial",
+      "where": "Dónde",
+      "wherePlaceholder": "Ingresa ciudad o código postal",
+      "mapPreview": "Vista previa del mapa",
+      "price": "Precio",
+      "priceMin": "$0",
+      "priceMax": "$160 Máx",
+      "whoAttends": "Quién asiste",
+      "when": "Cuándo",
+      "whenFrom": "Desde",
+      "whenTo": "Hasta",
+      "eventStyle": "Estilo del evento",
+      "eventStyleAny": "Cualquier estilo de evento"
+    }
   }
 }

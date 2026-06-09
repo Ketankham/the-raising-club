@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Search } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EventsFilters } from "@/components/events/events-filters";
@@ -17,6 +18,7 @@ export default async function EventsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const t = await getTranslations("eventsPage");
   const sp = await searchParams;
   const filters = parseFilters(sp);
   const supabase = await createClient();
@@ -39,9 +41,9 @@ export default async function EventsPage({
         <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8 lg:py-14">
           <header className="mb-8">
             <h1 className="font-display text-3xl font-bold text-ink lg:text-4xl">
-              Upcoming Events
+              {t("title")}
             </h1>
-            <p className="mt-2 text-ink-soft">Spaces to gather and grow together</p>
+            <p className="mt-2 text-ink-soft">{t("description")}</p>
 
             <form action="/events" method="get" className="mt-6 max-w-md">
               {hidden.map((h) => (
@@ -56,7 +58,7 @@ export default async function EventsPage({
                   type="search"
                   name="q"
                   defaultValue={filters.q ?? ""}
-                  placeholder="Search events..."
+                  placeholder={t("searchPlaceholder")}
                   className="w-full rounded-full border border-ink/15 bg-white py-3 pl-11 pr-4 text-sm text-ink shadow-sm outline-none focus:border-[#baaae1]"
                 />
               </div>

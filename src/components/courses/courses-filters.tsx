@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { CARE_TYPE_LABELS, type CourseCareType } from "@/lib/courses/types";
 import type { CourseTaxonomyLite } from "@/lib/courses/queries";
 
@@ -9,6 +10,7 @@ const selectCls =
   "w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm text-ink focus:border-primary focus:outline-none";
 
 export function CoursesFilters({ taxonomy }: { taxonomy: CourseTaxonomyLite }) {
+  const t = useTranslations("coursesPage.filters");
   const router = useRouter();
   const sp = useSearchParams();
 
@@ -34,21 +36,21 @@ export function CoursesFilters({ taxonomy }: { taxonomy: CourseTaxonomyLite }) {
     <aside className="rounded-2xl bg-[#fbe9d6]/60 p-4 lg:sticky lg:top-20">
       <div className="mb-4 flex items-center justify-between">
         <span className="flex items-center gap-2 font-display font-bold text-ink">
-          <SlidersHorizontal size={16} /> Filters
+          <SlidersHorizontal size={16} /> {t("label")}
         </span>
         <button onClick={clearAll} className="text-xs font-semibold text-primary hover:underline">
-          Clear all
+          {t("clearAll")}
         </button>
       </div>
 
       <div className="space-y-5">
         <div>
-          <p className="mb-1.5 text-sm font-semibold text-ink">Content type</p>
+          <p className="mb-1.5 text-sm font-semibold text-ink">{t("contentType")}</p>
           <div className="space-y-2">
             {[
-              { value: "", label: "All" },
-              { value: "course", label: "Courses" },
-              { value: "bundle", label: "Bundles" },
+              { value: "", label: t("contentTypeAll") },
+              { value: "course", label: t("contentTypeCourse") },
+              { value: "bundle", label: t("contentTypeBundle") },
             ].map((o) => {
               const on = (get("type") || "") === o.value;
               return (
@@ -74,7 +76,7 @@ export function CoursesFilters({ taxonomy }: { taxonomy: CourseTaxonomyLite }) {
         </div>
 
         <div>
-          <p className="mb-1.5 text-sm font-semibold text-ink">Care type</p>
+          <p className="mb-1.5 text-sm font-semibold text-ink">{t("careType")}</p>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(CARE_TYPE_LABELS) as CourseCareType[]).map((k) => {
               const on = get("care") === k;
@@ -94,7 +96,7 @@ export function CoursesFilters({ taxonomy }: { taxonomy: CourseTaxonomyLite }) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-ink">Age (up to)</label>
+          <label className="mb-1.5 block text-sm font-semibold text-ink">{t("age")}</label>
           <input
             type="range"
             min={0}
@@ -105,17 +107,17 @@ export function CoursesFilters({ taxonomy }: { taxonomy: CourseTaxonomyLite }) {
             className="w-full accent-primary"
           />
           <div className="flex justify-between text-xs text-ink-soft">
-            <span>0 months</span>
+            <span>{t("ageMonths")}</span>
             <span className="font-semibold text-primary">
-              {ageMax ? (Number(ageMax) < 24 ? `${ageMax} months` : `${Math.round(Number(ageMax) / 12)} years`) : "12 years"}
+              {ageMax ? (Number(ageMax) < 24 ? `${ageMax} months` : `${Math.round(Number(ageMax) / 12)} years`) : t("ageYears")}
             </span>
           </div>
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-ink">Category</label>
+          <label className="mb-1.5 block text-sm font-semibold text-ink">{t("category")}</label>
           <select className={selectCls} value={get("category")} onChange={(e) => setParam("category", e.target.value || null)}>
-            <option value="">All categories</option>
+            <option value="">{t("categoryAll")}</option>
             {taxonomy.categories.map((o) => (
               <option key={o.id} value={o.id}>{o.label}</option>
             ))}
@@ -123,9 +125,9 @@ export function CoursesFilters({ taxonomy }: { taxonomy: CourseTaxonomyLite }) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-ink">Approach</label>
+          <label className="mb-1.5 block text-sm font-semibold text-ink">{t("approach")}</label>
           <select className={selectCls} value={get("approach")} onChange={(e) => setParam("approach", e.target.value || null)}>
-            <option value="">All approaches</option>
+            <option value="">{t("approachAll")}</option>
             {taxonomy.approaches.map((o) => (
               <option key={o.id} value={o.id}>{o.label}</option>
             ))}
@@ -133,7 +135,7 @@ export function CoursesFilters({ taxonomy }: { taxonomy: CourseTaxonomyLite }) {
         </div>
 
         <div>
-          <p className="mb-1.5 text-sm font-semibold text-ink">Skills</p>
+          <p className="mb-1.5 text-sm font-semibold text-ink">{t("skills")}</p>
           <div className="flex flex-wrap gap-2">
             {taxonomy.skills.map((s) => {
               const on = skills.includes(s.id);

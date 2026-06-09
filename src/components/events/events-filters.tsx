@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SlidersHorizontal, X, MapPin } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ageLabel } from "@/lib/events/format";
 import {
   EVENT_STYLE_LABELS,
@@ -16,10 +17,6 @@ import {
 const AGE_MAX = 144; // 12 years, in months
 const PRICE_MAX = 160;
 const PURPLE = "#baaae1";
-const JOIN_OPTIONS: { value: EventJoinMode; label: string }[] = [
-  { value: "online", label: "Online" },
-  { value: "in_person", label: "In-Person" },
-];
 
 // Default OpenStreetMap view (New York City) for the "Where" preview — no API
 // key required. Purely a visual aid; filtering is by the city/zip text below.
@@ -31,8 +28,14 @@ function toggle<T>(set: T[], value: T): T[] {
 }
 
 export function EventsFilters({ initial }: { initial: EventFilters }) {
+  const t = useTranslations("eventsPage.filters");
   const [open, setOpen] = useState(false); // mobile sheet
   const router = useRouter();
+
+  const JOIN_OPTIONS: { value: EventJoinMode; label: string }[] = [
+    { value: "online", label: t("joinOnline") },
+    { value: "in_person", label: t("joinInPerson") },
+  ];
 
   const [ageMax, setAgeMax] = useState(initial.ageMax ?? AGE_MAX);
   const [priceMax, setPriceMax] = useState(initial.priceMax ?? PRICE_MAX);
@@ -77,20 +80,20 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 font-display text-base font-bold text-ink">
-          <SlidersHorizontal size={16} style={{ color: PURPLE }} /> Filters
+          <SlidersHorizontal size={16} style={{ color: PURPLE }} /> {t("label")}
         </h2>
         <button
           type="button"
           onClick={clearAll}
           className="text-sm font-semibold text-[#8b76c2] hover:underline"
         >
-          Clear all
+          {t("clearAll")}
         </button>
       </div>
 
       {/* Child's age */}
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold text-ink">Child&apos;s age</legend>
+        <legend className="mb-2 text-sm font-semibold text-ink">{t("childAge")}</legend>
         <input
           type="range"
           min={0}
@@ -102,17 +105,17 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
           aria-label="Maximum child age in months"
         />
         <div className="mt-1 flex justify-between text-xs text-ink-soft">
-          <span>0 months</span>
+          <span>{t("ageMonths")}</span>
           <span className="font-semibold text-[#8b76c2]">
-            {ageMax >= AGE_MAX ? "12 years" : ageLabel(ageMax)}
+            {ageMax >= AGE_MAX ? t("ageYears") : ageLabel(ageMax)}
           </span>
-          <span>12 years</span>
+          <span>{t("ageYears")}</span>
         </div>
       </fieldset>
 
       {/* How you'll join */}
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold text-ink">How you&apos;ll join</legend>
+        <legend className="mb-2 text-sm font-semibold text-ink">{t("joinHow")}</legend>
         <div className="space-y-2.5">
           {JOIN_OPTIONS.map((o) => (
             <CircleCheck
@@ -127,7 +130,7 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
 
       {/* Where */}
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold text-ink">Where</legend>
+        <legend className="mb-2 text-sm font-semibold text-ink">{t("where")}</legend>
         <div className="relative">
           <MapPin
             size={15}
@@ -137,13 +140,13 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
             type="text"
             value={near}
             onChange={(e) => setNear(e.target.value)}
-            placeholder="Enter city or zip code"
+            placeholder={t("wherePlaceholder")}
             className="w-full rounded-xl border border-ink/15 bg-white py-2 pl-9 pr-3 text-sm text-ink outline-none focus:border-[#baaae1]"
           />
         </div>
         <div className="mt-2 overflow-hidden rounded-xl border border-ink/10">
           <iframe
-            title="Map preview"
+            title={t("mapPreview")}
             src={OSM_SRC}
             loading="lazy"
             className="h-32 w-full"
@@ -154,7 +157,7 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
 
       {/* Price */}
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold text-ink">Price</legend>
+        <legend className="mb-2 text-sm font-semibold text-ink">{t("price")}</legend>
         <input
           type="range"
           min={0}
@@ -166,16 +169,16 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
           aria-label="Maximum price"
         />
         <div className="mt-1 flex justify-between text-xs text-ink-soft">
-          <span>$0</span>
+          <span>{t("priceMin")}</span>
           <span className="font-semibold text-[#8b76c2]">
-            {priceMax >= PRICE_MAX ? "$160 Max" : `$${priceMax}`}
+            {priceMax >= PRICE_MAX ? t("priceMax") : `$${priceMax}`}
           </span>
         </div>
       </fieldset>
 
       {/* Who attends */}
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold text-ink">Who attends</legend>
+        <legend className="mb-2 text-sm font-semibold text-ink">{t("whoAttends")}</legend>
         <div className="flex flex-wrap gap-2">
           {(Object.keys(PARTICIPATION_TAGS) as ParticipationType[]).map((k) => {
             const on = who.includes(k);
@@ -199,10 +202,10 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
 
       {/* When (stacked — two date inputs won't fit side-by-side in the rail) */}
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold text-ink">When</legend>
+        <legend className="mb-2 text-sm font-semibold text-ink">{t("when")}</legend>
         <div className="space-y-2">
           <label className="block">
-            <span className="mb-1 block text-xs text-ink-soft">From</span>
+            <span className="mb-1 block text-xs text-ink-soft">{t("whenFrom")}</span>
             <input
               type="date"
               value={date}
@@ -212,7 +215,7 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs text-ink-soft">To</span>
+            <span className="mb-1 block text-xs text-ink-soft">{t("whenTo")}</span>
             <input
               type="date"
               value={dateTo}
@@ -227,13 +230,13 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
 
       {/* Event style */}
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold text-ink">Event style</legend>
+        <legend className="mb-2 text-sm font-semibold text-ink">{t("eventStyle")}</legend>
         <select
           value={style}
           onChange={(e) => setStyle(e.target.value as EventStyle | "")}
           className="w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-[#baaae1]"
         >
-          <option value="">Any event style</option>
+          <option value="">{t("eventStyleAny")}</option>
           {(Object.keys(EVENT_STYLE_LABELS) as EventStyle[]).map((k) => (
             <option key={k} value={k}>
               {EVENT_STYLE_LABELS[k]}

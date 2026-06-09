@@ -450,5 +450,56 @@
     "joinCtaOrganizationPerks3": "View verified credentials & course badges",
     "joinCtaOrganizationPerks4": "Host events & recruit at community fairs",
     "joinCtaOrganizationBtn": "Get Started as an Organisation"
+  },
+  "coursesPage": {
+    "title": "Browse Courses",
+    "description": "Discover and enroll in professional childcare courses",
+    "searchPlaceholder": "Search courses...",
+    "noResults": "No courses found",
+    "noResultsHint": "Try adjusting your filters or check back soon.",
+    "filters": {
+      "label": "Filters",
+      "clearAll": "Clear all",
+      "contentType": "Content type",
+      "contentTypeAll": "All",
+      "contentTypeCourse": "Courses",
+      "contentTypeBundle": "Bundles",
+      "careType": "Care type",
+      "age": "Age (up to)",
+      "ageMonths": "0 months",
+      "ageYears": "12 years",
+      "category": "Category",
+      "categoryAll": "All categories",
+      "approach": "Approach",
+      "approachAll": "All approaches",
+      "skills": "Skills"
+    }
+  },
+  "eventsPage": {
+    "title": "Upcoming Events",
+    "description": "Spaces to gather and grow together",
+    "searchPlaceholder": "Search events...",
+    "filters": {
+      "label": "Filters",
+      "clearAll": "Clear all",
+      "childAge": "Child's age",
+      "ageMonths": "0 months",
+      "ageYears": "12 years",
+      "joinHow": "How you'll join",
+      "joinOnline": "Online",
+      "joinInPerson": "In-Person",
+      "where": "Where",
+      "wherePlaceholder": "Enter city or zip code",
+      "mapPreview": "Map preview",
+      "price": "Price",
+      "priceMin": "$0",
+      "priceMax": "$160 Max",
+      "whoAttends": "Who attends",
+      "when": "When",
+      "whenFrom": "From",
+      "whenTo": "To",
+      "eventStyle": "Event style",
+      "eventStyleAny": "Any event style"
+    }
   }
 }

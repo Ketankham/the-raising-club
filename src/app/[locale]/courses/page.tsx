@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Search } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CoursesFilters } from "@/components/courses/courses-filters";
@@ -17,6 +18,7 @@ export default async function CoursesPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const t = await getTranslations("coursesPage");
   const sp = await searchParams;
   const filters = parseCourseFilters(sp);
   const supabase = await createClient();
@@ -37,8 +39,8 @@ export default async function CoursesPage({
       <main className="flex-1">
         <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8 lg:py-14">
           <header className="mb-8">
-            <h1 className="font-display text-3xl font-bold text-ink lg:text-4xl">Browse Courses</h1>
-            <p className="mt-2 text-ink-soft">Discover and enroll in professional childcare courses</p>
+            <h1 className="font-display text-3xl font-bold text-ink lg:text-4xl">{t("title")}</h1>
+            <p className="mt-2 text-ink-soft">{t("description")}</p>
 
             <form action="/courses" method="get" className="mt-6 max-w-md">
               {hidden.map((h) => (
@@ -50,7 +52,7 @@ export default async function CoursesPage({
                   type="search"
                   name="q"
                   defaultValue={filters.q ?? ""}
-                  placeholder="Search courses..."
+                  placeholder={t("searchPlaceholder")}
                   className="w-full rounded-full border border-ink/15 bg-white py-3 pl-11 pr-4 text-sm text-ink shadow-sm outline-none focus:border-primary"
                 />
               </div>
@@ -65,8 +67,8 @@ export default async function CoursesPage({
             <div className="flex-1">
               {items.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-ink/15 bg-white/50 p-12 text-center">
-                  <p className="font-display text-lg font-bold text-ink">No courses found</p>
-                  <p className="mt-1 text-sm text-ink-soft">Try adjusting your filters or check back soon.</p>
+                  <p className="font-display text-lg font-bold text-ink">{t("noResults")}</p>
+                  <p className="mt-1 text-sm text-ink-soft">{t("noResultsHint")}</p>
                 </div>
               ) : (
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
