@@ -37,7 +37,7 @@ export function DashboardShell({
     <div className="min-h-screen bg-[#faf5ee]">
       <header className="sticky top-0 z-30 flex h-16 items-center justify-between bg-[#faf5ee] px-4 sm:px-6">
         <Link href="/dashboard"><Logo /></Link>
-        <nav className="hidden items-center gap-2 md:flex">
+        <nav className="hidden items-center gap-2 lg:flex">
           {TOP_NAV.map((n) => {
             const isActive = pathname === n.href;
             return (
