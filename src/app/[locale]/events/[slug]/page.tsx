@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { EventDetail } from "@/components/events/event-detail";
@@ -35,6 +37,11 @@ export default async function EventDetailPage({
     <>
       <SiteHeader />
       <main className="flex-1">
+        <div className="mx-auto max-w-7xl px-5 py-5 lg:px-8">
+          <Link href="/events" className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink">
+            <ArrowLeft className="h-4 w-4" /> Upcoming Events
+          </Link>
+        </div>
         <EventDetail event={event} registration={registration} registrationDetails={registrationDetails} />
       </main>
       <SiteFooter />

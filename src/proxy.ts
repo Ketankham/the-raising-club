@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import { routing } from "@/i18n/routing";
 import { updateSession } from "@/lib/supabase/middleware";
 import { isBetaLocked } from "@/lib/beta";
+
+const handleI18nRouting = createMiddleware(routing);
 
 /**
  * Next 16 Proxy (formerly Middleware). Two jobs only — kept optimistic and
@@ -19,8 +23,19 @@ import { isBetaLocked } from "@/lib/beta";
 const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/connect"];
 
 export async function proxy(request: NextRequest) {
-  const { response, user } = await updateSession(request);
-  const { pathname } = request.nextUrl;
+  // 1. Run i18n routing first (handles locale prefix, adds locale cookie)
+  const i18nResponse = handleI18nRouting(request);
+
+  // 2. Refresh Supabase session with i18n response as base
+  const { response, user } = await updateSession(request, i18nResponse);
+
+  // Get pathname — i18n middleware preserves it, so we check against the original
+  let { pathname } = request.nextUrl;
+  // Strip locale prefix if present for route matching
+  const locale = pathname.split("/")[1];
+  if (locale && routing.locales.includes(locale as any)) {
+    pathname = pathname.slice(`/${locale}`.length) || "/";
+  }
 
   // Beta lock (LIVE only): block the signup wizard so no new accounts are
   // created. Sign-in stays open for existing users. The redirect happens before

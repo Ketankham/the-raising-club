@@ -24,7 +24,7 @@ export default async function ApplicantsPage({ params }: { params: Promise<{ id:
             <p className="mt-1 text-sm text-ink-soft">Caregivers who apply will appear here. You can also invite caregivers from Find Care.</p>
           </div>
         ) : (
-          data.applicants.map((a) => <ApplicantRow key={a.applicationId} a={a} />)
+          data.applicants.map((a) => <ApplicantRow key={a.applicationId} a={a} jobId={id} />)
         )}
       </div>
     </div>

@@ -1,0 +1,68 @@
+{
+  "sidebar": {
+    "home": "Inicio",
+    "learn": "Aprender",
+    "events": "Eventos",
+    "messages": "Mensajes",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión",
+    "collapse": "Contraer barra lateral",
+    "expand": "Abrir barra lateral"
+  },
+  "languageSwitcher": {
+    "en": "English",
+    "es": "Español"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "back": "Atrás",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "noResults": "No se encontraron resultados",
+    "loading_ellipsis": "Cargando..."
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "welcomeBack": "Bienvenido de vuelta",
+    "newHere": "¿Eres nuevo aquí?",
+    "getStarted": "Comenzar",
+    "or": "o"
+  },
+  "dashboard": {
+    "title": "Panel de control",
+    "welcome": "Bienvenido",
+    "recentActivity": "Actividad reciente",
+    "noActivity": "Sin actividad aún"
+  },
+  "settings": {
+    "title": "Configuración",
+    "profile": "Perfil",
+    "personalDetails": "Detalles personales",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "language": "Idioma",
+    "notifications": "Notificaciones",
+    "privacy": "Privacidad",
+    "account": "Cuenta",
+    "deactivateAccount": "Desactivar cuenta",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "phone": "Teléfono",
+    "zip": "Código postal",
+    "saveChanges": "Guardar cambios"
+  }
+}

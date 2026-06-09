@@ -76,6 +76,19 @@ export async function sendPasswordReset(): Promise<Result> {
   return error ? { ok: false, error: error.message } : { ok: true };
 }
 
+/** Update the user's UI language preference. */
+export async function updateLocale(locale: "en" | "es"): Promise<Result> {
+  const { supabase, user } = await me();
+  if (!user) return { ok: false, error: "Not signed in" };
+  const { error } = await supabase
+    .from("profiles")
+    .update({ locale })
+    .eq("id", user.id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
 /**
  * Record the membership plan the user selected. The plan key is re-validated
  * server-side against the user's role catalog — never trust the client.
