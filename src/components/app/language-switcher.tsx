@@ -19,8 +19,17 @@ export function LanguageSwitcher() {
     try {
       // Update the user's profile preference
       await updateLocale(newLocale);
-      // Navigate to the same path in the new locale
-      const newPath = newLocale === "en" ? pathname : `/es${pathname === "/" ? "" : pathname}`;
+
+      // Strip current locale prefix from pathname, then add new one if Spanish
+      let newPath = pathname;
+      if (pathname.startsWith("/es")) {
+        newPath = pathname.slice(3) || "/";
+      }
+
+      if (newLocale === "es") {
+        newPath = `/es${newPath}`;
+      }
+
       router.push(newPath);
     } finally {
       setIsLoading(false);
