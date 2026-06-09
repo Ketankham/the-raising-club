@@ -255,6 +255,22 @@ export interface JobApplicant {
   headline: string | null;
 }
 
+export interface DetailedApplicant extends JobApplicant {
+  firstName: string | null;
+  lastInitial: string | null;
+  about: string | null;
+  experienceLevel: string | null;
+  rateAmount: number | null;
+  rateUnit: string | null;
+  ratingAvg: number | null;
+  ratingCount: number;
+  skills: string[];
+  ageGroups: string[];
+  careSettings: string[];
+  jobTitle: string;
+  jobPostId: string;
+}
+
 /** Applicants on a job the current user manages (RLS japps_manager_read).
  *  Caregiver identity comes from the public_caregiver() definer fn. */
 export async function getJobApplicants(jobId: string): Promise<{ title: string; applicants: JobApplicant[] } | null> {
@@ -286,6 +302,54 @@ export async function getJobApplicants(jobId: string): Promise<{ title: string; 
     });
   }
   return { title: job.title as string, applicants };
+}
+
+/** Get detailed applicant profile for viewing by job owner. */
+export async function getDetailedApplicant(jobId: string, applicationId: string): Promise<DetailedApplicant | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: app } = await supabase
+    .from("job_applications")
+    .select("id, job_post_id, status, cover_note, proposed_rate, created_at, caregiver_user_id")
+    .eq("id", applicationId)
+    .eq("job_post_id", jobId)
+    .maybeSingle();
+  if (!app) return null;
+
+  const { data: job } = await supabase.from("job_posts").select("title").eq("id", jobId).maybeSingle();
+
+  const { data: pub } = await supabase.rpc("public_caregiver", { uid: app.caregiver_user_id });
+  const p: any = pub ?? {};
+  const first = p.preferredName || p.firstName || "Caregiver";
+
+  return {
+    applicationId: app.id,
+    jobPostId: app.job_post_id,
+    status: app.status,
+    coverNote: app.cover_note,
+    proposedRate: app.proposed_rate != null ? Number(app.proposed_rate) : null,
+    createdAt: app.created_at,
+    caregiverUserId: app.caregiver_user_id,
+    name: p.lastInitial ? `${first} ${p.lastInitial}.` : first,
+    avatarUrl: p.avatarUrl ?? null,
+    headline: p.headline ?? null,
+    firstName: p.firstName ?? null,
+    lastInitial: p.lastInitial ?? null,
+    about: p.about ?? null,
+    experienceLevel: p.experienceLevel ?? null,
+    rateAmount: p.rateAmount != null ? Number(p.rateAmount) : null,
+    rateUnit: p.rateUnit ?? null,
+    ratingAvg: p.ratingAvg != null ? Number(p.ratingAvg) : null,
+    ratingCount: p.ratingCount ?? 0,
+    skills: p.skills ?? [],
+    ageGroups: p.ageGroups ?? [],
+    careSettings: p.careSettings ?? [],
+    jobTitle: (job?.title as string) ?? "",
+  };
 }
 
 /** Orgs the current user can post jobs on behalf of (owner/admin). */

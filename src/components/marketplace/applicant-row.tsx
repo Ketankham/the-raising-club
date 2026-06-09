@@ -17,7 +17,7 @@ const STATUS_LABEL: Record<string, string> = {
   hired: "Hired", rejected: "Declined", withdrawn: "Withdrawn",
 };
 
-export function ApplicantRow({ a }: { a: JobApplicant }) {
+export function ApplicantRow({ a, jobId }: { a: JobApplicant; jobId: string }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [status, setStatus] = useState(a.status);
@@ -32,7 +32,8 @@ export function ApplicantRow({ a }: { a: JobApplicant }) {
     });
 
   return (
-    <div className="rounded-2xl border border-ink/10 bg-white p-4">
+    <Link href={`/dashboard/posts/${jobId}/applicants/${a.applicationId}`}>
+      <div className="rounded-2xl border border-ink/10 bg-white p-4 transition hover:border-olive/30 hover:bg-cream cursor-pointer">
       <div className="flex items-start gap-3">
         {a.avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -42,7 +43,7 @@ export function ApplicantRow({ a }: { a: JobApplicant }) {
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <Link href={`/profile/${a.caregiverUserId}`} className="font-semibold text-ink hover:underline">{a.name}</Link>
+            <span className="font-semibold text-ink">{a.name}</span>
             <span className="rounded-full bg-mint px-2 py-0.5 text-xs font-medium text-ink">{STATUS_LABEL[status] ?? status}</span>
           </div>
           {a.headline && <p className="text-sm text-ink-soft">{a.headline}</p>}
@@ -50,18 +51,7 @@ export function ApplicantRow({ a }: { a: JobApplicant }) {
           {a.coverNote && <p className="mt-2 text-sm text-ink-soft">{a.coverNote}</p>}
         </div>
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <a href={`/chat/new?to=${a.caregiverUserId}&ctxType=application&ctxId=${a.applicationId}`}
-          className="inline-flex items-center gap-1.5 rounded-full bg-olive px-3 py-1.5 text-sm font-semibold text-white transition hover:brightness-95">
-          <MessageCircle className="h-4 w-4" /> Message
-        </a>
-        {NEXT.map((n) => (
-          <button key={n.value} onClick={() => update(n.value)} disabled={pending || status === n.value}
-            className="rounded-full border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-cream disabled:opacity-40">
-            {n.label}
-          </button>
-        ))}
-      </div>
     </div>
+    </Link>
   );
 }
