@@ -10,11 +10,14 @@ export function PublicLanguageSwitcher() {
   const handleSwitch = (newLocale: "en" | "es") => {
     if (newLocale === locale) return;
 
+    // Set the NEXT_LOCALE cookie so next-intl doesn't redirect back
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
+
     if (newLocale === "en") {
-      // Remove /es from the current URL — same page, English
+      // Remove /es from current URL — same page, English
       window.location.href = pathname.replace(/^\/es/, "") || "/";
     } else {
-      // Add /es to the current URL — same page, Spanish
+      // Add /es to current URL — same page, Spanish
       window.location.href = `/es${pathname}`;
     }
   };
