@@ -28,8 +28,18 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   // ===== ORGANIZATION/CENTERS PLANS =====
   "Program Core": "Programa Base",
   "Program Professional": "Programa Profesional",
+  "Program Growth": "Programa Crecimiento",
+  "Program Partner": "Programa Socio",
   "Launch your program": "Lanza tu programa",
   "Scale your organization": "Expande tu organización",
+  "Get Started": "Comienza",
+  "See How It Works": "Ver cómo funciona",
+  "Contact Us": "Contáctanos",
+
+  // Centers subtitle/description text
+  "BEST FOR SMALL CENTERS NEEDING ESSENTIAL TOOLS AND BASIC COVERAGE.": "MEJOR PARA CENTROS PEQUEÑOS QUE NECESITAN HERRAMIENTAS ESENCIALES Y COBERTURA BÁSICA.",
+  "BEST FOR GROWING PROGRAMS NEEDING VISIBILITY AND ADVANCED TRACKING.": "MEJOR PARA PROGRAMAS EN CRECIMIENTO QUE NECESITAN VISIBILIDAD Y SEGUIMIENTO AVANZADO.",
+  "BEST FOR LARGE NETWORKS OR FRANCHISE OPERATORS NEEDING ENTERPRISE SOLUTIONS.": "MEJOR PARA REDES GRANDES U OPERADORES DE FRANQUICIAS QUE NECESITAN SOLUCIONES EMPRESARIALES.",
 
   // ===== PLAN DESCRIPTIONS =====
   // Caregiver descriptions
@@ -91,6 +101,17 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "Post unlimited job listings and connect with qualified caregivers.": "Publica ofertas de empleo ilimitadas y conecta con cuidadores calificados.",
   "Build your team directory with verified staff members.": "Construye tu directorio de equipo con miembros del personal verificados.",
   "Tools for scheduling, payroll, and staff communication.": "Herramientas para programación, nómina y comunicación del personal.",
+
+  // Organization plan descriptions
+  "Home daycares and single-site programs building a stable, aligned team.": "Guarderías en el hogar y programas de un solo sitio que construyen un equipo estable y alineado.",
+  "Multi-site networks and chains standardizing hiring and training across locations.": "Redes multi-sitio y cadenas que estandarizan la contratación y capacitación en diferentes ubicaciones.",
+  "Custom pricing. Get in touch to design your program.": "Precio personalizado. Contáctanos para diseñar tu programa.",
+
+  // Organization features (expanded)
+  "Training seats & tracking": "Asientos de capacitación y seguimiento",
+  "Starter training seats to onboard staff into TRC foundations (up to 4 staff members).": "Asientos de capacitación inicial para incorporar personal a los fundamentos de TRC (hasta 4 miembros del personal).",
+  "Director dashboard to assign, track, and verify courses and badges (up to 10 staff members).": "Panel director para asignar, rastrear y verificar cursos e insignias (hasta 10 miembros del personal).",
+  "Custom training seats with advanced reporting and a co-branded learning hub (seat count tailored to your program).": "Asientos de capacitación personalizados con informes avanzados y un centro de aprendizaje co-marcado (recuento de asientos adaptado a tu programa).",
 
   // ===== BADGES AND LABELS =====
   "Best value": "Mejor valor",
