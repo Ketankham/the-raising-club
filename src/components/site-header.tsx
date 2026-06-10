@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./logo";
 import { PublicLanguageSwitcher } from "./public-language-switcher";
@@ -10,6 +11,11 @@ import { PublicLanguageSwitcher } from "./public-language-switcher";
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const t = useTranslations("navigation");
+  const locale = useLocale();
+
+  const getLocalizedHref = (href: string) => {
+    return locale === "es" ? `/es${href}` : href;
+  };
 
   const NAV = [
     { label: t("aboutUs"), href: "/about-us" },
@@ -22,7 +28,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-black/5 bg-white">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
-        <Link href="/" aria-label="The Raising Club home">
+        <Link href={getLocalizedHref("/")} aria-label="The Raising Club home">
           <Logo />
         </Link>
 
@@ -31,7 +37,7 @@ export function SiteHeader() {
           {NAV.map((item) => (
             <Link
               key={item.label}
-              href={item.href}
+              href={getLocalizedHref(item.href)}
               className="text-sm font-semibold text-ink/85 transition-colors hover:text-primary"
             >
               {item.label}
@@ -42,13 +48,13 @@ export function SiteHeader() {
         <div className="hidden items-center gap-3 lg:flex">
           <PublicLanguageSwitcher />
           <Link
-            href="/sign-in"
+            href={getLocalizedHref("/sign-in")}
             className="rounded-full border border-ink/15 px-5 py-2 text-sm font-semibold text-ink transition-colors hover:border-primary hover:text-primary"
           >
             {t("signIn")}
           </Link>
           <Link
-            href="/onboarding"
+            href={getLocalizedHref("/onboarding")}
             className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
           >
             {t("getStarted")}
@@ -73,7 +79,7 @@ export function SiteHeader() {
             {NAV.map((item) => (
               <Link
                 key={item.label}
-                href={item.href}
+                href={getLocalizedHref(item.href)}
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-2 py-2.5 text-sm font-semibold text-ink/85 hover:bg-lavender"
               >
@@ -86,13 +92,13 @@ export function SiteHeader() {
               <PublicLanguageSwitcher />
             </div>
             <Link
-              href="/sign-in"
+              href={getLocalizedHref("/sign-in")}
               className="rounded-full border border-ink/15 px-5 py-2.5 text-center text-sm font-semibold text-ink"
             >
               {t("signIn")}
             </Link>
             <Link
-              href="/onboarding"
+              href={getLocalizedHref("/onboarding")}
               className="rounded-full bg-primary px-5 py-2.5 text-center text-sm font-semibold text-white"
             >
               {t("getStarted")}

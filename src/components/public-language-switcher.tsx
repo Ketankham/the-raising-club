@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 
 export function PublicLanguageSwitcher() {
@@ -11,12 +12,13 @@ export function PublicLanguageSwitcher() {
   const handleSwitch = (newLocale: "en" | "es") => {
     if (newLocale === locale) return;
 
-    // Remove current locale prefix if present, then add new one if Spanish
+    // Remove /es prefix if present to get the base path
     let newPath = pathname;
     if (pathname.startsWith("/es")) {
       newPath = pathname.slice(3) || "/";
     }
 
+    // Add /es prefix if switching to Spanish
     if (newLocale === "es") {
       newPath = `/es${newPath}`;
     }
