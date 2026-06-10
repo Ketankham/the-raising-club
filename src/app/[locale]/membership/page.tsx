@@ -1,6 +1,6 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { Membership } from "@/components/membership/membership";
+import { TranslatingMembership } from "@/components/membership/translating-membership";
 import { listTabs } from "@/lib/plans/queries";
 import { getTranslations } from "next-intl/server";
 
@@ -19,7 +19,7 @@ export default async function MembershipPage() {
     <>
       <SiteHeader />
       <main className="flex-1">
-        <Membership tabs={tabs} />
+        <TranslatingMembership tabs={tabs} />
       </main>
       <SiteFooter />
     </>
