@@ -1,13 +1,16 @@
-import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MarketplaceContent } from "@/components/marketplace-landing/marketplace-content";
 
-export const metadata: Metadata = {
-  title: "Marketplace — The Raising Club",
-  description:
-    "One marketplace connecting caregivers seeking opportunities, parents finding trusted care, and organisations building their teams — plus the community, courses and events that tie it all together.",
-};
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }) {
+  const params = await props.params;
+  const t = await getTranslations({ locale: params.locale, namespace: "marketplacePage" });
+  return {
+    title: t("meta_title"),
+    description: t("meta_description"),
+  };
+}
 
 export default function MarketplacePage() {
   return (
