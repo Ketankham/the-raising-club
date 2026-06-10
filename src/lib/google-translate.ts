@@ -78,7 +78,20 @@ export async function batchTranslate(
 ): Promise<string[]> {
   if (!texts.length) return texts;
 
+  // Return original if not translating to Spanish
+  if (targetLanguage !== 'es') {
+    return texts;
+  }
+
+  // Check if API key is available
+  if (!GOOGLE_API_KEY) {
+    console.warn('[Google Translate] No API key configured');
+    return texts;
+  }
+
   try {
+    console.log(`[Google Translate] Translating ${texts.length} items to ${targetLanguage}`);
+
     const response = await fetch(GOOGLE_TRANSLATE_API_URL, {
       method: 'POST',
       headers: {
@@ -92,27 +105,38 @@ export async function batchTranslate(
     });
 
     if (!response.ok) {
+      console.error(`[Google Translate] API error: ${response.status} ${response.statusText}`);
+      const errorBody = await response.text();
+      console.error('[Google Translate] Error response:', errorBody);
       return texts;
     }
 
     const data = await response.json();
+
+    if (data.error) {
+      console.error('[Google Translate] API error response:', data.error);
+      return texts;
+    }
+
     const translations = data.data?.translations?.map(
       (t: { translatedText: string }) => t.translatedText
     );
 
-    if (translations) {
+    if (translations && translations.length === texts.length) {
       // Cache each translation
       texts.forEach((text, i) => {
         if (translations[i]) {
           cacheTranslation(text, translations[i], targetLanguage);
         }
       });
+      console.log(`[Google Translate] Successfully translated ${translations.length} items`);
       return translations;
     }
 
+    console.warn('[Google Translate] Translation count mismatch');
     return texts;
   } catch (error) {
-    console.error('Batch translation error:', error);
+    console.error('[Google Translate] Batch translation error:', error);
     return texts;
   }
 }

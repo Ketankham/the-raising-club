@@ -13,72 +13,49 @@ import type { Plan, Tab, Feature } from "@/lib/plans/types";
 export function TranslatingMembership({ tabs }: { tabs: Tab[] }) {
   const locale = useLocale();
   const [translatedTabs, setTranslatedTabs] = useState<Tab[]>(tabs);
-  const [isLoading, setIsLoading] = useState(locale !== "en");
+  const [isTranslating, setIsTranslating] = useState(false);
 
   useEffect(() => {
     // Don't translate for English locale
     if (locale === "en") {
       setTranslatedTabs(tabs);
-      setIsLoading(false);
+      setIsTranslating(false);
       return;
     }
 
-    // Translate all plan content
+    // Show membership immediately while translating in background
+    setTranslatedTabs(tabs);
+    setIsTranslating(true);
+
+    // Translate all plan content in background
     const translateTabs = async () => {
       try {
         const textsToTranslate: string[] = [];
-        const textIndexMap: { text: string; tabIdx: number; planIdx: number; field: string }[] = [];
 
-        // Collect all text that needs translation
-        tabs.forEach((tab, tabIdx) => {
-          tab.plans.forEach((plan, planIdx) => {
-            if (plan.name) {
-              textsToTranslate.push(plan.name);
-              textIndexMap.push({ text: plan.name, tabIdx, planIdx, field: "name" });
-            }
-            if (plan.subtitle) {
-              textsToTranslate.push(plan.subtitle);
-              textIndexMap.push({ text: plan.subtitle, tabIdx, planIdx, field: "subtitle" });
-            }
-            if (plan.description) {
-              textsToTranslate.push(plan.description);
-              textIndexMap.push({ text: plan.description, tabIdx, planIdx, field: "description" });
-            }
-            if (plan.cta) {
-              textsToTranslate.push(plan.cta);
-              textIndexMap.push({ text: plan.cta, tabIdx, planIdx, field: "cta" });
-            }
-            if (plan.badge) {
-              textsToTranslate.push(plan.badge);
-              textIndexMap.push({ text: plan.badge, tabIdx, planIdx, field: "badge" });
-            }
+        // Collect all text that needs translation (deduplicated)
+        const uniqueTexts = new Set<string>();
+        tabs.forEach((tab) => {
+          tab.plans.forEach((plan) => {
+            if (plan.name) uniqueTexts.add(plan.name);
+            if (plan.subtitle) uniqueTexts.add(plan.subtitle);
+            if (plan.description) uniqueTexts.add(plan.description);
+            if (plan.cta) uniqueTexts.add(plan.cta);
+            if (plan.badge) uniqueTexts.add(plan.badge);
             plan.features.forEach((feature) => {
-              if (feature.label) {
-                textsToTranslate.push(feature.label);
-                textIndexMap.push({
-                  text: feature.label,
-                  tabIdx,
-                  planIdx,
-                  field: `feature_label_${feature.label}`,
-                });
-              }
-              if (feature.body) {
-                textsToTranslate.push(feature.body);
-                textIndexMap.push({
-                  text: feature.body,
-                  tabIdx,
-                  planIdx,
-                  field: `feature_body_${feature.label}`,
-                });
-              }
+              if (feature.label) uniqueTexts.add(feature.label);
+              if (feature.body) uniqueTexts.add(feature.body);
             });
           });
         });
 
+        textsToTranslate.push(...Array.from(uniqueTexts));
+
         if (!textsToTranslate.length) {
-          setIsLoading(false);
+          setIsTranslating(false);
           return;
         }
+
+        console.log(`[Translation] Translating ${textsToTranslate.length} unique texts to ${locale}`);
 
         // Translate all texts
         const translations = await batchTranslate(textsToTranslate, locale);
@@ -89,16 +66,16 @@ export function TranslatingMembership({ tabs }: { tabs: Tab[] }) {
         );
 
         // Apply translations to tabs
-        const newTabs = tabs.map((tab, tabIdx) => ({
+        const newTabs = tabs.map((tab) => ({
           ...tab,
-          plans: tab.plans.map((plan, planIdx) => {
+          plans: tab.plans.map((plan) => {
             const newPlan: Plan = {
               ...plan,
               name: translationMap.get(plan.name) || plan.name,
-              subtitle: plan.subtitle ? translationMap.get(plan.subtitle) : plan.subtitle,
+              subtitle: plan.subtitle ? translationMap.get(plan.subtitle) || plan.subtitle : plan.subtitle,
               description: translationMap.get(plan.description) || plan.description,
               cta: translationMap.get(plan.cta) || plan.cta,
-              badge: plan.badge ? translationMap.get(plan.badge) : plan.badge,
+              badge: plan.badge ? translationMap.get(plan.badge) || plan.badge : plan.badge,
               features: plan.features.map((feature) => ({
                 label: translationMap.get(feature.label) || feature.label,
                 body: translationMap.get(feature.body) || feature.body,
@@ -108,28 +85,18 @@ export function TranslatingMembership({ tabs }: { tabs: Tab[] }) {
           }),
         }));
 
+        console.log(`[Translation] Successfully translated ${textsToTranslate.length} texts`);
         setTranslatedTabs(newTabs);
       } catch (error) {
-        console.error("Error translating plans:", error);
-        setTranslatedTabs(tabs);
+        console.error("[Translation] Error translating plans:", error);
+        // Silently fail - membership already shown in original language
       } finally {
-        setIsLoading(false);
+        setIsTranslating(false);
       }
     };
 
     translateTabs();
   }, [locale, tabs]);
-
-  // Show loading state if still translating
-  if (isLoading) {
-    return (
-      <section className="relative overflow-hidden bg-cream py-14 lg:py-20">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8 text-center py-20">
-          <p className="text-ink/60">Cargando planes...</p>
-        </div>
-      </section>
-    );
-  }
 
   return <Membership tabs={translatedTabs} />;
 }
