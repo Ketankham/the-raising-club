@@ -21,9 +21,18 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
 
   // ===== FAMILY PLANS =====
   "Family Essentials": "Esenciales Familiares",
+  "Family Access": "Acceso Familiar",
+  "Family Club+": "Club+ Familiar",
   "Family Plus": "Familia Plus",
   "Start as a Member": "Comienza como Miembro",
   "Upgrade to Pro": "Actualiza a Profesional",
+
+  // Family subtitles/CTAs
+  "GO DEEPER": "PROFUNDIZA",
+  "COORDINATE CARE TOGETHER": "COORDINA EL CUIDADO JUNTOS",
+  "Explore TRC": "Explora TRC",
+  "Get Family Access": "Obtén Acceso Familiar",
+  "Get Family Club+": "Obtén Club+ Familiar",
 
   // ===== ORGANIZATION/CENTERS PLANS =====
   "Program Core": "Programa Base",
@@ -49,6 +58,9 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
 
   // Family descriptions
   "For families beginning their search for quality care and community.": "Para familias que comienzan su búsqueda de cuidado de calidad y comunidad.",
+  "For anyone caring for or spending time with a child—parents, grandparents, aunts, uncles—who wants to understand the basics of child development and explore The Raising Club's events and community at their own pace.": "Para cualquiera que cuide o pase tiempo con un niño—padres, abuelos, tías, tíos—que quiera entender los conceptos básicos del desarrollo infantil y explorar los eventos y la comunidad de The Raising Club a su propio ritmo.",
+  "For families who want deeper learning, and to start connecting with other families and caregivers as part of everyday family life.": "Para familias que desean aprendizaje más profundo y comenzar a conectar con otras familias y cuidadores como parte de la vida familiar cotidiana.",
+  "For families coordinating care with others—including nanny shares, shared-care setups, or extended family—who want a more integrated way of doing things together.": "Para familias que coordinan el cuidado con otros—incluyendo servicios de niñera compartida, arreglos de cuidado compartido o familia extendida—que desean una forma más integrada de hacer las cosas juntos.",
   "For families seeking vetted caregivers and curriculum support.": "Para familias que buscan cuidadores verificados y apoyo curricular.",
 
   // Organization descriptions
@@ -93,9 +105,14 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "Resources for coaching, scheduling, and team management.": "Recursos para coaching, programación y gestión de equipos.",
 
   // Family feature descriptions
+  "Foundational TRC guidance on child development.": "Orientación fundamental de TRC sobre desarrollo infantil.",
   "Search for vetted caregivers matching your needs and values.": "Busca cuidadores verificados que coincidan con tus necesidades y valores.",
+  "Everything in Family Essentials, plus the full A Raising Approach™ (one-on-one care) framework to raise a child with structure and purpose.": "Todo en Esenciales Familiares, más el marco completo del Enfoque A Raising™ (cuidado uno a uno) para criar a un niño con estructura y propósito.",
+  "Everything in Family Access, plus the A Raising Approach™ (shared care) framework, community support, and guidance for coordinating care with nanny shares and extended family.": "Todo en Acceso Familiar, más el marco del Enfoque A Raising™ (cuidado compartido), apoyo comunitario y orientación para coordinar el cuidado con servicios de niñera compartida y familia extendida.",
   "Access to TRC-curated resources supporting child development.": "Acceso a recursos seleccionados por TRC que apoyan el desarrollo infantil.",
   "Direct communication channels with families you match with.": "Canales de comunicación directa con cuidadores verificados.",
+  "Learning & guidance": "Aprendizaje y orientación",
+  "Community & support": "Comunidad y apoyo",
 
   // Organization feature descriptions
   "Post unlimited job listings and connect with qualified caregivers.": "Publica ofertas de empleo ilimitadas y conecta con cuidadores calificados.",
@@ -124,10 +141,16 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "Gratis": "Gratis",
   "Free forever": "Gratis para siempre",
   "/month": "/mes",
+  "/month per site": "/mes por sitio",
   "/year": "/año",
   "Billed monthly": "Facturado mensualmente",
   "Billed annually": "Facturado anualmente",
   "Save 15%": "Ahorra 15%",
+  "per month": "por mes",
+  "per site": "por sitio",
+  "Monthly": "Mensual",
+  "Annual": "Anual",
+  "Ahorra 15%": "Ahorra 15%",
 };
 
 function translateText(text: string | undefined, locale: string): string | undefined {
