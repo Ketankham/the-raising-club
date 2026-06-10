@@ -103,7 +103,16 @@
     "priceFreeSub": "Gratis por siempre",
     "priceCustom": "Personalizado",
     "priceBilledMonthly": "Facturado mensualmente",
-    "priceBilledAnnually": "Facturado anualmente"
+    "priceBilledAnnually": "Facturado anualmente",
+    "tabCaregiverLabel": "Cuidador",
+    "tabCaregiverTitle": "Cuidador y Educador",
+    "tabFamiliesLabel": "Familias",
+    "tabFamiliesTitle": "Familia",
+    "tabCentersLabel": "Centros y Programas",
+    "tabCentersTitle": "Centros y Programas",
+    "tabCentersHeadingAccent": "Centros y",
+    "tabCentersHeadingRest": "Programas",
+    "tabHeadingMemberships": "membresías"
   },
   "membershipPage": {
     "meta_title": "Membresía — The Raising Club",

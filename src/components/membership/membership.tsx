@@ -35,8 +35,27 @@ export function Membership({ tabs }: { tabs: Tab[] }) {
   const t = useTranslations("membership");
   const [tabId, setTabId] = useState<string>(tabs[0]?.id ?? "caregiver");
   const [annual, setAnnual] = useState(false);
-  const tab = tabs.find((t) => t.id === tabId) ?? tabs[0];
-  const showToggle = tab.id !== "centers";
+  const baseTab = tabs.find((t) => t.id === tabId) ?? tabs[0];
+  const showToggle = baseTab.id !== "centers";
+
+  // Translate tab labels and headings
+  const getTabLabel = (tabId: string) => {
+    if (tabId === "caregiver") return t("tabCaregiverLabel");
+    if (tabId === "families") return t("tabFamiliesLabel");
+    return t("tabCentersLabel");
+  };
+
+  const getTabHeading = (tabId: string) => {
+    if (tabId === "caregiver") return { accent: t("tabCaregiverTitle"), rest: t("tabHeadingMemberships") };
+    if (tabId === "families") return { accent: t("tabFamiliesTitle"), rest: t("tabHeadingMemberships") };
+    return { accent: t("tabCentersHeadingAccent"), rest: t("tabCentersHeadingRest") };
+  };
+
+  const tab = {
+    ...baseTab,
+    label: getTabLabel(baseTab.id),
+    heading: getTabHeading(baseTab.id),
+  };
 
   return (
     <section className="relative overflow-hidden bg-cream py-14 lg:py-20">
@@ -57,7 +76,7 @@ export function Membership({ tabs }: { tabs: Tab[] }) {
                     : "text-ink/70 hover:text-ink"
                 }`}
               >
-                {t.label}
+                {getTabLabel(t.id)}
               </button>
             ))}
           </div>
