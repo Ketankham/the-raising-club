@@ -104,11 +104,24 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "Lead pods, circles, and learning spaces, and support the growth of other caregivers.": "Lidera grupos, círculos y espacios de aprendizaje, y apoya el crecimiento de otros cuidadores.",
   "Resources for coaching, scheduling, and team management.": "Recursos para coaching, programación y gestión de equipos.",
 
+  // Family feature labels
+  "Caregiver & extended family": "Cuidador y familia extendida",
+  "Events & community": "Eventos y comunidad",
+  "Care search & matching": "Búsqueda y emparejamiento de cuidados",
+  "Parent-caregiver path": "Ruta de padre-cuidador",
+
   // Family feature descriptions
   "Foundational TRC guidance on child development.": "Orientación fundamental de TRC sobre desarrollo infantil.",
+  "Training for up to 3 adults in your Raising Club, with role-specific guidance for parents, co-parents, grandparents, extended family, or household support.": "Capacitación para hasta 3 adultos en tu Raising Club, con orientación específica de rol para padres, co-padres, abuelos, familia extendida o apoyo del hogar.",
+  "Training for up to 5 adults in your Raising Club, with role-specific guidance. Additional training seats may be added as needed.": "Capacitación para hasta 5 adultos en tu Raising Club, con orientación específica de rol. Se pueden agregar asientos de capacitación adicionales según sea necesario.",
   "Search for vetted caregivers matching your needs and values.": "Busca cuidadores verificados que coincidan con tus necesidades y valores.",
+  "Everything in Family Essentials, plus select TRC workshops and classes included as part of your membership.": "Todo en Esenciales Familiares, más talleres y clases seleccionadas de TRC incluidas como parte de tu membresía.",
   "Everything in Family Essentials, plus the full A Raising Approach™ (one-on-one care) framework to raise a child with structure and purpose.": "Todo en Esenciales Familiares, más el marco completo del Enfoque A Raising™ (cuidado uno a uno) para criar a un niño con estructura y propósito.",
+  "Everything in Family Access, plus the ability to host family gatherings and shared learning experiences—with support from TRC.": "Todo en Acceso Familiar, más la capacidad de albergar reuniones familiares y experiencias de aprendizaje compartido—con apoyo de TRC.",
   "Everything in Family Access, plus the A Raising Approach™ (shared care) framework, community support, and guidance for coordinating care with nanny shares and extended family.": "Todo en Acceso Familiar, más el marco del Enfoque A Raising™ (cuidado compartido), apoyo comunitario y orientación para coordinar el cuidado con servicios de niñera compartida y familia extendida.",
+  "Smart matching and messaging with caregivers and nearby families—for one-on-one care, playdates, and trusted parent connections.": "Emparejamiento inteligente y mensajería con cuidadores y familias cercanas—para cuidado uno a uno, citas de juego y conexiones de padres de confianza.",
+  "Everything in Family Access, plus added support for shared care setups like nanny shares, pods, and group care.": "Todo en Acceso Familiar, más apoyo adicional para configuraciones de cuidado compartido como servicios de niñera compartida, grupos y cuidado grupal.",
+  "Optional path to care for another child alongside your own, with structure, training, and support.": "Ruta opcional para cuidar a otro niño junto con el tuyo, con estructura, capacitación y apoyo.",
   "Access to TRC-curated resources supporting child development.": "Acceso a recursos seleccionados por TRC que apoyan el desarrollo infantil.",
   "Direct communication channels with families you match with.": "Canales de comunicación directa con cuidadores verificados.",
   "Learning & guidance": "Aprendizaje y orientación",
