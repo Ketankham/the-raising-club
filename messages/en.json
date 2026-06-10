@@ -547,10 +547,14 @@
   },
   "termsPage": {
     "meta_title": "Terms & Conditions | The Raising Club",
+    "meta_description": "Terms of Service for The Raising Club childcare marketplace, courses, and events platform.",
+    "header_label": "Legal",
     "header_title": "Terms & Conditions",
     "header_intro": "Welcome to The Raising Club. Please read these Terms carefully before using our platform. By creating an account or using any part of our services, you agree to be bound by these Terms. If you do not agree, do not use The Raising Club."
   },
   "privacyPage": {
+    "meta_title": "Privacy Policy | The Raising Club",
+    "meta_description": "How The Raising Club collects, uses, and protects your personal information.",
     "header_label": "Legal",
     "header_title": "Privacy Policy",
     "header_effective": "Effective date: June 3, 2026",

@@ -3,10 +3,12 @@ import { SiteFooter } from "@/components/site-footer";
 import { TermsContent } from "@/components/legal/terms-content";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata() {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }) {
+  const params = await props.params;
+  const t = await getTranslations({ locale: params.locale, namespace: "termsPage" });
   return {
-    title: "Terms & Conditions | The Raising Club",
-    description: "Terms of Service for The Raising Club childcare marketplace, courses, and events platform.",
+    title: t("meta_title"),
+    description: t("meta_description"),
   };
 }
 

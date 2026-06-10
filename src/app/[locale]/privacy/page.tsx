@@ -3,10 +3,12 @@ import { SiteFooter } from "@/components/site-footer";
 import { PrivacyContent } from "@/components/legal/privacy-content";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata() {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }) {
+  const params = await props.params;
+  const t = await getTranslations({ locale: params.locale, namespace: "privacyPage" });
   return {
-    title: "Privacy Policy | The Raising Club",
-    description: "How The Raising Club collects, uses, and protects your personal information.",
+    title: t("meta_title"),
+    description: t("meta_description"),
   };
 }
 
