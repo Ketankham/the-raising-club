@@ -520,6 +520,10 @@
       "eventStyleAny": "Any event style"
     }
   },
+  "aboutPage": {
+    "meta_title": "About Us — The Raising Club",
+    "meta_description": "We're building the modern village for families—bringing families, caregivers, and programs together with evidence-based guidance. Meet our founder and read our manifesto."
+  },
   "footer": {
     "tagline": "Trusted by families and caregivers across the globe",
     "quickLinks": "Quick Links",

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -8,11 +7,14 @@ import { Values } from "@/components/about/values";
 import { AboutCta } from "@/components/about/about-cta";
 import { Flower } from "@/components/about/star-burst";
 
-export const metadata: Metadata = {
-  title: "About Us — The Raising Club",
-  description:
-    "We’re building the modern village for families—bringing families, caregivers, and programs together with evidence-based guidance. Meet our founder and read our manifesto.",
-};
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }) {
+  const params = await props.params;
+  const t = await getTranslations({ locale: params.locale, namespace: "aboutPage" });
+  return {
+    title: t("meta_title"),
+    description: t("meta_description"),
+  };
+}
 
 export default async function AboutUsPage() {
   const t = await getTranslations("about");
