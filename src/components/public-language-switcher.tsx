@@ -1,29 +1,28 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 
 export function PublicLanguageSwitcher() {
-  const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
 
   const handleSwitch = (newLocale: "en" | "es") => {
     if (newLocale === locale) return;
 
-    // Remove /es prefix if present to get the base path
-    let newPath = pathname;
-    if (pathname.startsWith("/es")) {
-      newPath = pathname.slice(3) || "/";
+    // Strip any /es prefix to get the base path
+    let basePath = pathname;
+    if (pathname.startsWith("/es/")) {
+      basePath = pathname.slice(3); // keeps the leading /
+    } else if (pathname === "/es") {
+      basePath = "/";
     }
 
-    // Add /es prefix if switching to Spanish
-    if (newLocale === "es") {
-      newPath = `/es${newPath}`;
-    }
+    // Build the new URL
+    const newPath = newLocale === "es" ? `/es${basePath}` : basePath;
 
-    router.push(newPath);
+    // Hard navigate so next-intl re-detects the locale from the URL
+    window.location.href = newPath;
   };
 
   return (
