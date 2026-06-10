@@ -10,19 +10,13 @@ export function PublicLanguageSwitcher() {
   const handleSwitch = (newLocale: "en" | "es") => {
     if (newLocale === locale) return;
 
-    // Strip any /es prefix to get the base path
-    let basePath = pathname;
-    if (pathname.startsWith("/es/")) {
-      basePath = pathname.slice(3); // keeps the leading /
-    } else if (pathname === "/es") {
-      basePath = "/";
+    if (newLocale === "en") {
+      // Remove /es from the current URL — same page, English
+      window.location.href = pathname.replace(/^\/es/, "") || "/";
+    } else {
+      // Add /es to the current URL — same page, Spanish
+      window.location.href = `/es${pathname}`;
     }
-
-    // Build the new URL
-    const newPath = newLocale === "es" ? `/es${basePath}` : basePath;
-
-    // Hard navigate so next-intl re-detects the locale from the URL
-    window.location.href = newPath;
   };
 
   return (
