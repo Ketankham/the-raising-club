@@ -511,6 +511,25 @@
       "eventStyleAny": "Any event style"
     }
   },
+  "footer": {
+    "tagline": "Trusted by families and caregivers across the globe",
+    "quickLinks": "Quick Links",
+    "links": {
+      "aboutUs": "About Us",
+      "faq": "FAQ",
+      "contact": "Contact",
+      "trustSafety": "Trust & Safety",
+      "blog": "Blog",
+      "termsConditions": "Terms & Conditions",
+      "privacy": "Privacy"
+    },
+    "newsletter": "Newsletter",
+    "newsletterDescription": "Join The Raising Club community",
+    "emailPlaceholder": "Your email",
+    "subscribe": "Subscribe",
+    "formedBy": "The Raising Club is formed by The Raising Club Marketplace",
+    "and": "and The Raising Club Foundation"
+  },
   "termsPage": {
     "meta_title": "Terms & Conditions | The Raising Club",
     "header_title": "Terms & Conditions",

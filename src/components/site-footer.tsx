@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Logo } from "./logo";
 
 const SOCIAL_PATHS: Record<string, string> = {
@@ -14,17 +17,19 @@ const SOCIAL_PATHS: Record<string, string> = {
 
 const SOCIALS = ["Facebook", "Instagram", "LinkedIn", "YouTube"];
 
-const QUICK_LINKS = [
-  { label: "About Us", href: "/about-us" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Contact", href: "/#footer" },
-  { label: "Trust & Safety", href: "/trust-safety" },
-  { label: "Blog", href: "/blog" },
-  { label: "Terms & Conditions", href: "/terms" },
-  { label: "Privacy", href: "/privacy" },
-];
-
 export function SiteFooter() {
+  const t = useTranslations("footer");
+
+  const QUICK_LINKS = [
+    { key: "aboutUs", href: "/about-us" },
+    { key: "faq", href: "/faq" },
+    { key: "contact", href: "/#footer" },
+    { key: "trustSafety", href: "/trust-safety" },
+    { key: "blog", href: "/blog" },
+    { key: "termsConditions", href: "/terms" },
+    { key: "privacy", href: "/privacy" },
+  ];
+
   return (
     <footer id="footer" className="mt-auto bg-mint">
       <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
@@ -33,7 +38,7 @@ export function SiteFooter() {
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm text-ink/70">
-              Trusted by families and caregivers across the globe
+              {t("tagline")}
             </p>
             <div className="mt-5 flex gap-3">
               {SOCIALS.map((label) => (
@@ -54,16 +59,16 @@ export function SiteFooter() {
           {/* Quick links */}
           <div>
             <h4 className="font-display text-sm font-bold uppercase tracking-wide text-ink">
-              Quick Links
+              {t("quickLinks")}
             </h4>
             <ul className="mt-4 space-y-2.5">
               {QUICK_LINKS.map((l) => (
-                <li key={l.label}>
+                <li key={l.key}>
                   <Link
                     href={l.href}
                     className="text-sm text-ink/70 transition-colors hover:text-primary"
                   >
-                    {l.label}
+                    {t(`links.${l.key}`)}
                   </Link>
                 </li>
               ))}
@@ -73,23 +78,23 @@ export function SiteFooter() {
           {/* Newsletter */}
           <div>
             <h4 className="font-display text-sm font-bold uppercase tracking-wide text-ink">
-              Newsletter
+              {t("newsletter")}
             </h4>
             <p className="mt-4 text-sm text-ink/70">
-              Join The Raising Club community
+              {t("newsletterDescription")}
             </p>
             <form className="mt-4 flex max-w-sm gap-2">
               <input
                 type="email"
                 required
-                placeholder="Your email"
+                placeholder={t("emailPlaceholder")}
                 className="min-w-0 flex-1 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm outline-none placeholder:text-ink/40 focus:border-primary"
               />
               <button
                 type="submit"
                 className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
               >
-                Subscribe
+                {t("subscribe")}
               </button>
             </form>
           </div>
@@ -99,14 +104,14 @@ export function SiteFooter() {
       {/* Bottom bar */}
       <div className="border-t border-black/5 bg-mint">
         <div className="mx-auto max-w-7xl px-5 py-5 text-center text-xs text-ink/60 lg:px-8">
-          The Raising Club is formed by The Raising Club Marketplace{" "}
+          {t("formedBy")}{" "}
           <a
             href="https://theraisingclub.com"
             className="italic text-primary hover:underline"
           >
             (theraisingclub.com)
           </a>{" "}
-          and The Raising Club Foundation{" "}
+          {t("and")}{" "}
           <a
             href="https://theraisingclub.org"
             className="italic text-primary hover:underline"

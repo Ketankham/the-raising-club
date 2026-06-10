@@ -577,5 +577,24 @@
     "s4_3_p1": "Podemos divulgar tu informacion cuando lo requiere la ley o una orden judicial.",
     "s4_4_title": "Transferencias de negocios",
     "s4_4_p1": "Si TRC esta involucrado en una fusion, adquisicion o venta de activos, tu informacion puede ser transferida."
+  },
+  "footer": {
+    "tagline": "Confiado por familias y cuidadores en todo el mundo",
+    "quickLinks": "Enlaces Rápidos",
+    "links": {
+      "aboutUs": "Sobre Nosotros",
+      "faq": "Preguntas Frecuentes",
+      "contact": "Contacto",
+      "trustSafety": "Confianza y Seguridad",
+      "blog": "Blog",
+      "termsConditions": "Términos y Condiciones",
+      "privacy": "Privacidad"
+    },
+    "newsletter": "Boletín",
+    "newsletterDescription": "Únete a la comunidad de The Raising Club",
+    "emailPlaceholder": "Tu correo electrónico",
+    "subscribe": "Suscribirse",
+    "formedBy": "The Raising Club está formado por The Raising Club Marketplace",
+    "and": "y The Raising Club Foundation"
   }
 }
