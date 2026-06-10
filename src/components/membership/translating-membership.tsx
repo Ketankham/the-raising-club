@@ -4,37 +4,48 @@ import { useLocale } from "next-intl";
 import { Membership } from "./membership";
 import type { Plan, Tab } from "@/lib/plans/types";
 
-// Direct Spanish translations for membership page content
+// Direct Spanish translations for membership page content - COMPLETE
 const SPANISH_TRANSLATIONS: Record<string, string> = {
-  // Plan names
+  // ===== CAREGIVER PLANS =====
   "TRC Community": "Comunidad TRC",
   "TRC Pro Caregiver": "Profesional TRC",
   "TRC Lead Caregiver": "Líder TRC",
-  "Family Essentials": "Esenciales Familiares",
-  "Family Plus": "Familia Plus",
-  "Program Core": "Programa Base",
-  "Program Professional": "Programa Profesional",
 
-  // CTAs and labels
+  // Caregiver CTAs
   "START HERE": "COMIENZA AQUÍ",
   "GROW AS A PROFESSIONAL": "CRECE COMO PROFESIONAL",
   "LEAD AND SUPPORT OTHERS": "LIDERA Y APOYA A OTROS",
   "Join for Free": "Únete Gratis",
   "Become a TRC Pro Caregiver": "Conviértete en Profesional TRC",
   "Apply as a TRC Lead Caregiver": "Solicita ser Líder TRC",
-  "Start Here": "Comienza Aquí",
+
+  // ===== FAMILY PLANS =====
+  "Family Essentials": "Esenciales Familiares",
+  "Family Plus": "Familia Plus",
   "Start as a Member": "Comienza como Miembro",
   "Upgrade to Pro": "Actualiza a Profesional",
 
-  // Descriptions
+  // ===== ORGANIZATION/CENTERS PLANS =====
+  "Program Core": "Programa Base",
+  "Program Professional": "Programa Profesional",
+  "Launch your program": "Lanza tu programa",
+  "Scale your organization": "Expande tu organización",
+
+  // ===== PLAN DESCRIPTIONS =====
+  // Caregiver descriptions
   "Caregivers and educators starting on TRC, creating a professional profile, and applying to a limited number of roles.": "Cuidadores y educadores que comienzan en TRC, crean un perfil profesional y solicitan un número limitado de empleos.",
   "For career-focused caregivers & educators seeking consistent work and professional verification.": "Para cuidadores y educadores enfocados en su carrera que buscan trabajo consistente y verificación profesional.",
   "For experienced leaders managing pods, mentoring junior educators, or running micro-schools.": "Para líderes experimentados que manejan grupos, mentorizan educadores junior o dirigen microescuelas.",
+
+  // Family descriptions
   "For families beginning their search for quality care and community.": "Para familias que comienzan su búsqueda de cuidado de calidad y comunidad.",
   "For families seeking vetted caregivers and curriculum support.": "Para familias que buscan cuidadores verificados y apoyo curricular.",
+
+  // Organization descriptions
   "For organizations building and scaling their staffing network.": "Para organizaciones que construyen y expanden su red de personal.",
 
-  // Features
+  // ===== FEATURE LABELS =====
+  // Caregiver features
   "Job access": "Acceso a empleos",
   "Training & badge": "Capacitación y insignia",
   "Verified profile": "Perfil verificado",
@@ -42,30 +53,52 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "Professional verification": "Verificación profesional",
   "Priority job matching": "Emparejamiento de empleos prioritario",
   "Advanced analytics": "Análisis avanzados",
-  "Direct family connections": "Conexiones directas con familias",
-  "Curriculum resources": "Recursos curriculares",
   "Mentorship program": "Programa de mentoría",
   "Leadership toolkit": "Kit de herramientas de liderazgo",
+  "Community & growth": "Comunidad y crecimiento",
 
-  // Feature descriptions
+  // Family features
+  "Caregiver search": "Búsqueda de cuidadores",
+  "Curriculum resources": "Recursos curriculares",
+  "Vetting & verification": "Verificación y validación",
+
+  // Organization features
+  "Job posting": "Publicación de empleos",
+  "Staff directory": "Directorio de personal",
+  "Team management": "Gestión de equipo",
+
+  // ===== FEATURE DESCRIPTIONS =====
+  // Caregiver feature descriptions
   "Apply to a limited number of family and program roles each month.": "Solicita un número limitado de empleos de familia y programa cada mes.",
   "Foundational TRC lessons on safe care and professional practices.": "Lecciones TRC fundamentales sobre cuidado seguro y prácticas profesionales.",
-  "TRC-verified profile that appears to families seeking vetted caregivers.": "Perfil verificado por TRC que aparece para familias que buscan cuidadores verificados.",
+  "Standard caregiver profile visible to families and programs.": "Perfil de cuidador estándar visible para familias y programas.",
   "Connect with families in your community exploring quality care.": "Conecta con familias en tu comunidad que exploran cuidado de calidad.",
   "Verified by TRC for consistent work and professional growth.": "Verificado por TRC para trabajo consistente y crecimiento profesional.",
-  "Matched with families seeking caregivers with your experience and skills.": "Emparejado con familias que buscan cuidadores con tu experiencia y habilidades.",
+  "Access to the full range of roles, including leadership opportunities, pods, and TRC-led initiatives.": "Acceso a la gama completa de empleos, incluyendo oportunidades de liderazgo, grupos y iniciativas dirigidas por TRC.",
+  "Structured TRC training with verified badges that make your skills visible to families and programs.": "Capacitación estructurada de TRC con insignias verificadas que hacen visible tus habilidades ante familias y programas.",
+  "Enhanced profile visibility, prioritized for better-aligned family and program roles.": "Visibilidad mejorada del perfil, priorizado para empleos de familia y programa mejor alineados.",
   "Real-time insights into your profile views and match rates.": "Información en tiempo real sobre vistas de perfil y tasas de compatibilidad.",
-  "Direct communication channels with families you match with.": "Canales de comunicación directa con familias con las que te emparejas.",
-  "Access to TRC-curated resources supporting child development.": "Acceso a recursos seleccionados por TRC que apoyan el desarrollo infantil.",
   "Structured guidance from experienced TRC community members.": "Orientación estructurada de miembros experimentados de la comunidad TRC.",
+  "Lead pods, circles, and learning spaces, and support the growth of other caregivers.": "Lidera grupos, círculos y espacios de aprendizaje, y apoya el crecimiento de otros cuidadores.",
   "Resources for coaching, scheduling, and team management.": "Recursos para coaching, programación y gestión de equipos.",
 
-  // Badges and labels
+  // Family feature descriptions
+  "Search for vetted caregivers matching your needs and values.": "Busca cuidadores verificados que coincidan con tus necesidades y valores.",
+  "Access to TRC-curated resources supporting child development.": "Acceso a recursos seleccionados por TRC que apoyan el desarrollo infantil.",
+  "Direct communication channels with families you match with.": "Canales de comunicación directa con cuidadores verificados.",
+
+  // Organization feature descriptions
+  "Post unlimited job listings and connect with qualified caregivers.": "Publica ofertas de empleo ilimitadas y conecta con cuidadores calificados.",
+  "Build your team directory with verified staff members.": "Construye tu directorio de equipo con miembros del personal verificados.",
+  "Tools for scheduling, payroll, and staff communication.": "Herramientas para programación, nómina y comunicación del personal.",
+
+  // ===== BADGES AND LABELS =====
   "Best value": "Mejor valor",
   "Best for": "Mejor para",
   "Everything in": "Todo en",
+  "Visibility": "Visibilidad",
 
-  // Price text
+  // ===== PRICING TEXT =====
   "Free": "Gratis",
   "Gratis": "Gratis",
   "Free forever": "Gratis para siempre",
@@ -73,6 +106,7 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "/year": "/año",
   "Billed monthly": "Facturado mensualmente",
   "Billed annually": "Facturado anualmente",
+  "Save 15%": "Ahorra 15%",
 };
 
 function translateText(text: string | undefined, locale: string): string | undefined {
