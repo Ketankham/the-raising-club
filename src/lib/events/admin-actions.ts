@@ -27,7 +27,7 @@ function eventColumns(form: EventFormInput) {
     title: form.title,
     summary: form.summary ?? null,
     what_to_expect: form.whatToExpect ?? null,
-    hero_image_url: form.heroImageUrl ?? null,
+    hero_image_url: form.heroImageUrl?.startsWith("https://") ? form.heroImageUrl : null,
     join_mode: form.joinMode,
     style: form.style ?? null,
     participation_type: form.participationType,

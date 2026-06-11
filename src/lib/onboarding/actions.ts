@@ -187,6 +187,10 @@ export async function createAccount(input: {
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "No session" };
 
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(input.email)) {
+    return { ok: false, error: "Invalid email address." };
+  }
+
   // Upgrade the anonymous user in place. `registered_at` + email_confirmed_at
   // are set by DB triggers (on_auth_user_updated).
   const { error: authError } = await supabase.auth.updateUser({
@@ -341,12 +345,13 @@ async function promoteOnboardingData(
       await supabase.from("children").delete().eq("parent_user_id", userId);
       const kids = arr<{ pet_name?: string; birth_month?: number; birth_year?: number }>(a.children);
       if (kids.length) {
+        const now = new Date().getFullYear();
         await supabase.from("children").insert(
           kids.map((k, i) => ({
             parent_user_id: userId,
-            pet_name: k.pet_name ?? null,
-            birth_month: k.birth_month ?? null,
-            birth_year: k.birth_year ?? null,
+            pet_name: typeof k.pet_name === "string" ? k.pet_name.slice(0, 100) : null,
+            birth_month: typeof k.birth_month === "number" && k.birth_month >= 1 && k.birth_month <= 12 ? k.birth_month : null,
+            birth_year: typeof k.birth_year === "number" && k.birth_year >= 2000 && k.birth_year <= now ? k.birth_year : null,
             position: i,
           })),
         );
@@ -428,12 +433,13 @@ async function promoteOnboardingData(
         await supabase.from("caregiver_context_children").delete().eq("user_id", userId);
         const cc = arr<{ pet_name?: string; birth_month?: number; birth_year?: number }>(a.contextChildren);
         if (cc.length) {
+          const now = new Date().getFullYear();
           await supabase.from("caregiver_context_children").insert(
             cc.map((k, i) => ({
               user_id: userId,
-              pet_name: k.pet_name ?? null,
-              birth_month: k.birth_month ?? null,
-              birth_year: k.birth_year ?? null,
+              pet_name: typeof k.pet_name === "string" ? k.pet_name.slice(0, 100) : null,
+              birth_month: typeof k.birth_month === "number" && k.birth_month >= 1 && k.birth_month <= 12 ? k.birth_month : null,
+              birth_year: typeof k.birth_year === "number" && k.birth_year >= 2000 && k.birth_year <= now ? k.birth_year : null,
               position: i,
             })),
           );

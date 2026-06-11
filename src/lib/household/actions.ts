@@ -72,7 +72,14 @@ export async function inviteFamilyMember(input: { email: string; relationLabel?:
 export async function revokeFamilyInvite(id: string): Promise<Result> {
   const { supabase, user } = await me();
   if (!user) return { ok: false, error: "Not signed in" };
-  const { error } = await supabase.from("household_invitations").update({ status: "revoked" }).eq("id", id);
+  const householdId = await findHousehold(supabase, user.id);
+  if (!householdId) return { ok: false, error: "No household." };
+  // Pin to caller's household to prevent revoking another family's invitations.
+  const { error } = await supabase
+    .from("household_invitations")
+    .update({ status: "revoked" })
+    .eq("id", id)
+    .eq("household_id", householdId);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/dashboard/family");
   return { ok: true };

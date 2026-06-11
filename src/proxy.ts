@@ -20,7 +20,7 @@ const handleI18nRouting = createMiddleware(routing);
 
 // Routes that require a signed-in user. NOTE: /profile is intentionally absent
 // so /profile/[id] stays publicly shareable; the own /profile page guards itself.
-const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/connect"];
+const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/connect", "/manage", "/chat"];
 
 export async function proxy(request: NextRequest) {
   // 1. Run i18n routing first (handles locale prefix, adds locale cookie)
