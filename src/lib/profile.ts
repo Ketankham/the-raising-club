@@ -27,6 +27,8 @@ export interface CaregiverProfileData {
   courseCredentials: { certificateId: string; courseTitle: string; courseSlug: string; issuedAt: string }[];
   reviews: { id: string; reviewer_name: string | null; relationship: string | null; rating: number | null; body: string | null }[];
   verifications: { type: string; status: string }[];
+  hasAuthenticateUser: boolean;
+  backgroundCheckVerified: boolean;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -90,7 +92,12 @@ export async function getPublicCaregiverProfile(userId: string): Promise<Caregiv
     earnedSkills: mapSkills(skills.data),
     courseCredentials: mapCredsFromRows(creds.data),
     reviews: reviews.data ?? [],
-    verifications: pub.idVerified ? [{ type: "identity", status: "verified" }] : [],
+    verifications: [
+      ...(pub.idVerified ? [{ type: "identity", status: "verified" }] : []),
+      ...(pub.backgroundCheckVerified ? [{ type: "background_check", status: "verified" }] : []),
+    ],
+    hasAuthenticateUser: false,
+    backgroundCheckVerified: !!pub.backgroundCheckVerified,
   };
 }
 
@@ -99,7 +106,7 @@ export async function getCaregiverProfile(userId: string): Promise<CaregiverProf
 
   const [profile, cg, ages, settings, langs, exp, avail, edu, certs, reviews, verifs, skills, creds] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
-    supabase.from("caregiver_profiles").select("*").eq("user_id", userId).maybeSingle(),
+    supabase.from("caregiver_profiles").select("*, authenticate_user_code").eq("user_id", userId).maybeSingle(),
     supabase.from("caregiver_age_groups").select("age").eq("user_id", userId),
     supabase.from("caregiver_care_settings").select("setting").eq("user_id", userId),
     supabase.from("caregiver_languages").select("language, is_primary").eq("user_id", userId),
@@ -146,5 +153,7 @@ export async function getCaregiverProfile(userId: string): Promise<CaregiverProf
     courseCredentials: mapCredsFromRows(creds.data),
     reviews: reviews.data ?? [],
     verifications: verifs.data ?? [],
+    hasAuthenticateUser: !!(c as any)?.authenticate_user_code,
+    backgroundCheckVerified: (verifs.data ?? []).some((v) => v.type === "background_check" && v.status === "verified"),
   };
 }

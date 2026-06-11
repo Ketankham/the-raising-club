@@ -19,6 +19,7 @@ function mapRow(r: any, savedIds: Set<string>): CaregiverCard {
     rateUnit: r.rateUnit,
     lookingForPaidWork: !!r.lookingForPaidWork,
     idVerified: !!r.idVerified,
+    backgroundCheckVerified: !!r.backgroundCheckVerified,
     ratingAvg: r.ratingAvg != null ? Number(r.ratingAvg) : null,
     ratingCount: Number(r.ratingCount ?? 0),
     skills: r.skills ?? [],

@@ -295,6 +295,43 @@ export function TermsContent() {
         </section>
       ))}
 
+      {/* Identity Verification & Background Checks */}
+      <section>
+        <h2 className="mb-3 font-display text-xl font-bold text-ink">Identity Verification &amp; Background Checks</h2>
+        <p className="mb-3">
+          The Raising Club offers optional identity verification and background check services to caregivers through our third-party provider,{" "}
+          <strong>Authenticate</strong> (authenticate.com). Participation is voluntary. Caregivers who complete verification receive a badge
+          visible to families on the platform.
+        </p>
+        <ul className="space-y-2 list-disc pl-5">
+          <li>
+            <strong>Consent:</strong> By initiating verification you agree to Authenticate&apos;s terms of service and authorise them to process
+            your government-issued photo ID, biometric liveness data, and — if you request a background check — criminal record information.
+          </li>
+          <li>
+            <strong>Data processing:</strong> Authenticate is an independent data processor. The Raising Club receives only a pass/fail status
+            and an expiry date. We do not receive or store raw identity documents, biometric templates, or detailed criminal report data.
+          </li>
+          <li>
+            <strong>Red flags:</strong> If a sex-offender registry match is detected, your profile will be immediately depublished and your
+            account suspended pending admin review. Criminal records flagged for review are assessed by our Trust &amp; Safety team before any
+            action is taken.
+          </li>
+          <li>
+            <strong>Families &amp; organisations:</strong> In the event a caregiver is removed for safety reasons, users who had active
+            conversations with that caregiver may receive a notification that the caregiver is no longer available. No reason is disclosed.
+          </li>
+          <li>
+            <strong>Expiry:</strong> Verified badges expire according to the dates set by Authenticate. Caregivers must re-verify when their
+            badge expires; families will not see an expired badge.
+          </li>
+          <li>
+            <strong>Limitations:</strong> Verification does not guarantee that a caregiver is suitable for your family. Always conduct your own
+            due diligence, including interviews and reference checks, before hiring.
+          </li>
+        </ul>
+      </section>
+
       {/* Contact section */}
       <section>
         <h2 className="mb-3 font-display text-xl font-bold text-ink">{t("s30_title")}</h2>

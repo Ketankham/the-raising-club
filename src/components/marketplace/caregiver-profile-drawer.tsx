@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { X, Star, BadgeCheck, Briefcase, MapPin, DollarSign, MessageCircle, ExternalLink } from "lucide-react";
+import { X, Star, BadgeCheck, ShieldCheck, Briefcase, MapPin, DollarSign, MessageCircle, ExternalLink } from "lucide-react";
 import { caregiverName, moneyRange, EXPERIENCE_SHORT, AGE_GROUP_TAGS } from "@/lib/marketplace/format";
 import { CARE_SETTINGS } from "@/lib/caregiver-options";
 import type { CaregiverCard as Caregiver } from "@/lib/marketplace/types";
@@ -62,6 +62,7 @@ export function CaregiverProfileDrawer({
             <div className="mt-3 flex items-center gap-1.5">
               <h2 className="font-display text-2xl font-bold text-ink">{name}</h2>
               {c.idVerified && <BadgeCheck className="h-5 w-5 text-olive" aria-label="Verified" />}
+              {c.backgroundCheckVerified && <ShieldCheck className="h-5 w-5 text-[#4a6b9a]" aria-label="Background Checked" />}
             </div>
             {c.headline && <p className="mt-0.5 text-sm text-ink-soft">{c.headline}</p>}
             <div className="mt-3 flex items-center gap-5 text-sm">

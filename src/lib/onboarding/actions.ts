@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { emitNotification } from "@/lib/notifications/emit";
 import {
   FLOW_VERSION,
   getNextStep,
@@ -252,6 +253,11 @@ export async function completeStep(
       })
       .eq("user_id", user.id);
     await supabase.from("profiles").update({ onboarding_completed_at: now }).eq("id", user.id);
+    // Nudge paid-work caregivers to get verified (fail-soft — never blocks completion)
+    if (state.role === "caregiver" && mergedAnswers.caregiverIntents?.includes("paid_work")) {
+      emitNotification({ typeKey: "caregiver.verify_prompt", userId: user.id, link: "/profile#verify" }).catch(() => {});
+    }
+
     revalidatePath("/onboarding", "layout");
     return { ok: true, data: { nextStep: null, completed: true } };
   }

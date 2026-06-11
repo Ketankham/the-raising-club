@@ -64,6 +64,55 @@ export async function listInvitations(): Promise<AdminInvitation[]> {
   }));
 }
 
+export interface AdminVerificationRow {
+  verificationId: string;
+  userId: string;
+  name: string;
+  email: string | null;
+  type: string;
+  status: string;
+  provider: string | null;
+  adminReviewRequired: boolean;
+  reviewedAt: string | null;
+  redFlag: boolean;
+  redFlagType: string | null;
+  updatedAt: string;
+  isPublished: boolean;
+  isDeactivated: boolean;
+}
+
+/** All caregiver verifications — used by the admin Verifications panel. */
+export async function listVerifications(): Promise<AdminVerificationRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("verifications")
+    .select("id, user_id, type, status, provider, admin_review_required, reviewed_at, metadata, updated_at, profiles!inner(first_name, last_name, preferred_name, email, deactivated_at), caregiver_profiles!inner(is_published)")
+    .order("updated_at", { ascending: false });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data ?? []).map((v: any) => {
+    const meta = v.metadata ?? {};
+    const p = v.profiles ?? {};
+    const c = v.caregiver_profiles ?? {};
+    return {
+      verificationId: v.id,
+      userId: v.user_id,
+      name: p.preferred_name || [p.first_name, p.last_name].filter(Boolean).join(" ") || "—",
+      email: p.email ?? null,
+      type: v.type,
+      status: v.status,
+      provider: v.provider ?? null,
+      adminReviewRequired: !!v.admin_review_required,
+      reviewedAt: v.reviewed_at ?? null,
+      redFlag: !!meta.redFlag,
+      redFlagType: meta.redFlagType ?? null,
+      updatedAt: v.updated_at,
+      isPublished: !!c.is_published,
+      isDeactivated: !!p.deactivated_at,
+    };
+  });
+}
+
 export interface AdminUserDetail {
   id: string;
   role: string | null;
