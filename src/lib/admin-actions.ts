@@ -108,7 +108,7 @@ export async function inviteUser(input: { email: string; role: string }): Promis
     .single();
   if (error) return { ok: false, error: error.message };
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://theraisingclub.com";
   const link = `${base}/onboarding?invite=${data.token}`;
 
   // Real email delivery requires the Supabase service role + SMTP. If the

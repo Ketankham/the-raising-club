@@ -29,7 +29,7 @@ export async function saveFamilyListing(input: FamilyListingInput): Promise<Fami
     budget_max: input.budgetMax ?? null,
     budget_unit: input.budgetUnit || "hour",
     care_type: input.careType ?? null,
-    cover_photo_url: input.coverPhotoUrl?.trim() || null,
+    cover_photo_url: input.coverPhotoUrl?.trim().startsWith("https://") ? input.coverPhotoUrl.trim() : null,
     co_hire_interested: input.coHireInterested,
     is_published: input.isPublished,
   });

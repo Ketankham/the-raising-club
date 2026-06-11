@@ -30,7 +30,7 @@ export async function inviteReview(input: {
     .single();
   if (error) return { ok: false, error: error.message };
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://theraisingclub.com";
   revalidatePath("/profile/reviews");
   return { ok: true, data: { link: `${base}/review/${data.token}` } };
 }
@@ -76,12 +76,17 @@ export async function submitReviewByToken(input: {
 }): Promise<Result> {
   const supabase = await createClient();
   if (input.rating < 1 || input.rating > 5) return { ok: false, error: "Please choose a rating." };
+  if (!input.reviewerName.trim()) return { ok: false, error: "Please enter your name." };
+  if (input.reviewerName.length > 200) return { ok: false, error: "Name is too long." };
+  if (input.body.length > 2000) return { ok: false, error: "Review body must be under 2000 characters." };
+  if (!input.relationship.trim()) return { ok: false, error: "Please enter your relationship." };
+  if (input.relationship.length > 200) return { ok: false, error: "Relationship is too long." };
   const { data, error } = await supabase.rpc("submit_review", {
     invite_token: input.token,
-    p_reviewer_name: input.reviewerName,
-    p_relationship: input.relationship,
+    p_reviewer_name: input.reviewerName.trim().slice(0, 200),
+    p_relationship: input.relationship.trim().slice(0, 200),
     p_rating: input.rating,
-    p_body: input.body,
+    p_body: input.body.trim().slice(0, 2000),
   });
   if (error) return { ok: false, error: error.message };
   if (!data) return { ok: false, error: "This review link is invalid or has already been used." };

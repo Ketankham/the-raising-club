@@ -64,7 +64,7 @@ export async function inviteFamilyMember(input: { email: string; relationLabel?:
     .single();
   if (error) return { ok: false, error: error.message };
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://theraisingclub.com";
   revalidatePath("/dashboard/family");
   return { ok: true, data: { link: `${base}/invite/household/${data.token}` } };
 }
@@ -72,7 +72,14 @@ export async function inviteFamilyMember(input: { email: string; relationLabel?:
 export async function revokeFamilyInvite(id: string): Promise<Result> {
   const { supabase, user } = await me();
   if (!user) return { ok: false, error: "Not signed in" };
-  const { error } = await supabase.from("household_invitations").update({ status: "revoked" }).eq("id", id);
+  const householdId = await findHousehold(supabase, user.id);
+  if (!householdId) return { ok: false, error: "No household." };
+  // Pin to caller's household to prevent revoking another family's invitations.
+  const { error } = await supabase
+    .from("household_invitations")
+    .update({ status: "revoked" })
+    .eq("id", id)
+    .eq("household_id", householdId);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/dashboard/family");
   return { ok: true };
@@ -122,7 +129,7 @@ export async function acceptHouseholdInviteWithNewAccount(input: {
   password: string;
 }): Promise<Result<{ householdId: string }>> {
   const supabase = await createClient();
-  if (input.password.length < 8) return { ok: false, error: "Password must be at least 8 characters." };
+  if (input.password.length < 12) return { ok: false, error: "Password must be at least 12 characters." };
 
   let {
     data: { user },

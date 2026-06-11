@@ -41,6 +41,7 @@ export async function sendMessage(conversationId: string, body: string): Promise
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, reason: "unauthenticated" };
   if (!body.trim()) return { ok: false, reason: "empty" };
+  if (body.length > 10000) return { ok: false, reason: "error", message: "Message is too long." };
 
   const { error } = await supabase
     .from("messages")

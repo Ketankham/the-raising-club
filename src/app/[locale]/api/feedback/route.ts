@@ -85,6 +85,12 @@ async function uploadScreenshot(
 }
 
 export async function POST(request: Request) {
+  // Require a signed-in session — prevents anonymous abuse of the GitHub token.
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return jsonError("Must be signed in to submit feedback.", 401);
+
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     return jsonError(
@@ -108,7 +114,16 @@ export async function POST(request: Request) {
   const screenshot = formData.get("screenshot") as File | null;
 
   if (!title) return jsonError("Title is required.", 400);
+  if (title.length > 200) return jsonError("Title is too long.", 400);
   if (!description) return jsonError("Description is required.", 400);
+  if (description.length > 5000) return jsonError("Description is too long.", 400);
+
+  // Validate screenshot type using MIME (client-supplied but screened server-side)
+  if (screenshot && screenshot.size > 0) {
+    const allowed = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+    if (!allowed.includes(screenshot.type)) return jsonError("Screenshot must be a PNG, JPEG, WebP, or GIF image.", 400);
+    if (screenshot.size > 5 * 1024 * 1024) return jsonError("Screenshot must be under 5 MB.", 400);
+  }
 
   const typeLabel =
     type === "bug" ? "Bug" : type === "improvement" ? "Improvement" : "Idea";
