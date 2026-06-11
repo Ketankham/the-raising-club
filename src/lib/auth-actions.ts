@@ -17,7 +17,7 @@ export async function requestPasswordReset(email: string): Promise<{ ok: boolean
 }
 
 export async function updatePassword(password: string): Promise<{ ok: boolean; error?: string }> {
-  if (password.length < 8) return { ok: false, error: "Password must be at least 8 characters." };
+  if (password.length < 12) return { ok: false, error: "Password must be at least 12 characters." };
 
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });

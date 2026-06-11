@@ -41,8 +41,8 @@ export async function POST(request: Request) {
   try {
     await handleStripeEvent(stripe, event);
   } catch (e) {
-    // Log and 500 so Stripe retries — but never throw the raw error to Stripe.
-    console.error(`[stripe webhook] handler error for ${event.type}:`, e);
+    // Log only the message, not the full event object which may contain PII.
+    console.error(`[stripe webhook] handler error for ${event.type}:`, e instanceof Error ? e.message : String(e));
     return Response.json({ error: "Handler error" }, { status: 500 });
   }
 

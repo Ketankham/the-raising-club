@@ -64,7 +64,7 @@ export async function inviteFamilyMember(input: { email: string; relationLabel?:
     .single();
   if (error) return { ok: false, error: error.message };
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://theraisingclub.com";
   revalidatePath("/dashboard/family");
   return { ok: true, data: { link: `${base}/invite/household/${data.token}` } };
 }
@@ -129,7 +129,7 @@ export async function acceptHouseholdInviteWithNewAccount(input: {
   password: string;
 }): Promise<Result<{ householdId: string }>> {
   const supabase = await createClient();
-  if (input.password.length < 8) return { ok: false, error: "Password must be at least 8 characters." };
+  if (input.password.length < 12) return { ok: false, error: "Password must be at least 12 characters." };
 
   let {
     data: { user },

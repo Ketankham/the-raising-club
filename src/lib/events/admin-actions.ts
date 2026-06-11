@@ -214,6 +214,8 @@ export async function setAttendanceStatus(
   status: "registered" | "attended" | "no_show" | "cancelled",
 ): Promise<AttendanceResult> {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Not signed in." };
   const { error } = await supabase
     .from("event_registration_children")
     .update({ attendance_status: status })
@@ -234,6 +236,8 @@ export async function setRegistrationStatus(
   eventId: string,
 ): Promise<AttendanceResult> {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, message: "Not signed in." };
   const { error } = await supabase
     .from("event_registrations")
     .update({ status })

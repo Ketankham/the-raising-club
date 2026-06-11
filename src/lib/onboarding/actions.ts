@@ -304,7 +304,7 @@ export async function signInWithPassword(input: {
 }): Promise<ActionResult> {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword(input);
-  if (error) return { ok: false, error: error.message };
+  if (error) return { ok: false, error: "Invalid email or password." };
 
   // Block deactivated accounts: sign them straight back out.
   const { data: profile } = await supabase

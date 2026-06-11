@@ -27,7 +27,7 @@ export async function proxy(request: NextRequest) {
   const i18nResponse = handleI18nRouting(request);
 
   // 2. Refresh Supabase session with i18n response as base
-  const { response, user } = await updateSession(request, i18nResponse);
+  const { response, user, supabaseError } = await updateSession(request, i18nResponse) as Awaited<ReturnType<typeof updateSession>> & { supabaseError?: boolean };
 
   // Get pathname — i18n middleware preserves it, so we check against the original
   let { pathname } = request.nextUrl;
@@ -59,6 +59,11 @@ export async function proxy(request: NextRequest) {
   // registered user stays anonymous until they confirm, and must still reach
   // their dashboard. Page-level server guards do the real role/completion check.
   if (needsAuth && !user) {
+    // If Supabase is down (not simply logged out), return 503 so users see
+    // a transient error rather than a misleading sign-in page.
+    if (supabaseError) {
+      return new NextResponse("Service temporarily unavailable. Please try again shortly.", { status: 503 });
+    }
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
     url.searchParams.set("next", pathname);
