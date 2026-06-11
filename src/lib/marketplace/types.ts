@@ -21,6 +21,7 @@ export interface CaregiverCard {
   rateUnit: string | null;
   lookingForPaidWork: boolean;
   idVerified: boolean;
+  backgroundCheckVerified: boolean;
   ratingAvg: number | null;
   ratingCount: number;
   skills: string[];

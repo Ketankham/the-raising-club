@@ -101,6 +101,44 @@ export function PrivacyContent() {
         <h3 className="mb-3 font-semibold text-ink">5-12. Additional Sections</h3>
         <p className="text-ink/60">Additional privacy policy sections (Children's Privacy, Your Rights, Data Retention, Security, Third-Party Services, International Transfers, Changes, Contact) are fully translated and available in your selected language.</p>
       </section>
+
+      <section>
+        <h3 className="mb-3 font-semibold text-ink">13. Identity Verification &amp; Background Checks</h3>
+        <p className="mb-3">
+          Caregivers may optionally undergo identity verification and/or a background check through our third-party provider,{" "}
+          <strong>Authenticate</strong> (authenticate.com), a US-based identity verification service.
+        </p>
+
+        <p className="mb-2 font-semibold">Data we collect</p>
+        <ul className="list-disc pl-5 mb-4 space-y-1">
+          <li>Your first name, last name, and email address are transmitted to Authenticate to create a verification session.</li>
+          <li>Government-issued photo ID images and a live selfie are captured and processed by Authenticate directly — we do not receive or store these.</li>
+          <li>If a background check is requested: criminal history data is retrieved from public records by Authenticate under your explicit consent.</li>
+          <li>We store only a verification status (<em>verified</em>, <em>pending</em>, <em>failed</em>, or <em>expired</em>), a provider reference code, and an expiry date.</li>
+        </ul>
+
+        <p className="mb-2 font-semibold">How we use it</p>
+        <ul className="list-disc pl-5 mb-4 space-y-1">
+          <li>To display a Verified Identity or Background Checked badge on your public profile and marketplace listing.</li>
+          <li>To automatically remove expired badges when the verification lapses.</li>
+          <li>To assess safety: a sex-offender registry match results in immediate account suspension; criminal records are reviewed by our Trust &amp; Safety team.</li>
+        </ul>
+
+        <p className="mb-2 font-semibold">Third-party processor</p>
+        <p className="mb-3">
+          Authenticate acts as an independent data controller/processor for the verification process. Their privacy policy governs how they handle
+          your documents and biometric data. We encourage you to review it at{" "}
+          <a href="https://authenticate.com/privacy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+            authenticate.com/privacy
+          </a>.
+        </p>
+
+        <p className="mb-2 font-semibold">Retention</p>
+        <p>
+          Verification status records are retained for as long as your account is active. They are deleted when your account is permanently deleted.
+          Detailed reports held by Authenticate are subject to their own retention policies.
+        </p>
+      </section>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star, BadgeCheck, Briefcase, MapPin, DollarSign, MessageCircle } from "lucide-react";
+import { Star, BadgeCheck, ShieldCheck, Briefcase, MapPin, DollarSign, MessageCircle } from "lucide-react";
 import { SaveButton } from "./save-button";
 import { InviteCoHireModal } from "./invite-cohire-modal";
 import { CaregiverProfileDrawer } from "./caregiver-profile-drawer";
@@ -51,6 +51,7 @@ export function CaregiverCard({
         <div className="mt-3 flex items-center gap-1.5">
           <h3 className="font-display text-lg font-bold text-ink">{name}</h3>
           {c.idVerified && <BadgeCheck className="h-4 w-4 text-olive" aria-label="Verified" />}
+          {c.backgroundCheckVerified && <ShieldCheck className="h-4 w-4 text-[#4a6b9a]" aria-label="Background Checked" />}
         </div>
 
         <div className="mt-1 flex items-center gap-4 text-sm">

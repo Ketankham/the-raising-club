@@ -16,6 +16,7 @@ import {
   updateAbout, updateLanguages, updateEducationAndCerts,
   updateAges, updateSettings, updateAvailability, togglePublish,
 } from "@/lib/profile-actions";
+import { VerificationStatusCard, VerifyPromptBanner } from "@/components/profile/verification-status-card";
 
 const initials = (f: string | null, l: string | null, p: string | null) =>
   ((p || f || "?").trim()[0] ?? "?").toUpperCase() + ((l || "").trim()[0] ?? "").toUpperCase();
@@ -119,6 +120,7 @@ export function CaregiverProfile({ data, isOwner }: { data: CaregiverProfileData
   const location = data.zip ? `ZIP ${data.zip}` : "Location not set";
   const headlineText = headline || (data.experienceLevel ? `${EXPERIENCE_LEVELS[data.experienceLevel]} of experience` : "Caregiver & Educator");
   const idVerified = data.verifications.some((v) => v.type === "identity" && v.status === "verified");
+  const bgVerified = data.backgroundCheckVerified;
   const rating = data.reviews.length ? (data.reviews.reduce((s, r) => s + (r.rating ?? 0), 0) / data.reviews.length).toFixed(1) : null;
   const hasCoursePro = data.earnedSkills.some((s) => s.fromCourse);
 
@@ -166,6 +168,7 @@ export function CaregiverProfile({ data, isOwner }: { data: CaregiverProfileData
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="font-display text-3xl font-bold text-ink">{name}</h1>
               {idVerified && <span className="inline-flex items-center gap-1 rounded-full bg-[#dcebc6] px-2.5 py-1 text-xs font-semibold text-[#4f6b15]"><BadgeCheck className="h-3.5 w-3.5" /> Verified Caregiver</span>}
+              {bgVerified && <span className="inline-flex items-center gap-1 rounded-full bg-[#dce6f0] px-2.5 py-1 text-xs font-semibold text-[#2a4a7a]"><ShieldCheck className="h-3.5 w-3.5" /> Background Checked</span>}
               {isOwner && <button onClick={toggle("about")} className="grid h-7 w-7 place-items-center rounded-lg bg-white/70 text-ink-soft hover:text-ink"><Pencil className="h-3.5 w-3.5" /></button>}
             </div>
             <p className="mt-1 text-ink-soft">{headlineText}</p>
@@ -189,6 +192,9 @@ export function CaregiverProfile({ data, isOwner }: { data: CaregiverProfileData
             )}
           </div>
         </div>
+
+        {/* Verification prompt banner — shown to owner after onboarding */}
+        {isOwner && !idVerified && <div className="mt-5"><VerifyPromptBanner /></div>}
 
         {/* GRID */}
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_300px]">
@@ -300,6 +306,14 @@ export function CaregiverProfile({ data, isOwner }: { data: CaregiverProfileData
 
           {/* RIGHT SIDEBAR */}
           <div className="flex flex-col gap-5">
+            {/* Verification — owner only */}
+            {isOwner && (
+              <VerificationStatusCard
+                verifications={data.verifications}
+                hasAuthenticateUser={data.hasAuthenticateUser}
+              />
+            )}
+
             {/* Snapshot */}
             <Card title="Snapshot" tone="peach" owner={isOwner} open={open === "avail"} onEdit={toggle("avail")}>
               {open === "avail" ? (
