@@ -20,8 +20,8 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "Apply as a TRC Lead Caregiver": "Solicita ser Líder TRC",
 
   // ===== FAMILY PLANS =====
-  "Family Essentials": "Esenciales Familiares",
-  "Family Access": "Acceso Familiar",
+  "Family Essentials": "Comunidad TRC",
+  "Family Access": "Acceso TRC",
   "Family Club+": "Club+ Familiar",
   "Family Plus": "Familia Plus",
   "Start as a Member": "Comienza como Miembro",
@@ -31,7 +31,7 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "GO DEEPER": "PROFUNDIZA",
   "COORDINATE CARE TOGETHER": "COORDINA EL CUIDADO JUNTOS",
   "Explore TRC": "Explora TRC",
-  "Get Family Access": "Obtén Acceso Familiar",
+  "Get Family Access": "Obtén Acceso TRC",
   "Get Family Club+": "Obtén Club+ Familiar",
 
   // ===== ORGANIZATION/CENTERS PLANS =====
@@ -54,11 +54,13 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   // Caregiver descriptions
   "Caregivers and educators starting on TRC, creating a professional profile, and applying to a limited number of roles.": "Cuidadores y educadores que comienzan en TRC, crean un perfil profesional y solicitan un número limitado de empleos.",
   "For career-focused caregivers & educators seeking consistent work and professional verification.": "Para cuidadores y educadores enfocados en su carrera que buscan trabajo consistente y verificación profesional.",
+  "Caregivers who want structured training, visible skills, and access to more stable, better-aligned roles as they grow professionally.": "Niñeras, cuidadores o educadores que desean fortalecer sus habilidades, recibir formación estructurada y acceder a oportunidades laborales que acompañen su desarrollo profesional.",
   "For experienced leaders managing pods, mentoring junior educators, or running micro-schools.": "Para líderes experimentados que manejan grupos, mentorizan educadores junior o dirigen microescuelas.",
+  "Caregivers and educators with credentials in early childhood or advanced TRC training, prepared to guide others and support select family roles, including shared care such as learning pods and nanny shares.": "Niñeras, cuidadores y educadores con experiencia o educación formal en desarrollo infantil o formación avanzada de The Raising Club, listos para asumir roles de liderazgo, acompañar a otros cuidadores y colaborar en modelos de cuidado compartido, como learning pods y nanny shares.",
 
   // Family descriptions
   "For families beginning their search for quality care and community.": "Para familias que comienzan su búsqueda de cuidado de calidad y comunidad.",
-  "For anyone caring for or spending time with a child—parents, grandparents, aunts, uncles—who wants to understand the basics of child development and explore The Raising Club's events and community at their own pace.": "Para cualquiera que cuide o pase tiempo con un niño—padres, abuelos, tías, tíos—que quiera entender los conceptos básicos del desarrollo infantil y explorar los eventos y la comunidad de The Raising Club a su propio ritmo.",
+  "For anyone caring for or spending time with a child—parents, grandparents, aunts, uncles—who wants to understand the basics of child development and explore The Raising Club's events and community at their own pace.": "Para cualquier persona que forme parte de la vida de un niño —padres, abuelos, tíos o cuidadores— y quiera comprender mejor su desarrollo mientras explora los eventos y la comunidad de The Raising Club a su propio ritmo.",
   "For families who want deeper learning, and to start connecting with other families and caregivers as part of everyday family life.": "Para familias que desean aprendizaje más profundo y comenzar a conectar con otras familias y cuidadores como parte de la vida familiar cotidiana.",
   "For families coordinating care with others—including nanny shares, shared-care setups, or extended family—who want a more integrated way of doing things together.": "Para familias que coordinan el cuidado con otros—incluyendo servicios de niñera compartida, arreglos de cuidado compartido o familia extendida—que desean una forma más integrada de hacer las cosas juntos.",
   "For families seeking vetted caregivers and curriculum support.": "Para familias que buscan cuidadores verificados y apoyo curricular.",
@@ -69,7 +71,7 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   // ===== FEATURE LABELS =====
   // Caregiver features
   "Job access": "Acceso a empleos",
-  "Training & badge": "Capacitación y insignia",
+  "Training & badge": "Capacitación e insignia",
   "Verified profile": "Perfil verificado",
   "Community access": "Acceso a la comunidad",
   "Professional verification": "Verificación profesional",
@@ -115,12 +117,12 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "Training for up to 3 adults in your Raising Club, with role-specific guidance for parents, co-parents, grandparents, extended family, or household support.": "Capacitación para hasta 3 adultos en tu Raising Club, con orientación específica de rol para padres, co-padres, abuelos, familia extendida o apoyo del hogar.",
   "Training for up to 5 adults in your Raising Club, with role-specific guidance. Additional training seats may be added as needed.": "Capacitación para hasta 5 adultos en tu Raising Club, con orientación específica de rol. Se pueden agregar asientos de capacitación adicionales según sea necesario.",
   "Search for vetted caregivers matching your needs and values.": "Busca cuidadores verificados que coincidan con tus necesidades y valores.",
-  "Everything in Family Essentials, plus select TRC workshops and classes included as part of your membership.": "Todo en Esenciales Familiares, más talleres y clases seleccionadas de TRC incluidas como parte de tu membresía.",
-  "Everything in Family Essentials, plus the full A Raising Approach™ (one-on-one care) framework to raise a child with structure and purpose.": "Todo en Esenciales Familiares, más el marco completo del Enfoque A Raising™ (cuidado uno a uno) para criar a un niño con estructura y propósito.",
-  "Everything in Family Access, plus the ability to host family gatherings and shared learning experiences—with support from TRC.": "Todo en Acceso Familiar, más la capacidad de albergar reuniones familiares y experiencias de aprendizaje compartido—con apoyo de TRC.",
-  "Everything in Family Access, plus the A Raising Approach™ (shared care) framework, community support, and guidance for coordinating care with nanny shares and extended family.": "Todo en Acceso Familiar, más el marco del Enfoque A Raising™ (cuidado compartido), apoyo comunitario y orientación para coordinar el cuidado con servicios de niñera compartida y familia extendida.",
+  "Everything in Family Essentials, plus select TRC workshops and classes included as part of your membership.": "Todo en Comunidad TRC, más talleres y clases seleccionadas de TRC incluidas como parte de tu membresía.",
+  "Everything in Family Essentials, plus the full A Raising Approach™ (one-on-one care) framework to raise a child with structure and purpose.": "Todo en Comunidad TRC, más el marco completo del Enfoque A Raising™ (cuidado uno a uno) para criar a un niño con estructura y propósito.",
+  "Everything in Family Access, plus the ability to host family gatherings and shared learning experiences—with support from TRC.": "Todo en Acceso TRC, más la capacidad de albergar reuniones familiares y experiencias de aprendizaje compartido—con apoyo de TRC.",
+  "Everything in Family Access, plus the A Raising Approach™ (shared care) framework, community support, and guidance for coordinating care with nanny shares and extended family.": "Todo en Acceso TRC, más el marco del Enfoque A Raising™ (cuidado compartido), apoyo comunitario y orientación para coordinar el cuidado con servicios de niñera compartida y familia extendida.",
   "Smart matching and messaging with caregivers and nearby families—for one-on-one care, playdates, and trusted parent connections.": "Emparejamiento inteligente y mensajería con cuidadores y familias cercanas—para cuidado uno a uno, citas de juego y conexiones de padres de confianza.",
-  "Everything in Family Access, plus added support for shared care setups like nanny shares, pods, and group care.": "Todo en Acceso Familiar, más apoyo adicional para configuraciones de cuidado compartido como servicios de niñera compartida, grupos y cuidado grupal.",
+  "Everything in Family Access, plus added support for shared care setups like nanny shares, pods, and group care.": "Todo en Acceso TRC, más apoyo adicional para configuraciones de cuidado compartido como servicios de niñera compartida, grupos y cuidado grupal.",
   "Optional path to care for another child alongside your own, with structure, training, and support.": "Ruta opcional para cuidar a otro niño junto con el tuyo, con estructura, capacitación y apoyo.",
   "Access to TRC-curated resources supporting child development.": "Acceso a recursos seleccionados por TRC que apoyan el desarrollo infantil.",
   "Direct communication channels with families you match with.": "Canales de comunicación directa con cuidadores verificados.",
@@ -138,14 +140,14 @@ const SPANISH_TRANSLATIONS: Record<string, string> = {
   "Custom pricing. Get in touch to design your program.": "Precio personalizado. Contáctanos para diseñar tu programa.",
 
   // Organization features (expanded)
-  "Training seats & tracking": "Asientos de capacitación y seguimiento",
+  "Training seats & tracking": "Capacitación e insignia",
   "Starter training seats to onboard staff into TRC foundations (up to 4 staff members).": "Asientos de capacitación inicial para incorporar personal a los fundamentos de TRC (hasta 4 miembros del personal).",
   "Director dashboard to assign, track, and verify courses and badges (up to 10 staff members).": "Panel director para asignar, rastrear y verificar cursos e insignias (hasta 10 miembros del personal).",
   "Custom training seats with advanced reporting and a co-branded learning hub (seat count tailored to your program).": "Asientos de capacitación personalizados con informes avanzados y un centro de aprendizaje co-marcado (recuento de asientos adaptado a tu programa).",
 
   // ===== BADGES AND LABELS =====
   "Best value": "Mejor valor",
-  "Best for": "Mejor para",
+  "Best for": "La mejor opción para:",
   "Everything in": "Todo en",
   "Visibility": "Visibilidad",
 

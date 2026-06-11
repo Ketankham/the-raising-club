@@ -46,8 +46,8 @@ export function Membership({ tabs }: { tabs: Tab[] }) {
   };
 
   const getTabHeading = (tabId: string) => {
-    if (tabId === "caregiver") return { accent: t("tabCaregiverTitle"), rest: t("tabHeadingMemberships") };
-    if (tabId === "families") return { accent: t("tabFamiliesTitle"), rest: t("tabHeadingMemberships") };
+    if (tabId === "caregiver") return { accent: t("tabCaregiverHeadingAccent"), rest: t("tabCaregiverHeadingRest") };
+    if (tabId === "families") return { accent: t("tabFamiliesHeadingAccent"), rest: t("tabFamiliesHeadingRest") };
     return { accent: t("tabCentersHeadingAccent"), rest: t("tabCentersHeadingRest") };
   };
 
