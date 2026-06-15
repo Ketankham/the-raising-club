@@ -1,10 +1,13 @@
 -- 0044_verification_rpcs.sql
--- Recreate marketplace_caregiver_cards() and public_caregiver() to:
---   1. Pin idVerified to type='identity' (prior version checked ANY verified row — bug fix)
---   2. Add backgroundCheckVerified field
---   3. Exclude expired verifications (valid_until check)
--- Run order: 0043 → 0044.
+-- Update marketplace_caregiver_cards() and public_caregiver() to:
+--   1. Fix idVerified bug: was checking any verified row; now pinned to type='identity'.
+--   2. Add backgroundCheckVerified field (type='background_check').
+--   3. Respect valid_until expiry on both badge types.
+-- Run order: 0043 -> 0044.
 
+-- ---------------------------------------------------------------------------
+-- marketplace_caregiver_cards() — browse grid (authenticated only)
+-- ---------------------------------------------------------------------------
 create or replace function marketplace_caregiver_cards()
 returns setof jsonb
 language sql
@@ -39,6 +42,7 @@ as $$
       where v.user_id = p.id
         and v.type = 'background_check'
         and v.status = 'verified'
+        and v.admin_review_required = false
         and (v.valid_until is null or v.valid_until > current_date)
     ),
     'ratingAvg', (
@@ -69,6 +73,9 @@ as $$
 $$;
 grant execute on function marketplace_caregiver_cards() to authenticated;
 
+-- ---------------------------------------------------------------------------
+-- public_caregiver(uid) — public profile page (anon + authenticated)
+-- ---------------------------------------------------------------------------
 create or replace function public_caregiver(uid uuid)
 returns jsonb
 language sql
@@ -84,6 +91,7 @@ as $$
     'zip',                p.zip_code,
     'avatarUrl',          p.avatar_url,
     'registeredAt',       p.registered_at,
+    'locale',             p.locale,
     'headline',           c.headline,
     'about',              c.about,
     'experienceLevel',    c.experience_level,
@@ -100,6 +108,7 @@ as $$
       where v.user_id = p.id
         and v.type = 'background_check'
         and v.status = 'verified'
+        and v.admin_review_required = false
         and (v.valid_until is null or v.valid_until > current_date)
     )
   ) else null end
@@ -107,4 +116,5 @@ as $$
   join caregiver_profiles c on c.user_id = p.id
   where p.id = uid;
 $$;
+
 grant execute on function public_caregiver(uuid) to anon, authenticated;
