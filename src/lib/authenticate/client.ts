@@ -64,6 +64,41 @@ export async function getMedallionUrl(userAccessCode: string, redirectUrl?: stri
   return `https://verify.authenticating.com/?token=${token}`;
 }
 
+/** Initiate asynchronous PDF report generation for a user.
+ *  Report is delivered via USER_PDF_REPORT_GENERATION webhook (10-20s).
+ *  Returns true if the request was accepted. */
+export async function initiatePdfReport(userAccessCode: string): Promise<boolean> {
+  const res = await fetch(`${BASE}/user/initiate/pdf/report`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey()}`,
+    },
+    body: JSON.stringify({ userAccessCode }),
+  });
+  return res.ok;
+}
+
+/** Retrieve the PDF report URL generated for a user (call after initiatePdfReport).
+ *  Returns the URL string, or null if not ready yet. */
+export async function retrievePdfReport(userAccessCode: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${BASE}/user/retrieve/pdf/report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey()}`,
+      },
+      body: JSON.stringify({ userAccessCode }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.url ?? data.reportUrl ?? data.pdfUrl ?? data.link) as string | null ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Fetch the latest identity result directly from Authenticate.
  * Used as a fallback when the SELF_VERIFICATION_TRY_STATUS webhook never arrived.

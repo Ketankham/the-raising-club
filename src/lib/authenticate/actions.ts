@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireUserProfile } from '@/lib/guards';
-import { createAuthenticateUser, getMedallionUrl, getTestResult } from './client';
+import { createAuthenticateUser, getMedallionUrl, getTestResult, initiatePdfReport, retrievePdfReport } from './client';
 
 /** Start or resume identity verification. Returns the Medallion™ hosted URL.
  *  dob is required on first call (DD-MM-YYYY); ignored on resume (code already exists). */
@@ -127,6 +127,36 @@ export async function adminApproveVerification(verificationId: string): Promise<
   } catch (err) {
     console.error('[authenticate] adminApproveVerification error:', err);
     return { ok: false, error: 'Action failed. Please try again.' };
+  }
+}
+
+/** Admin: generate or retrieve the PDF verification report for a caregiver.
+ *  Initiates generation if not ready, then polls up to ~20s.
+ *  Returns a short-lived URL (24h) or a message to retry. */
+export async function adminGenerateReport(userCode: string): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  try {
+    const { profile } = await requireUserProfile();
+    if (profile.role !== 'admin') return { ok: false, error: 'Unauthorized' };
+
+    // Try to retrieve an already-generated report first
+    const existing = await retrievePdfReport(userCode);
+    if (existing) return { ok: true, url: existing };
+
+    // Initiate generation
+    const initiated = await initiatePdfReport(userCode);
+    if (!initiated) return { ok: false, error: 'Report generation request failed. Check Authenticate account.' };
+
+    // Poll up to 4 times × 5s = ~20s
+    for (let i = 0; i < 4; i++) {
+      await new Promise((r) => setTimeout(r, 5000));
+      const url = await retrievePdfReport(userCode);
+      if (url) return { ok: true, url };
+    }
+
+    return { ok: false, error: 'Report is still generating — refresh in 30 seconds.' };
+  } catch (err) {
+    console.error('[authenticate] adminGenerateReport error:', err instanceof Error ? err.message : err);
+    return { ok: false, error: 'Could not generate report. Please try again.' };
   }
 }
 

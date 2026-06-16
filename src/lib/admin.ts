@@ -78,6 +78,7 @@ export interface AdminVerificationRow {
   reviewedAt: string | null;
   redFlag: boolean;
   redFlagType: string | null;
+  reportUrl: string | null;
   metadata: Record<string, unknown> | null;
   updatedAt: string;
   isPublished: boolean;
@@ -120,6 +121,7 @@ export async function listVerifications(): Promise<AdminVerificationRow[]> {
       reviewedAt: v.reviewed_at ?? null,
       redFlag: !!meta.redFlag,
       redFlagType: meta.redFlagType ?? null,
+      reportUrl: (meta.reportUrl as string | undefined) ?? null,
       metadata: Object.keys(meta).length ? meta : null,
       updatedAt: v.updated_at,
       isPublished: !!c.is_published,

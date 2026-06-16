@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { BadgeCheck, ShieldCheck, AlertTriangle, Clock, CheckCircle, XCircle, UserX, ChevronDown, ChevronRight } from "lucide-react";
 import type { AdminVerificationRow } from "@/lib/admin";
-import { adminApproveVerification, adminDepublishCaregiver } from "@/lib/authenticate/actions";
+import { FileText } from "lucide-react";
+import { adminApproveVerification, adminDepublishCaregiver, adminGenerateReport } from "@/lib/authenticate/actions";
 
 const TYPE_LABEL: Record<string, string> = {
   identity: "Identity",
@@ -38,6 +39,7 @@ export function VerificationsAdmin({ rows }: { rows: AdminVerificationRow[] }) {
   const [toast, setToast] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "red_flags" | "review" | "verified">("all");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [reportLoading, setReportLoading] = useState<string | null>(null);
 
   const show = (m: string) => { setToast(m); setTimeout(() => setToast(null), 2600); };
 
@@ -62,6 +64,19 @@ export function VerificationsAdmin({ rows }: { rows: AdminVerificationRow[] }) {
     start(async () => {
       const res = await adminDepublishCaregiver(userId);
       show(res.ok ? "Caregiver depublished" : (res.error ?? "Error"));
+    });
+  }
+
+  function handleGenerateReport(userCode: string) {
+    setReportLoading(userCode);
+    start(async () => {
+      const res = await adminGenerateReport(userCode);
+      setReportLoading(null);
+      if (res.ok) {
+        window.open(res.url, "_blank", "noopener");
+      } else {
+        show(res.error ?? "Could not generate report");
+      }
     });
   }
 
@@ -236,8 +251,24 @@ export function VerificationsAdmin({ rows }: { rows: AdminVerificationRow[] }) {
                                 <pre className="mt-1.5 overflow-x-auto rounded-lg bg-ink/5 p-2 text-[10px] text-ink">{JSON.stringify(row.metadata, null, 2)}</pre>
                               </details>
                             )}
-                            <div className="mt-3 flex gap-3">
+                            <div className="mt-3 flex flex-wrap gap-3 items-center">
                               <Link href={`/admin/users/${row.userId}`} className="text-[#4f6b15] hover:underline">View user profile →</Link>
+                              {row.reference && (
+                                row.reportUrl ? (
+                                  <a href={row.reportUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-full bg-ink/8 px-3 py-1 text-xs font-medium text-ink hover:bg-ink/15">
+                                    <FileText className="h-3 w-3" /> View Report (PDF)
+                                  </a>
+                                ) : (
+                                  <button
+                                    disabled={reportLoading === row.reference || pending}
+                                    onClick={() => handleGenerateReport(row.reference!)}
+                                    className="inline-flex items-center gap-1 rounded-full bg-ink/8 px-3 py-1 text-xs font-medium text-ink hover:bg-ink/15 disabled:opacity-60"
+                                  >
+                                    <FileText className="h-3 w-3" />
+                                    {reportLoading === row.reference ? "Generating…" : "Generate Report"}
+                                  </button>
+                                )
+                              )}
                             </div>
                           </div>
                         </td>
