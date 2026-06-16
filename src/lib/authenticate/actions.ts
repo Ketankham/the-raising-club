@@ -62,13 +62,13 @@ export async function startVerification(dob?: string): Promise<{ ok: true; url: 
       }
     }
 
-    const url = await getMedallionUrl(userCode!);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://theraisingclub.com');
+    const url = await getMedallionUrl(userCode!, `${siteUrl}/profile`);
     console.log('[authenticate] Medallion URL:', url?.slice(0, 80));
     return { ok: true, url };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error('[authenticate] startVerification error:', msg);
-    return { ok: false, error: `Debug: ${msg}` };
+    console.error('[authenticate] startVerification error:', err instanceof Error ? err.message : err);
+    return { ok: false, error: 'Could not start verification. Please try again.' };
   }
 }
 

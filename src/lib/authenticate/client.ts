@@ -40,24 +40,28 @@ export async function createAuthenticateUser(params: {
   return code;
 }
 
-/** Generate a fresh Medallion™ hosted verification URL from a stored userAccessCode. */
-export async function getMedallionUrl(userAccessCode: string): Promise<string> {
-  const res = await fetch(`${BASE}/user/medallion/link`, {
+/** Generate a fresh Medallion™ hosted verification URL from a stored userAccessCode.
+ *  Uses POST /user/jwt → constructs https://verify.authenticating.com/?token=... */
+export async function getMedallionUrl(userAccessCode: string, redirectUrl?: string): Promise<string> {
+  const body: Record<string, string> = { userAccessCode };
+  if (redirectUrl) body.redirectURL = redirectUrl;
+
+  const res = await fetch(`${BASE}/user/jwt`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey()}`,
     },
-    body: JSON.stringify({ userAccessCode }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Authenticate getMedallionUrl failed ${res.status}: ${body}`);
+    const text = await res.text();
+    throw new Error(`Authenticate getMedallionUrl failed ${res.status}: ${text}`);
   }
   const data = await res.json();
-  const url = (data.url ?? data.link ?? data.redirectUrl ?? data.verificationUrl) as string | undefined;
-  if (!url) throw new Error(`Authenticate getMedallionUrl: no URL in response: ${JSON.stringify(data)}`);
-  return url;
+  const token = (data.token ?? data.jwt) as string | undefined;
+  if (!token) throw new Error(`Authenticate getMedallionUrl: no token in response: ${JSON.stringify(data)}`);
+  return `https://verify.authenticating.com/?token=${token}`;
 }
 
 /**
