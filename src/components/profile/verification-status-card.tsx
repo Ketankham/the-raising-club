@@ -44,17 +44,23 @@ export function VerifyPromptBanner() {
 export function VerificationStatusCard({
   verifications,
   hasAuthenticateUser,
+  hasDob,
 }: {
   verifications: { type: string; status: string }[];
   hasAuthenticateUser: boolean;
+  hasDob: boolean;
 }) {
   const idStatus = statusOf(verifications, "identity");
   const bgStatus = statusOf(verifications, "background_check");
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
+  // DOB collection step — only shown on first verification attempt (when no code stored yet)
+  const [showDobInput, setShowDobInput] = useState(false);
+  const [dob, setDob] = useState("");
 
   const canStart = idStatus === "not_started" || idStatus === "failed" || idStatus === "expired";
+  const needsDob = canStart && !hasAuthenticateUser && !hasDob;
   const btnLabel = hasAuthenticateUser && idStatus === "not_started"
     ? "Continue Verification"
     : idStatus === "failed"
@@ -62,9 +68,14 @@ export function VerificationStatusCard({
     : "Start Verification";
 
   function handleStart() {
+    // First click with no DOB stored: show the DOB input form
+    if (needsDob && !showDobInput) {
+      setShowDobInput(true);
+      return;
+    }
     setError(null);
     start(async () => {
-      const res = await startVerification();
+      const res = await startVerification(needsDob ? dob : undefined);
       if (res.ok) {
         window.location.href = res.url;
       } else {
@@ -116,14 +127,29 @@ export function VerificationStatusCard({
 
       {error && <p className="mt-3 text-xs text-red-600">{error}</p>}
 
+      {/* DOB collection — shown only the first time, before redirecting */}
+      {showDobInput && (
+        <div className="mt-4 rounded-xl border border-ink/10 bg-[#faf5ee] p-3.5">
+          <p className="mb-2 text-xs font-medium text-ink">Date of birth required</p>
+          <p className="mb-3 text-xs text-ink-soft">Authenticate needs your date of birth to verify your identity. It is sent directly to their secure system and is not stored publicly.</p>
+          <input
+            type="date"
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+            max={new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]}
+            className="w-full rounded-lg border border-ink/15 bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-[#4f6b15]/30"
+          />
+        </div>
+      )}
+
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {canStart && (
           <button
             onClick={handleStart}
-            disabled={pending}
+            disabled={pending || (showDobInput && !dob)}
             className="inline-flex items-center gap-1.5 rounded-full bg-[#4f6b15] px-4 py-1.5 text-xs font-semibold text-white transition hover:brightness-95 disabled:opacity-60"
           >
-            {pending ? "Opening…" : btnLabel} <ArrowRight className="h-3.5 w-3.5" />
+            {pending ? "Opening…" : showDobInput ? "Continue to Verify" : btnLabel} <ArrowRight className="h-3.5 w-3.5" />
           </button>
         )}
         {idStatus === "pending" && (

@@ -8,11 +8,13 @@ function apiKey(): string {
   return key;
 }
 
-/** Create a new Authenticate user for a caregiver. Returns the userAccessCode. */
+/** Create a new Authenticate user for a caregiver. Returns the userAccessCode.
+ *  dob must be in DD-MM-YYYY format (required by the Authenticate API). */
 export async function createAuthenticateUser(params: {
   firstName: string;
   lastName: string;
   email: string;
+  dob: string; // DD-MM-YYYY
 }): Promise<string> {
   const res = await fetch(`${BASE}/user/create`, {
     method: 'POST',
@@ -24,6 +26,7 @@ export async function createAuthenticateUser(params: {
       firstName: params.firstName,
       lastName: params.lastName,
       email: params.email,
+      dob: params.dob,
     }),
   });
   if (!res.ok) {
@@ -31,7 +34,10 @@ export async function createAuthenticateUser(params: {
     throw new Error(`Authenticate createUser failed ${res.status}: ${body}`);
   }
   const data = await res.json();
-  return data.userAccessCode as string;
+  const code = (data.userAccessCode ?? data.userCode ?? data.accessCode ?? data.code) as string | undefined;
+  if (!code) throw new Error(`Authenticate createUser: no userAccessCode in response: ${JSON.stringify(data)}`);
+  console.log('[authenticate] created user, code prefix:', code.slice(0, 8));
+  return code;
 }
 
 /** Generate a fresh Medallion™ hosted verification URL from a stored userAccessCode. */
@@ -49,7 +55,9 @@ export async function getMedallionUrl(userAccessCode: string): Promise<string> {
     throw new Error(`Authenticate getMedallionUrl failed ${res.status}: ${body}`);
   }
   const data = await res.json();
-  return data.url as string;
+  const url = (data.url ?? data.link ?? data.redirectUrl ?? data.verificationUrl) as string | undefined;
+  if (!url) throw new Error(`Authenticate getMedallionUrl: no URL in response: ${JSON.stringify(data)}`);
+  return url;
 }
 
 /**

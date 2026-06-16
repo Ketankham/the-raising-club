@@ -28,6 +28,7 @@ export interface CaregiverProfileData {
   reviews: { id: string; reviewer_name: string | null; relationship: string | null; rating: number | null; body: string | null }[];
   verifications: { type: string; status: string }[];
   hasAuthenticateUser: boolean;
+  hasDob: boolean;
   backgroundCheckVerified: boolean;
 }
 
@@ -97,6 +98,7 @@ export async function getPublicCaregiverProfile(userId: string): Promise<Caregiv
       ...(pub.backgroundCheckVerified ? [{ type: "background_check", status: "verified" }] : []),
     ],
     hasAuthenticateUser: false,
+    hasDob: false,
     backgroundCheckVerified: !!pub.backgroundCheckVerified,
   };
 }
@@ -106,7 +108,7 @@ export async function getCaregiverProfile(userId: string): Promise<CaregiverProf
 
   const [profile, cg, ages, settings, langs, exp, avail, edu, certs, reviews, verifs, skills, creds] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
-    supabase.from("caregiver_profiles").select("*, authenticate_user_code").eq("user_id", userId).maybeSingle(),
+    supabase.from("caregiver_profiles").select("*, authenticate_user_code, date_of_birth").eq("user_id", userId).maybeSingle(),
     supabase.from("caregiver_age_groups").select("age").eq("user_id", userId),
     supabase.from("caregiver_care_settings").select("setting").eq("user_id", userId),
     supabase.from("caregiver_languages").select("language, is_primary").eq("user_id", userId),
@@ -154,6 +156,7 @@ export async function getCaregiverProfile(userId: string): Promise<CaregiverProf
     reviews: reviews.data ?? [],
     verifications: verifs.data ?? [],
     hasAuthenticateUser: !!(c as any)?.authenticate_user_code,
+    hasDob: !!(c as any)?.date_of_birth,
     backgroundCheckVerified: (verifs.data ?? []).some((v) => v.type === "background_check" && v.status === "verified"),
   };
 }

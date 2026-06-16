@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export interface AdminUserRow {
   id: string;
@@ -81,9 +82,11 @@ export interface AdminVerificationRow {
   isDeactivated: boolean;
 }
 
-/** All caregiver verifications — used by the admin Verifications panel. */
+/** All caregiver verifications — used by the admin Verifications panel.
+ *  Uses service-role client so RLS is bypassed (this is an admin-only server
+ *  function; the page guard already calls requireAdmin()). */
 export async function listVerifications(): Promise<AdminVerificationRow[]> {
-  const supabase = await createClient();
+  const supabase = createAdminClient()!;
   // Join path: verifications → profiles (direct FK) → caregiver_profiles (nested).
   // Using caregiver_profiles!inner directly from verifications fails because there
   // is no direct FK between those two tables — only via profiles.

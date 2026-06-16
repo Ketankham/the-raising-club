@@ -311,6 +311,7 @@ export function CaregiverProfile({ data, isOwner }: { data: CaregiverProfileData
               <VerificationStatusCard
                 verifications={data.verifications}
                 hasAuthenticateUser={data.hasAuthenticateUser}
+                hasDob={data.hasDob}
               />
             )}
 

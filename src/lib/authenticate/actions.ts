@@ -6,8 +6,9 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { requireUserProfile } from '@/lib/guards';
 import { createAuthenticateUser, getMedallionUrl, getTestResult } from './client';
 
-/** Start or resume identity verification. Returns the Medallion™ hosted URL. */
-export async function startVerification(): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+/** Start or resume identity verification. Returns the Medallion™ hosted URL.
+ *  dob is required on first call (DD-MM-YYYY); ignored on resume (code already exists). */
+export async function startVerification(dob?: string): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
   try {
     const { user, profile } = await requireUserProfile();
     if (profile.role !== 'caregiver') return { ok: false, error: 'Not a caregiver account' };
@@ -15,17 +16,30 @@ export async function startVerification(): Promise<{ ok: true; url: string } | {
     const supabase = await createClient();
     const { data: cp } = await supabase
       .from('caregiver_profiles')
-      .select('authenticate_user_code')
+      .select('authenticate_user_code, date_of_birth')
       .eq('user_id', user.id)
       .single();
 
     let userCode = (cp?.authenticate_user_code as string | null) ?? null;
 
     if (!userCode) {
+      // DOB required by Authenticate API. Use stored value if available, otherwise use the passed value.
+      const storedDob = (cp?.date_of_birth as string | null) ?? null;
+      // Both storedDob (DB) and dob (form input) are YYYY-MM-DD; API requires DD-MM-YYYY.
+      const toApiFormat = (d: string) => { const [y, m, day] = d.split('-'); return `${day}-${m}-${y}`; };
+      const effectiveDob = storedDob ? toApiFormat(storedDob) : dob ? toApiFormat(dob) : '';
+      if (!effectiveDob) return { ok: false, error: 'Date of birth is required to start verification.' };
+
+      // Save DOB for future retries before calling the API
+      if (dob && !storedDob) {
+        await supabase.from('caregiver_profiles').update({ date_of_birth: dob }).eq('user_id', user.id);
+      }
+
       userCode = await createAuthenticateUser({
         firstName: (profile.first_name as string | null) ?? '',
         lastName: (profile.last_name as string | null) ?? '',
         email: (profile.email as string | null) ?? '',
+        dob: effectiveDob,
       });
 
       // Atomic write: only stores if still null (prevents double-create on race)
@@ -49,6 +63,7 @@ export async function startVerification(): Promise<{ ok: true; url: string } | {
     }
 
     const url = await getMedallionUrl(userCode!);
+    console.log('[authenticate] Medallion URL:', url?.slice(0, 80));
     return { ok: true, url };
   } catch (err) {
     console.error('[authenticate] startVerification error:', err);
