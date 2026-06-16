@@ -104,6 +104,21 @@ export async function retrievePdfReport(userAccessCode: string): Promise<string 
  * Used as a fallback when the SELF_VERIFICATION_TRY_STATUS webhook never arrived.
  */
 export async function getTestResult(userAccessCode: string): Promise<'verified' | 'failed' | 'pending' | null> {
+  const data = await getFullTestResult(userAccessCode);
+  if (!data) return null;
+  const status = (data.status as string | undefined)?.toLowerCase();
+  if (status === 'verified') return 'verified';
+  if (status === 'failed' || status === 'not verified') return 'failed';
+  if (status === 'pending') return 'pending';
+  return null;
+}
+
+/**
+ * Fetch the full raw result object from Authenticate — contains extracted document
+ * fields: firstName, lastName, dateOfBirth, nationality, gender, documentType, etc.
+ * Exact field names vary by document/country; we store the whole object in metadata.
+ */
+export async function getFullTestResult(userAccessCode: string): Promise<Record<string, unknown> | null> {
   try {
     const res = await fetch(`${BASE}/user/gettestresult`, {
       method: 'POST',
@@ -114,12 +129,7 @@ export async function getTestResult(userAccessCode: string): Promise<'verified' 
       body: JSON.stringify({ userAccessCode }),
     });
     if (!res.ok) return null;
-    const data = await res.json();
-    const status = (data.status as string | undefined)?.toLowerCase();
-    if (status === 'verified') return 'verified';
-    if (status === 'failed' || status === 'not verified') return 'failed';
-    if (status === 'pending') return 'pending';
-    return null;
+    return await res.json() as Record<string, unknown>;
   } catch {
     return null;
   }

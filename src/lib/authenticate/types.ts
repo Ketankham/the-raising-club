@@ -7,6 +7,10 @@ export interface VerificationMetadata {
   reportUrl?: string;
   rawStatus?: string;
   rawResult?: Record<string, unknown>;
+  /** Full response from POST /user/gettestresult — contains extracted document fields:
+   *  firstName, lastName, dateOfBirth, nationality, gender, documentType, etc.
+   *  Exact keys vary by Authenticate's extraction; we store the whole object. */
+  idDocument?: Record<string, unknown>;
   redFlag?: boolean;
   redFlagType?: 'sex_offender' | 'criminal_record';
   detectedAt?: string;

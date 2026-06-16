@@ -1,6 +1,7 @@
 import 'server-only';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { emitNotification } from '@/lib/notifications/emit';
+import { getFullTestResult } from './client';
 import type { AuthWebhookPayload, VerificationMetadata } from './types';
 
 type AdminClient = NonNullable<ReturnType<typeof createAdminClient>>;
@@ -56,6 +57,13 @@ async function handleIdentityStatus(admin: AdminClient, payload: AuthWebhookPayl
   const rawStatus = (payload.status ?? '').toLowerCase();
   const status = rawStatus === 'verified' ? 'verified' : rawStatus === 'pending' ? 'pending' : 'failed';
   const metadata: VerificationMetadata = { rawStatus: payload.status, rawResult: payload.result };
+
+  // On verified: fetch full document extraction data (name, nationality, gender, DOB,
+  // document type, etc.) and store under metadata.idDocument so admins can review.
+  if (status === 'verified') {
+    const fullResult = await getFullTestResult(payload.userCode);
+    if (fullResult) metadata.idDocument = fullResult;
+  }
 
   await admin.from('verifications').upsert(
     { user_id: userId, type: 'identity', status, provider: 'authenticate', reference: payload.userCode, metadata, updated_at: new Date().toISOString() },

@@ -25,6 +25,43 @@ function fmtDate(s: string) {
   return new Date(s).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
+/** Pick a value from a metadata object trying multiple common field-name variants. */
+function pick(obj: Record<string, unknown>, ...keys: string[]): string | null {
+  for (const k of keys) {
+    const v = obj[k];
+    if (v && typeof v === "string") return v;
+  }
+  return null;
+}
+
+function IdDocumentPanel({ doc }: { doc: Record<string, unknown> }) {
+  const fields: [string, string | null][] = [
+    ["Verified name", [pick(doc, "firstName", "first_name", "givenNames", "given_names"), pick(doc, "lastName", "last_name", "surname", "familyName")].filter(Boolean).join(" ") || pick(doc, "fullName", "full_name", "name")],
+    ["Date of birth", pick(doc, "dateOfBirth", "date_of_birth", "dob", "birthDate")],
+    ["Nationality", pick(doc, "nationality", "nationalityCode", "country_of_origin", "issuingCountry", "issuing_country", "countryCode")],
+    ["Gender", pick(doc, "gender", "sex")],
+    ["Document type", pick(doc, "documentType", "document_type", "idType", "id_type", "type")],
+    ["Document number", pick(doc, "documentNumber", "document_number", "idNumber", "id_number", "number")],
+    ["Expiry", pick(doc, "expiryDate", "expiry_date", "expiry", "documentExpiry", "dateOfExpiry")],
+    ["Country of issue", pick(doc, "issuingCountry", "issuing_country", "country", "countryCode", "nationality")],
+  ];
+  const visible = fields.filter(([, v]) => v);
+  if (!visible.length) return null;
+  return (
+    <div className="mt-3 rounded-xl border border-[#dcebc6] bg-[#f5fbee] p-3">
+      <p className="mb-2 text-xs font-semibold text-[#4f6b15]">ID Document — extracted by Authenticate</p>
+      <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 sm:grid-cols-3">
+        {visible.map(([label, value]) => (
+          <div key={label}>
+            <span className="text-ink-soft">{label}</span>
+            <p className="font-medium text-ink">{value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Stat({ label, value, accent }: { label: string; value: number | string; accent?: string }) {
   return (
     <div className="rounded-xl border border-ink/5 bg-white p-4">
@@ -245,6 +282,9 @@ export function VerificationsAdmin({ rows }: { rows: AdminVerificationRow[] }) {
                               <div><span className="text-ink-soft">Reference / User Code</span><p className="font-mono font-medium text-ink break-all">{row.reference ?? "—"}</p></div>
                               <div><span className="text-ink-soft">Reviewed at</span><p className="font-medium text-ink">{row.reviewedAt ? fmtDate(row.reviewedAt) : "—"}</p></div>
                             </div>
+                            {row.metadata?.idDocument != null && typeof row.metadata.idDocument === "object" ? (
+                              <IdDocumentPanel doc={row.metadata.idDocument as Record<string, unknown>} />
+                            ) : null}
                             {row.metadata && (
                               <details className="mt-3">
                                 <summary className="cursor-pointer text-ink-soft hover:text-ink">Raw metadata</summary>

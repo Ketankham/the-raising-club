@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireUserProfile } from '@/lib/guards';
-import { createAuthenticateUser, getMedallionUrl, getTestResult, initiatePdfReport, retrievePdfReport } from './client';
+import { createAuthenticateUser, getMedallionUrl, getTestResult, getFullTestResult, initiatePdfReport, retrievePdfReport } from './client';
 
 /** Start or resume identity verification. Returns the Medallion™ hosted URL.
  *  dob is required on first call (DD-MM-YYYY); ignored on resume (code already exists). */
@@ -93,8 +93,13 @@ export async function checkVerificationStatus(): Promise<{ ok: true; status: str
     if (result === 'verified' || result === 'failed') {
       const admin = createAdminClient();
       if (admin) {
+        const metadata: Record<string, unknown> = {};
+        if (result === 'verified') {
+          const fullResult = await getFullTestResult(userCode);
+          if (fullResult) metadata.idDocument = fullResult;
+        }
         await admin.from('verifications').upsert(
-          { user_id: user.id, type: 'identity', status: result, provider: 'authenticate', reference: userCode, updated_at: new Date().toISOString() },
+          { user_id: user.id, type: 'identity', status: result, provider: 'authenticate', reference: userCode, metadata, updated_at: new Date().toISOString() },
           { onConflict: 'user_id,type' }
         );
       }
