@@ -90,16 +90,15 @@ export async function listVerifications(): Promise<AdminVerificationRow[]> {
   // Join path: verifications → profiles (direct FK) → caregiver_profiles (nested).
   // Using caregiver_profiles!inner directly from verifications fails because there
   // is no direct FK between those two tables — only via profiles.
+  // Use explicit FK name because verifications has two FKs to profiles:
+  //   verifications_user_id_fkey  (the one we want — the caregiver)
+  //   verifications_reviewed_by_fkey (admin who reviewed — added in 0043)
+  // PostgREST PGRST201 without the hint.
   const { data, error } = await supabase
     .from("verifications")
-    .select("id, user_id, type, status, provider, admin_review_required, reviewed_at, metadata, updated_at, profiles!inner(first_name, last_name, preferred_name, email, deactivated_at, caregiver_profiles(is_published))")
+    .select("id, user_id, type, status, provider, admin_review_required, reviewed_at, metadata, updated_at, profiles!verifications_user_id_fkey!inner(first_name, last_name, preferred_name, email, deactivated_at, caregiver_profiles(is_published))")
     .order("updated_at", { ascending: false });
-  if (error) {
-    console.error("[admin] listVerifications msg:", error.message);
-    console.error("[admin] listVerifications code:", error.code);
-    console.error("[admin] listVerifications details:", error.details);
-    console.error("[admin] listVerifications hint:", error.hint);
-  }
+  if (error) console.error("[admin] listVerifications error:", error.code, error.message);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data ?? []).map((v: any) => {
