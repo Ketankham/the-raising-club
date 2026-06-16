@@ -73,10 +73,12 @@ export interface AdminVerificationRow {
   type: string;
   status: string;
   provider: string | null;
+  reference: string | null;
   adminReviewRequired: boolean;
   reviewedAt: string | null;
   redFlag: boolean;
   redFlagType: string | null;
+  metadata: Record<string, unknown> | null;
   updatedAt: string;
   isPublished: boolean;
   isDeactivated: boolean;
@@ -96,7 +98,7 @@ export async function listVerifications(): Promise<AdminVerificationRow[]> {
   // PostgREST PGRST201 without the hint.
   const { data, error } = await supabase
     .from("verifications")
-    .select("id, user_id, type, status, provider, admin_review_required, reviewed_at, metadata, updated_at, profiles!verifications_user_id_fkey!inner(first_name, last_name, preferred_name, email, deactivated_at, caregiver_profiles(is_published))")
+    .select("id, user_id, type, status, provider, reference, admin_review_required, reviewed_at, metadata, updated_at, profiles!verifications_user_id_fkey!inner(first_name, last_name, preferred_name, email, deactivated_at, caregiver_profiles(is_published))")
     .order("updated_at", { ascending: false });
   if (error) console.error("[admin] listVerifications error:", error.code, error.message);
 
@@ -113,10 +115,12 @@ export async function listVerifications(): Promise<AdminVerificationRow[]> {
       type: v.type,
       status: v.status,
       provider: v.provider ?? null,
+      reference: v.reference ?? null,
       adminReviewRequired: !!v.admin_review_required,
       reviewedAt: v.reviewed_at ?? null,
       redFlag: !!meta.redFlag,
       redFlagType: meta.redFlagType ?? null,
+      metadata: Object.keys(meta).length ? meta : null,
       updatedAt: v.updated_at,
       isPublished: !!c.is_published,
       isDeactivated: !!p.deactivated_at,

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { BadgeCheck, ShieldCheck, AlertTriangle, Clock, CheckCircle, XCircle, UserX } from "lucide-react";
+import Link from "next/link";
+import { BadgeCheck, ShieldCheck, AlertTriangle, Clock, CheckCircle, XCircle, UserX, ChevronDown, ChevronRight } from "lucide-react";
 import type { AdminVerificationRow } from "@/lib/admin";
 import { adminApproveVerification, adminDepublishCaregiver } from "@/lib/authenticate/actions";
 
@@ -36,6 +37,7 @@ export function VerificationsAdmin({ rows }: { rows: AdminVerificationRow[] }) {
   const [pending, start] = useTransition();
   const [toast, setToast] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "red_flags" | "review" | "verified">("all");
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const show = (m: string) => { setToast(m); setTimeout(() => setToast(null), 2600); };
 
@@ -139,73 +141,111 @@ export function VerificationsAdmin({ rows }: { rows: AdminVerificationRow[] }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
-              {filtered.map((row) => (
-                <tr key={row.verificationId} className={`${row.redFlag ? "bg-red-50/50" : row.adminReviewRequired ? "bg-[#fdeede]/30" : ""}`}>
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-ink">{row.name}</p>
-                    <p className="text-xs text-ink-soft">{row.email}</p>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="flex items-center gap-1.5 text-ink-soft">
-                      {row.type === "identity" ? <BadgeCheck className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
-                      {TYPE_LABEL[row.type] ?? row.type}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_COLOR[row.status] ?? "bg-ink/10 text-ink-soft"}`}>
-                      {row.status === "verified" && <CheckCircle className="h-3 w-3" />}
-                      {row.status === "failed" && <XCircle className="h-3 w-3" />}
-                      {row.status === "pending" && <Clock className="h-3 w-3" />}
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {row.redFlag && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">
-                        <AlertTriangle className="h-3 w-3" />
-                        {row.redFlagType === "sex_offender" ? "Sex Offender" : "Criminal Record"}
-                      </span>
-                    )}
-                    {row.adminReviewRequired && !row.redFlag && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[#fdeede] px-2.5 py-1 text-xs font-medium text-[#9a5a2a]">
-                        Review needed
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {row.isDeactivated ? (
-                      <span className="flex items-center gap-1 text-xs text-red-600"><UserX className="h-3.5 w-3.5" /> Deactivated</span>
-                    ) : row.isPublished ? (
-                      <span className="text-xs text-[#4f6b15]">Published</span>
-                    ) : (
-                      <span className="text-xs text-ink-soft">Unpublished</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-ink-soft">{fmtDate(row.updatedAt)}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      {row.adminReviewRequired && (
+              {filtered.map((row) => {
+                const isOpen = expanded === row.verificationId;
+                const rowBg = row.redFlag ? "bg-red-50/50" : row.adminReviewRequired ? "bg-[#fdeede]/30" : "";
+                return (
+                  <>
+                    <tr key={row.verificationId} className={rowBg}>
+                      <td className="px-4 py-3">
                         <button
-                          disabled={pending}
-                          onClick={() => handleApprove(row.verificationId)}
-                          className="rounded-full bg-[#dcebc6] px-3 py-1 text-xs font-semibold text-[#4f6b15] transition hover:brightness-95 disabled:opacity-60"
+                          onClick={() => setExpanded(isOpen ? null : row.verificationId)}
+                          className="flex items-center gap-1 text-left"
                         >
-                          Approve
+                          {isOpen ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-ink-soft" /> : <ChevronRight className="h-3.5 w-3.5 shrink-0 text-ink-soft" />}
+                          <span>
+                            <Link href={`/admin/users/${row.userId}`} onClick={(e) => e.stopPropagation()} className="font-medium text-ink hover:underline">
+                              {row.name}
+                            </Link>
+                            <p className="text-xs text-ink-soft">{row.email}</p>
+                          </span>
                         </button>
-                      )}
-                      {!row.isDeactivated && row.status === "failed" && (
-                        <button
-                          disabled={pending}
-                          onClick={() => handleDepublish(row.userId)}
-                          className="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 transition hover:brightness-95 disabled:opacity-60"
-                        >
-                          Depublish
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="flex items-center gap-1.5 text-ink-soft">
+                          {row.type === "identity" ? <BadgeCheck className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
+                          {TYPE_LABEL[row.type] ?? row.type}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_COLOR[row.status] ?? "bg-ink/10 text-ink-soft"}`}>
+                          {row.status === "verified" && <CheckCircle className="h-3 w-3" />}
+                          {row.status === "failed" && <XCircle className="h-3 w-3" />}
+                          {row.status === "pending" && <Clock className="h-3 w-3" />}
+                          {row.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {row.redFlag && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">
+                            <AlertTriangle className="h-3 w-3" />
+                            {row.redFlagType === "sex_offender" ? "Sex Offender" : "Criminal Record"}
+                          </span>
+                        )}
+                        {row.adminReviewRequired && !row.redFlag && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#fdeede] px-2.5 py-1 text-xs font-medium text-[#9a5a2a]">
+                            Review needed
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {row.isDeactivated ? (
+                          <span className="flex items-center gap-1 text-xs text-red-600"><UserX className="h-3.5 w-3.5" /> Deactivated</span>
+                        ) : row.isPublished ? (
+                          <span className="text-xs text-[#4f6b15]">Published</span>
+                        ) : (
+                          <span className="text-xs text-ink-soft">Unpublished</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-ink-soft">{fmtDate(row.updatedAt)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {row.adminReviewRequired && (
+                            <button
+                              disabled={pending}
+                              onClick={() => handleApprove(row.verificationId)}
+                              className="rounded-full bg-[#dcebc6] px-3 py-1 text-xs font-semibold text-[#4f6b15] transition hover:brightness-95 disabled:opacity-60"
+                            >
+                              Approve
+                            </button>
+                          )}
+                          {!row.isDeactivated && row.status === "failed" && (
+                            <button
+                              disabled={pending}
+                              onClick={() => handleDepublish(row.userId)}
+                              className="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 transition hover:brightness-95 disabled:opacity-60"
+                            >
+                              Depublish
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    {isOpen && (
+                      <tr key={`${row.verificationId}-detail`} className={`${rowBg} border-t-0`}>
+                        <td colSpan={7} className="px-6 pb-4 pt-0">
+                          <div className="rounded-xl border border-ink/8 bg-white/70 p-3.5 text-xs">
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 sm:grid-cols-3">
+                              <div><span className="text-ink-soft">Provider</span><p className="font-medium text-ink">{row.provider ?? "—"}</p></div>
+                              <div><span className="text-ink-soft">Reference / User Code</span><p className="font-mono font-medium text-ink break-all">{row.reference ?? "—"}</p></div>
+                              <div><span className="text-ink-soft">Reviewed at</span><p className="font-medium text-ink">{row.reviewedAt ? fmtDate(row.reviewedAt) : "—"}</p></div>
+                            </div>
+                            {row.metadata && (
+                              <details className="mt-3">
+                                <summary className="cursor-pointer text-ink-soft hover:text-ink">Raw metadata</summary>
+                                <pre className="mt-1.5 overflow-x-auto rounded-lg bg-ink/5 p-2 text-[10px] text-ink">{JSON.stringify(row.metadata, null, 2)}</pre>
+                              </details>
+                            )}
+                            <div className="mt-3 flex gap-3">
+                              <Link href={`/admin/users/${row.userId}`} className="text-[#4f6b15] hover:underline">View user profile →</Link>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </>
+                );
+              })}
             </tbody>
           </table>
         </div>
