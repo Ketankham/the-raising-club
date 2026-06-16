@@ -84,16 +84,19 @@ export interface AdminVerificationRow {
 /** All caregiver verifications — used by the admin Verifications panel. */
 export async function listVerifications(): Promise<AdminVerificationRow[]> {
   const supabase = await createClient();
+  // Join path: verifications → profiles (direct FK) → caregiver_profiles (nested).
+  // Using caregiver_profiles!inner directly from verifications fails because there
+  // is no direct FK between those two tables — only via profiles.
   const { data } = await supabase
     .from("verifications")
-    .select("id, user_id, type, status, provider, admin_review_required, reviewed_at, metadata, updated_at, profiles!inner(first_name, last_name, preferred_name, email, deactivated_at), caregiver_profiles!inner(is_published)")
+    .select("id, user_id, type, status, provider, admin_review_required, reviewed_at, metadata, updated_at, profiles!inner(first_name, last_name, preferred_name, email, deactivated_at, caregiver_profiles(is_published))")
     .order("updated_at", { ascending: false });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data ?? []).map((v: any) => {
     const meta = v.metadata ?? {};
     const p = v.profiles ?? {};
-    const c = v.caregiver_profiles ?? {};
+    const c = Array.isArray(p.caregiver_profiles) ? (p.caregiver_profiles[0] ?? {}) : (p.caregiver_profiles ?? {});
     return {
       verificationId: v.id,
       userId: v.user_id,
