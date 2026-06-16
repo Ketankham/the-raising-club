@@ -94,7 +94,12 @@ export async function listVerifications(): Promise<AdminVerificationRow[]> {
     .from("verifications")
     .select("id, user_id, type, status, provider, admin_review_required, reviewed_at, metadata, updated_at, profiles!inner(first_name, last_name, preferred_name, email, deactivated_at, caregiver_profiles(is_published))")
     .order("updated_at", { ascending: false });
-  if (error) console.error("[admin] listVerifications error:", error.message, error.details, error.hint);
+  if (error) {
+    console.error("[admin] listVerifications msg:", error.message);
+    console.error("[admin] listVerifications code:", error.code);
+    console.error("[admin] listVerifications details:", error.details);
+    console.error("[admin] listVerifications hint:", error.hint);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data ?? []).map((v: any) => {
