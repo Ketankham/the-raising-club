@@ -90,10 +90,11 @@ export async function listVerifications(): Promise<AdminVerificationRow[]> {
   // Join path: verifications → profiles (direct FK) → caregiver_profiles (nested).
   // Using caregiver_profiles!inner directly from verifications fails because there
   // is no direct FK between those two tables — only via profiles.
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("verifications")
     .select("id, user_id, type, status, provider, admin_review_required, reviewed_at, metadata, updated_at, profiles!inner(first_name, last_name, preferred_name, email, deactivated_at, caregiver_profiles(is_published))")
     .order("updated_at", { ascending: false });
+  if (error) console.error("[admin] listVerifications error:", error.message, error.details, error.hint);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data ?? []).map((v: any) => {
