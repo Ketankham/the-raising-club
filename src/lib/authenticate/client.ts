@@ -99,6 +99,73 @@ export async function retrievePdfReport(userAccessCode: string): Promise<string 
   }
 }
 
+// ── Risk scoring ─────────────────────────────────────────────────────────────
+
+/** Run the identity risk-match check against Authenticate's identity graph.
+ *  Returns a score 0-100 (0=low risk, 99=high risk), or null on failure. */
+export async function runRiskScore(userAccessCode: string): Promise<number | null> {
+  try {
+    const res = await fetch(`${BASE}/identity/risk-match`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey()}` },
+      body: JSON.stringify({ userAccessCode }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json() as Record<string, unknown>;
+    const score = data.riskScore ?? data.risk_score ?? data.score;
+    return typeof score === 'number' ? Math.round(score) : null;
+  } catch {
+    return null;
+  }
+}
+
+// ── Background checks ─────────────────────────────────────────────────────────
+
+/** Trigger all three standard background checks in parallel (fire-and-forget).
+ *  Results arrive via webhooks: ALL_CRIMINAL_REQUESTS_COMPLETE and SEX_OFFENDER_CHECK_STATUS_UPDATE. */
+export async function triggerBackgroundChecks(userAccessCode: string): Promise<void> {
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey()}` };
+  const body = JSON.stringify({ userAccessCode });
+  await Promise.allSettled([
+    fetch(`${BASE}/identity/request-criminal-report-seven`, { method: 'POST', headers, body }),
+    fetch(`${BASE}/user/verify-criminal-sex-offender`,      { method: 'POST', headers, body }),
+    fetch(`${BASE}/identity/watchlist-global-useraccesscode`, { method: 'POST', headers, body }),
+  ]);
+}
+
+// ── True Continuous Monitoring ────────────────────────────────────────────────
+
+/** Enroll a user in True Continuous Monitoring™.
+ *  Authenticate will fire webhooks whenever new records appear. */
+export async function enrollTCM(userAccessCode: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${BASE}/tcm/enroll-user`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey()}` },
+      body: JSON.stringify({ userAccessCode }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** Check current TCM enrollment status for a user. */
+export async function getTCMStatus(userAccessCode: string): Promise<{ enrolled: boolean; status: string } | null> {
+  try {
+    const res = await fetch(`${BASE}/tcm/status-user`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey()}` },
+      body: JSON.stringify({ userAccessCode }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json() as Record<string, unknown>;
+    return { enrolled: !!(data.enrolled ?? data.active), status: String(data.status ?? 'unknown') };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Fetch the latest identity result directly from Authenticate.
  * Used as a fallback when the SELF_VERIFICATION_TRY_STATUS webhook never arrived.

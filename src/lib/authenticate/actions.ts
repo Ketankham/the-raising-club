@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireUserProfile } from '@/lib/guards';
-import { createAuthenticateUser, getMedallionUrl, getTestResult, getFullTestResult, initiatePdfReport, retrievePdfReport } from './client';
+import { createAuthenticateUser, getMedallionUrl, getTestResult, getFullTestResult, initiatePdfReport, retrievePdfReport, runRiskScore } from './client';
 
 /** Start or resume identity verification. Returns the Medallion™ hosted URL.
  *  dob is required on first call (DD-MM-YYYY); ignored on resume (code already exists). */
@@ -41,6 +41,10 @@ export async function startVerification(dob?: string): Promise<{ ok: true; url: 
         email: (profile.email as string | null) ?? '',
         dob: effectiveDob,
       });
+
+      // Run risk score immediately after user creation — result stored on profiles.
+      // Fire and forget so it never delays the Medallion redirect.
+      storeRiskScore(supabase, user.id, userCode).catch(() => {});
 
       // Atomic write: only stores if still null (prevents double-create on race)
       const { data: updated } = await supabase
@@ -162,6 +166,52 @@ export async function adminGenerateReport(userCode: string): Promise<{ ok: true;
   } catch (err) {
     console.error('[authenticate] adminGenerateReport error:', err instanceof Error ? err.message : err);
     return { ok: false, error: 'Could not generate report. Please try again.' };
+  }
+}
+
+// ── Risk score helpers ────────────────────────────────────────────────────────
+
+type SupaClient = Awaited<ReturnType<typeof import('@/lib/supabase/server').createClient>>;
+
+/** Fetch risk score from Authenticate and persist it on the profile row. */
+async function storeRiskScore(supabase: SupaClient, userId: string, userCode: string): Promise<void> {
+  const score = await runRiskScore(userCode);
+  if (score === null) return;
+  const flagged = score >= 67;
+  await supabase
+    .from('profiles')
+    .update({ risk_score: score, risk_flagged: flagged, risk_checked_at: new Date().toISOString() })
+    .eq('id', userId);
+  if (flagged) {
+    console.warn(`[authenticate] High risk score ${score} for user ${userId}`);
+  }
+}
+
+/** Run the Authenticate risk score check for a non-caregiver user (parent / org).
+ *  Creates an Authenticate user, scores them, stores result on profiles.
+ *  Called fire-and-forget from onboarding on final step completion. */
+export async function runRiskScoreForUser(
+  userId: string,
+  params: { firstName: string; lastName: string; email: string; dob: string },
+): Promise<void> {
+  try {
+    const admin = createAdminClient();
+    if (!admin) return;
+
+    // Check if we already have a code stored on profiles
+    const { data: existing } = await admin.from('profiles').select('authenticate_user_code, risk_checked_at').eq('id', userId).single();
+    let userCode = (existing?.authenticate_user_code as string | null) ?? null;
+
+    if (!userCode) {
+      userCode = await createAuthenticateUser(params);
+      await admin.from('profiles').update({ authenticate_user_code: userCode }).eq('id', userId);
+    }
+
+    if (!existing?.risk_checked_at) {
+      await storeRiskScore(admin as unknown as SupaClient, userId, userCode);
+    }
+  } catch (err) {
+    console.error('[authenticate] runRiskScoreForUser error:', err instanceof Error ? err.message : err);
   }
 }
 

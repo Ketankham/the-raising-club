@@ -142,7 +142,14 @@ export function AdminConsole({
                 {filtered.map((u) => (
                   <tr key={u.id} className={u.deactivated ? "opacity-60" : ""}>
                     <td className="py-3 pr-4">
-                      <div className="font-medium text-ink">{u.name}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-ink">{u.name}</span>
+                        {u.riskFlagged && (
+                          <span title={`Risk score: ${u.riskScore ?? "?"}%`} className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
+                            Risk {u.riskScore ?? "?"}%
+                          </span>
+                        )}
+                      </div>
                       <div className="text-xs text-ink-soft">{u.email ?? "no email"}</div>
                     </td>
                     <td className="py-3 pr-4">

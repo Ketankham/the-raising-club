@@ -1,7 +1,7 @@
 import 'server-only';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { emitNotification } from '@/lib/notifications/emit';
-import { getFullTestResult } from './client';
+import { getFullTestResult, triggerBackgroundChecks, enrollTCM } from './client';
 import type { AuthWebhookPayload, VerificationMetadata } from './types';
 
 type AdminClient = NonNullable<ReturnType<typeof createAdminClient>>;
@@ -72,6 +72,12 @@ async function handleIdentityStatus(admin: AdminClient, payload: AuthWebhookPayl
 
   if (status === 'verified') {
     await emitNotification({ typeKey: 'caregiver.identity_verified', userId });
+    // Auto-trigger all background checks now that identity is confirmed.
+    // Results arrive asynchronously via ALL_CRIMINAL_REQUESTS_COMPLETE and
+    // SEX_OFFENDER_CHECK_STATUS_UPDATE webhooks — fire and don't await.
+    triggerBackgroundChecks(payload.userCode).catch((err) =>
+      console.error('[authenticate webhook] triggerBackgroundChecks failed:', err)
+    );
   }
 }
 
@@ -95,6 +101,11 @@ async function handleBackgroundCheckComplete(admin: AdminClient, payload: AuthWe
 
   if (!hasRecords) {
     await emitNotification({ typeKey: 'caregiver.background_check_complete', userId });
+    // Both identity AND background check are now clean — enroll in TCM.
+    // Fire and forget; failure is non-fatal (can be enrolled manually later).
+    enrollTCM(payload.userCode).then((ok) => {
+      if (!ok) console.warn('[authenticate webhook] TCM enroll failed for', payload.userCode);
+    }).catch(() => {});
   } else {
     await notifyAdmins(admin, 'admin.verification_review_required', userId);
   }

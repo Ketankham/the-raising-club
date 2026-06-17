@@ -12,6 +12,8 @@ export interface AdminUserRow {
   registeredAt: string | null;
   createdAt: string;
   deactivated: boolean;
+  riskScore: number | null;
+  riskFlagged: boolean;
 }
 
 export interface AdminInvitation {
@@ -45,6 +47,8 @@ export async function listUsers(): Promise<AdminUserRow[]> {
     registeredAt: p.registered_at,
     createdAt: p.created_at,
     deactivated: !!p.deactivated_at,
+    riskScore: p.risk_score ?? null,
+    riskFlagged: !!p.risk_flagged,
   }));
 }
 

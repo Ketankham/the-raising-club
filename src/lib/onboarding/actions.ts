@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { emitNotification } from "@/lib/notifications/emit";
+import { runRiskScoreForUser } from "@/lib/authenticate/actions";
 import {
   FLOW_VERSION,
   getNextStep,
@@ -256,6 +257,27 @@ export async function completeStep(
     // Nudge paid-work caregivers to get verified (fail-soft — never blocks completion)
     if (state.role === "caregiver" && mergedAnswers.caregiverIntents?.includes("paid_work")) {
       emitNotification({ typeKey: "caregiver.verify_prompt", userId: user.id, link: "/profile#verify" }).catch(() => {});
+    }
+
+    // Run Authenticate risk score for all non-caregiver roles at onboarding completion.
+    // (Caregivers get scored when they start Medallion™ verification, which collects DOB.)
+    // Fire-and-forget — never blocks the user's flow.
+    if (state.role !== "caregiver") {
+      const { data: p } = await supabase
+        .from("profiles")
+        .select("first_name, last_name, email")
+        .eq("id", user.id)
+        .single();
+      if (p?.first_name && p?.email) {
+        const toApiDob = (d: string) => { const [y, m, day] = d.split("-"); return `${day}-${m}-${y}`; };
+        const dob = mergedAnswers.dateOfBirth ? toApiDob(mergedAnswers.dateOfBirth as string) : "01-01-1990";
+        runRiskScoreForUser(user.id, {
+          firstName: p.first_name as string,
+          lastName:  (p.last_name as string | null) ?? "",
+          email:     p.email as string,
+          dob,
+        }).catch(() => {});
+      }
     }
 
     revalidatePath("/onboarding", "layout");
