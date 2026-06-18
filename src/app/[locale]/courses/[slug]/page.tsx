@@ -4,12 +4,14 @@ import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { createClient } from "@/lib/supabase/server";
-import { getCourseForLearner } from "@/lib/courses/learner-queries";
+import { getCourseForLearner, getTeamCourseProgress } from "@/lib/courses/learner-queries";
 import { CourseIntro } from "@/components/courses/course-intro";
 import { CoursePlayer } from "@/components/courses/course-player";
+import { TeamLearningTab } from "@/components/courses/team-learning-tab";
 
-export default async function CoursePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CoursePage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
   const { slug } = await params;
+  const sp = await searchParams;
   const course = await getCourseForLearner(slug);
   if (!course) notFound();
 
@@ -23,9 +25,12 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
       if (allComplete) redirect(`/courses/${slug}/quiz`);
     }
 
+    const activeTab = sp.tab === "team" ? "team" : "learn";
+    const teamMembers = activeTab === "team" ? await getTeamCourseProgress(course.id) : [];
+
     return (
       <main className="min-h-screen bg-cream/30">
-        <CoursePlayer course={course} />
+        <CoursePlayer course={course} activeTab={activeTab} teamMembers={teamMembers} />
       </main>
     );
   }

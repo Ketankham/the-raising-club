@@ -48,7 +48,9 @@ export async function startVerification(): Promise<{ ok: true; url: string } | {
       }
     }
 
-    const url = await getMedallionUrl(userCode!);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? '';
+    const redirectUrl = siteUrl ? `${siteUrl}/profile` : undefined;
+    const url = await getMedallionUrl(userCode!, redirectUrl);
     return { ok: true, url };
   } catch (err) {
     console.error('[authenticate] startVerification error:', err);

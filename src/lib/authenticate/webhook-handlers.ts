@@ -1,4 +1,5 @@
 import 'server-only';
+import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { emitNotification } from '@/lib/notifications/emit';
 import type { AuthWebhookPayload, VerificationMetadata } from './types';
@@ -62,6 +63,11 @@ async function handleIdentityStatus(admin: AdminClient, payload: AuthWebhookPayl
     { onConflict: 'user_id,type' }
   );
 
+  revalidatePath('/profile');
+  revalidatePath('/es/profile');
+  revalidatePath('/admin/verifications');
+  revalidatePath('/es/admin/verifications');
+
   if (status === 'verified') {
     await emitNotification({ typeKey: 'caregiver.identity_verified', userId });
   }
@@ -84,6 +90,11 @@ async function handleBackgroundCheckComplete(admin: AdminClient, payload: AuthWe
     { user_id: userId, type: 'background_check', status, provider: 'authenticate', reference: payload.userCode, metadata, admin_review_required: hasRecords, updated_at: new Date().toISOString() },
     { onConflict: 'user_id,type' }
   );
+
+  revalidatePath('/profile');
+  revalidatePath('/es/profile');
+  revalidatePath('/admin/verifications');
+  revalidatePath('/es/admin/verifications');
 
   if (!hasRecords) {
     await emitNotification({ typeKey: 'caregiver.background_check_complete', userId });
@@ -116,6 +127,11 @@ async function handleSexOffenderUpdate(admin: AdminClient, payload: AuthWebhookP
   // Immediately depublish and soft-deactivate
   await admin.from('caregiver_profiles').update({ is_published: false }).eq('user_id', userId);
   await admin.from('profiles').update({ deactivated_at: new Date().toISOString() }).eq('id', userId);
+
+  revalidatePath('/profile');
+  revalidatePath('/es/profile');
+  revalidatePath('/admin/verifications');
+  revalidatePath('/es/admin/verifications');
 
   await notifyAdmins(admin, 'admin.verification_red_flag', userId, {
     flag_type: 'Sex offender registry match',
