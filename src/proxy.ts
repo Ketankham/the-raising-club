@@ -23,6 +23,13 @@ const handleI18nRouting = createMiddleware(routing);
 const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/connect"];
 
 export async function proxy(request: NextRequest) {
+  // Bare /api/webhooks/ routes live outside [locale] and are called by external
+  // services at a fixed URL. Skip i18n rewriting so they aren't rewritten to
+  // /en/api/webhooks/... (which 404s). These routes have their own auth.
+  if (request.nextUrl.pathname.startsWith("/api/webhooks/")) {
+    return NextResponse.next();
+  }
+
   // 1. Run i18n routing first (handles locale prefix, adds locale cookie)
   const i18nResponse = handleI18nRouting(request);
 
