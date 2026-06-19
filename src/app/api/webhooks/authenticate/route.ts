@@ -8,10 +8,8 @@ export const dynamic = "force-dynamic";
 /**
  * POST /api/webhooks/authenticate
  * Receives event notifications from Authenticate (authenticate.com).
- * If AUTHENTICATE_WEBHOOK_SECRET is set, validates it against the incoming
- * header before processing. Responds 200 immediately; processing is async so
- * Authenticate doesn't time out waiting for DB writes. All handlers are
- * idempotent — Authenticate retries on non-2xx.
+ * Intentionally outside [locale] so the URL is always /api/webhooks/authenticate
+ * regardless of locale — external services need a stable, prefix-free URL.
  */
 export async function POST(request: Request) {
   const secret = process.env.AUTHENTICATE_WEBHOOK_SECRET;
@@ -19,9 +17,10 @@ export async function POST(request: Request) {
   if (secret) {
     const sig =
       request.headers.get("x-authenticate-signature") ??
-      request.headers.get("x-webhook-secret");
+      request.headers.get("x-webhook-secret") ??
+      request.headers.get("authorization")?.replace("Bearer ", "");
     if (!sig || sig !== secret) {
-      console.warn("[authenticate webhook] signature mismatch");
+      console.warn("[authenticate webhook] signature mismatch — got:", sig?.slice(0, 8));
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
   }
@@ -33,11 +32,13 @@ export async function POST(request: Request) {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  console.log("[authenticate webhook] received event:", payload.event, "userCode:", payload.userCode?.slice(0, 8));
+
   if (!payload.event || !payload.userCode) {
     return Response.json({ error: "Missing event or userCode" }, { status: 400 });
   }
 
-  // Acknowledge immediately; process async so Authenticate doesn't time out
+  // Acknowledge immediately; process async so Authenticate doesn't time out waiting
   handleAuthenticateWebhook(payload).catch((err) =>
     console.error("[authenticate webhook] handler threw:", err)
   );
