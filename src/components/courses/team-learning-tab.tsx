@@ -56,7 +56,9 @@ export function TeamLearningTab({ members }: { members: TeamMemberProgress[] }) 
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-ink truncate">{m.name}</span>
                 {m.hasCertificate && (
-                  <Award className="h-3.5 w-3.5 shrink-0 text-[#e09c40]" title="Certificate earned" />
+                  <span title="Certificate earned" className="inline-flex shrink-0">
+                    <Award className="h-3.5 w-3.5 text-[#e09c40]" aria-label="Certificate earned" />
+                  </span>
                 )}
               </div>
               {m.totalModules > 0 ? (
