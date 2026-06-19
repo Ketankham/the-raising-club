@@ -85,6 +85,7 @@ await q(
    on conflict (user_id) do update
      set is_published = true,
          authenticate_user_code = null,
+         date_of_birth = null,
          headline = excluded.headline`,
   [cgId],
 );
@@ -142,6 +143,15 @@ try {
       return;
     }
     await btn.click();
+    await sleep(800);
+    // If DOB input appeared (first-time flow), fill it and submit
+    const dobInput = page.locator('input[type="date"]');
+    if (await dobInput.isVisible().catch(() => false)) {
+      console.log("  → DOB input appeared — filling 15-03-1990 …");
+      await dobInput.fill("1990-03-15");
+      await sleep(500);
+      await page.getByRole("button", { name: /continue to verify/i }).click();
+    }
     // Wait for either a redirect to authenticate.com OR an error toast
     try {
       await page.waitForURL(/authenticating\.com|authenticate\.com/, { timeout: 20000 });
@@ -284,7 +294,7 @@ try {
   // Clean up — restore QA caregiver to a clean state
   await q("delete from verifications where user_id = $1", [cgId]).catch(() => {});
   await q(
-    "update caregiver_profiles set is_published = true, authenticate_user_code = null where user_id = $1",
+    "update caregiver_profiles set is_published = true, authenticate_user_code = null, date_of_birth = null where user_id = $1",
     [cgId],
   ).catch(() => {});
   console.log("⚙  DB cleaned up");
