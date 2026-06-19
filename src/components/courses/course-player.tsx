@@ -12,15 +12,25 @@ import {
   Award,
   Sparkles,
   PartyPopper,
+  Users,
 } from "lucide-react";
 import { VideoEmbed } from "./video-embed";
 import { CancelPurchaseButton } from "./cancel-purchase-button";
+import { TeamLearningTab } from "./team-learning-tab";
 import { completeModule, answerRevision } from "@/lib/courses/actions";
 import { durationLabel } from "@/lib/courses/format";
 import { RESOURCE_KIND_LABELS } from "@/lib/courses/types";
-import type { LearnerCourse, LearnerModule, LearnerRevisionQuestion } from "@/lib/courses/learner-queries";
+import type { LearnerCourse, LearnerModule, LearnerRevisionQuestion, TeamMemberProgress } from "@/lib/courses/learner-queries";
 
-export function CoursePlayer({ course }: { course: LearnerCourse }) {
+export function CoursePlayer({
+  course,
+  activeTab = "learn",
+  teamMembers = [],
+}: {
+  course: LearnerCourse;
+  activeTab?: "learn" | "team";
+  teamMembers?: TeamMemberProgress[];
+}) {
   const [pending, start] = useTransition();
 
   const allModules = useMemo(
@@ -94,10 +104,37 @@ export function CoursePlayer({ course }: { course: LearnerCourse }) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 lg:px-6">
-      <Link href="/courses" className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink">
-        <ArrowLeft size={16} /> Back to courses
-      </Link>
+      <div className="mb-4 flex items-center gap-4">
+        <Link href="/courses" className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink">
+          <ArrowLeft size={16} /> Back to courses
+        </Link>
 
+        {/* Team Learning tab — only shown to org members (teamMembers populated by server) */}
+        {(teamMembers.length > 0 || activeTab === "team") && (
+          <div className="ml-auto flex rounded-xl border border-ink/10 bg-white p-1">
+            <Link
+              href={`/courses/${course.slug}`}
+              className={`rounded-lg px-3.5 py-1.5 text-sm font-medium transition ${
+                activeTab === "learn" ? "bg-primary text-white shadow-sm" : "text-ink-soft hover:text-ink"
+              }`}
+            >
+              Learn
+            </Link>
+            <Link
+              href={`/courses/${course.slug}?tab=team`}
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-medium transition ${
+                activeTab === "team" ? "bg-primary text-white shadow-sm" : "text-ink-soft hover:text-ink"
+              }`}
+            >
+              <Users size={14} /> Team Learning
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {activeTab === "team" ? (
+        <TeamLearningTab members={teamMembers} />
+      ) : (
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
         {/* MAIN ---------------------------------------------------------- */}
         <div className="min-w-0">
@@ -259,6 +296,8 @@ export function CoursePlayer({ course }: { course: LearnerCourse }) {
           </div>
         </aside>
       </div>
+
+      )} {/* end tab === "learn" conditional grid */}
 
       {popup && (
         <PauseAndNotice

@@ -35,14 +35,17 @@ export async function createAuthenticateUser(params: {
 }
 
 /** Generate a fresh Medallion™ hosted verification URL from a stored userAccessCode. */
-export async function getMedallionUrl(userAccessCode: string): Promise<string> {
+export async function getMedallionUrl(userAccessCode: string, redirectUrl?: string): Promise<string> {
   const res = await fetch(`${BASE}/user/medallion/link`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey()}`,
     },
-    body: JSON.stringify({ userAccessCode }),
+    body: JSON.stringify({
+      userAccessCode,
+      ...(redirectUrl ? { redirectUrl } : {}),
+    }),
   });
   if (!res.ok) {
     const body = await res.text();

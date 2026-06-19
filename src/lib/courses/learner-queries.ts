@@ -377,6 +377,97 @@ export interface VerifyResult {
   revokedAt: string | null;
 }
 
+// ---------------------------------------------------------------------------
+// Team Learning — org-wide progress for a course
+// ---------------------------------------------------------------------------
+export interface TeamMemberProgress {
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+  enrollmentStatus: "active" | "completed" | null;
+  completedModules: number;
+  totalModules: number;
+  hasCertificate: boolean;
+}
+
+/**
+ * Returns course progress for all active members of the caller's organizations
+ * who are enrolled in the given course. Returns [] if the caller is not an org
+ * member or no peers are enrolled.
+ */
+export async function getTeamCourseProgress(courseId: string): Promise<TeamMemberProgress[]> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  // Find the caller's orgs.
+  const { data: myMemberships } = await supabase
+    .from("organization_members")
+    .select("org_id")
+    .eq("user_id", user.id)
+    .eq("status", "active");
+
+  if (!myMemberships?.length) return [];
+  const orgIds = myMemberships.map((m: any) => m.org_id);
+
+  // All active peers (including self) in those orgs.
+  const { data: peers } = await supabase
+    .from("organization_members")
+    .select("user_id")
+    .in("org_id", orgIds)
+    .eq("status", "active");
+
+  if (!peers?.length) return [];
+  const peerIds = [...new Set((peers as any[]).map((p) => p.user_id as string))];
+
+  // Enrollments for those peers on this course.
+  const { data: enrollments } = await supabase
+    .from("course_enrollments")
+    .select("id, user_id, status, course_module_progress ( module_id )")
+    .in("user_id", peerIds)
+    .eq("course_id", courseId)
+    .neq("status", "cancelled");
+
+  if (!enrollments?.length) return [];
+  const enrolledUserIds = (enrollments as any[]).map((e) => e.user_id as string);
+
+  // Profile info for those enrolled peers.
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, first_name, preferred_name, avatar_url")
+    .in("id", enrolledUserIds);
+
+  // Total module count for this course.
+  const { data: modules } = await supabase
+    .from("course_modules")
+    .select("id, course_chapters!inner ( course_id )")
+    .eq("course_chapters.course_id", courseId);
+  const totalModules = modules?.length ?? 0;
+
+  // Certificates held by these users for this course.
+  const { data: certs } = await supabase
+    .from("certificates")
+    .select("user_id")
+    .eq("course_id", courseId)
+    .in("user_id", enrolledUserIds);
+  const certUserIds = new Set((certs ?? []).map((c: any) => c.user_id as string));
+
+  const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+
+  return (enrollments as any[]).map((e) => {
+    const p = profileMap.get(e.user_id) ?? {};
+    return {
+      userId: e.user_id,
+      name: (p.preferred_name || p.first_name) ?? "Team member",
+      avatarUrl: p.avatar_url ?? null,
+      enrollmentStatus: e.status,
+      completedModules: (e.course_module_progress ?? []).length,
+      totalModules,
+      hasCertificate: certUserIds.has(e.user_id),
+    };
+  });
+}
+
 export async function verifyCertificate(token: string): Promise<VerifyResult | null> {
   const supabase = await createClient();
   const { data } = await supabase.rpc("verify_certificate", { token });

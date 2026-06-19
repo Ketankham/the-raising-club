@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { SlidersHorizontal, X, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ageLabel } from "@/lib/events/format";
+import { PlacesAutocomplete } from "@/components/ui/places-autocomplete";
 import {
   EVENT_STYLE_LABELS,
   PARTICIPATION_TAGS,
@@ -17,11 +18,6 @@ import {
 const AGE_MAX = 144; // 12 years, in months
 const PRICE_MAX = 160;
 const PURPLE = "#baaae1";
-
-// Default OpenStreetMap view (New York City) for the "Where" preview — no API
-// key required. Purely a visual aid; filtering is by the city/zip text below.
-const OSM_SRC =
-  "https://www.openstreetmap.org/export/embed.html?bbox=-74.06,40.66,-73.86,40.82&layer=mapnik";
 
 function toggle<T>(set: T[], value: T): T[] {
   return set.includes(value) ? set.filter((v) => v !== value) : [...set, value];
@@ -131,28 +127,30 @@ export function EventsFilters({ initial }: { initial: EventFilters }) {
       {/* Where */}
       <fieldset>
         <legend className="mb-2 text-sm font-semibold text-ink">{t("where")}</legend>
-        <div className="relative">
-          <MapPin
-            size={15}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft/60"
-          />
-          <input
-            type="text"
-            value={near}
-            onChange={(e) => setNear(e.target.value)}
+        <div className="flex items-center gap-2 rounded-xl border border-ink/15 bg-white px-3 py-2 focus-within:border-[#baaae1]">
+          <MapPin size={15} className="shrink-0 text-ink-soft/60" />
+          <PlacesAutocomplete
             placeholder={t("wherePlaceholder")}
-            className="w-full rounded-xl border border-ink/15 bg-white py-2 pl-9 pr-3 text-sm text-ink outline-none focus:border-[#baaae1]"
+            types={["geocode"]}
+            initialValue={near}
+            className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-soft/70"
+            onPlace={(p) => {
+              const val = p.neighborhood ?? p.city ?? p.zipCode ?? p.formatted;
+              setNear(val ?? "");
+            }}
           />
+          {near && (
+            <button
+              type="button"
+              onClick={() => setNear("")}
+              className="shrink-0 text-ink-soft hover:text-ink"
+              aria-label="Clear location"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
-        <div className="mt-2 overflow-hidden rounded-xl border border-ink/10">
-          <iframe
-            title={t("mapPreview")}
-            src={OSM_SRC}
-            loading="lazy"
-            className="h-32 w-full"
-            style={{ border: 0 }}
-          />
-        </div>
+        {near && <p className="mt-1 text-xs text-[#8b76c2]">Filtering by: {near}</p>}
       </fieldset>
 
       {/* Price */}
