@@ -158,6 +158,20 @@ export async function setApplicationStatus(
   status: "applied" | "reviewing" | "shortlisted" | "rejected" | "hired" | "withdrawn",
 ): Promise<AppStatusResult> {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "error", message: "Not signed in." };
+
+  // Verify the caller owns the job this application belongs to.
+  const { data: app } = await supabase
+    .from("job_applications")
+    .select("job_post_id, job_posts!inner(owner_user_id)")
+    .eq("id", applicationId)
+    .maybeSingle();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (!app || (app as any).job_posts?.owner_user_id !== user.id) {
+    return { ok: false, reason: "error", message: "Forbidden." };
+  }
+
   const { error } = await supabase
     .from("job_applications")
     .update({ status })

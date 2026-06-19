@@ -46,7 +46,8 @@ export async function updateSession(request: NextRequest, baseResponse?: NextRes
     } = await supabase.auth.getUser();
     return { response, user };
   } catch {
-    // Supabase unreachable — fail open rather than 500 every request.
-    return { response, user: null };
+    // Supabase unreachable — signal the error so protected routes can 503
+    // rather than silently passing through as unauthenticated.
+    return { response, user: null, supabaseError: true };
   }
 }

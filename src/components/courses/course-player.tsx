@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import DOMPurify from "isomorphic-dompurify";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -155,7 +156,7 @@ export function CoursePlayer({
               {current.body && (
                 <div
                   className="prose prose-sm mt-4 max-w-none text-ink"
-                  dangerouslySetInnerHTML={{ __html: current.body }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(current.body) }}
                 />
               )}
 

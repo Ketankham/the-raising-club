@@ -100,7 +100,9 @@ export async function setJobStatus(
   status: "draft" | "open" | "closed" | "filled",
 ): Promise<JobMutResult> {
   const supabase = await createClient();
-  const { error } = await supabase.from("job_posts").update({ status }).eq("id", id);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "error", message: "Not signed in." };
+  const { error } = await supabase.from("job_posts").update({ status }).eq("id", id).eq("owner_user_id", user.id);
   if (error) return { ok: false, reason: "error", message: error.message };
   revalidatePath("/dashboard/posts");
   revalidatePath("/jobs");
@@ -109,7 +111,9 @@ export async function setJobStatus(
 
 export async function deleteJob(id: string): Promise<JobMutResult> {
   const supabase = await createClient();
-  const { error } = await supabase.from("job_posts").delete().eq("id", id);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "error", message: "Not signed in." };
+  const { error } = await supabase.from("job_posts").delete().eq("id", id).eq("owner_user_id", user.id);
   if (error) return { ok: false, reason: "error", message: error.message };
   revalidatePath("/dashboard/posts");
   return { ok: true };

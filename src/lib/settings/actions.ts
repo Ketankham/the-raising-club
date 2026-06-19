@@ -60,7 +60,7 @@ export async function updateEmail(email: string): Promise<Result> {
 export async function updatePassword(newPassword: string): Promise<Result> {
   const { supabase, user } = await me();
   if (!user) return { ok: false, error: "Not signed in" };
-  if (newPassword.length < 8) return { ok: false, error: "Password must be at least 8 characters" };
+  if (newPassword.length < 12) return { ok: false, error: "Password must be at least 12 characters" };
   const { error } = await supabase.auth.updateUser({ password: newPassword });
   return error ? { ok: false, error: error.message } : done();
 }

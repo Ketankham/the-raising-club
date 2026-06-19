@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import DOMPurify from "isomorphic-dompurify";
 import {
   ArrowRight, CheckCircle2, Circle, PlayCircle, FileText, Sparkles, Eye, Pencil, BadgeCheck,
 } from "lucide-react";
@@ -151,7 +152,7 @@ function ModuleView({
       <h2 className="mt-5 font-display text-2xl font-bold text-ink">{m.title || "Untitled module"}</h2>
       {m.estMinutes ? <p className="mt-1 text-sm text-ink-soft">{durationLabel(m.estMinutes)}</p> : null}
 
-      {m.body && <div className="prose prose-sm mt-4 max-w-none text-ink" dangerouslySetInnerHTML={{ __html: m.body }} />}
+      {m.body && <div className="prose prose-sm mt-4 max-w-none text-ink" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(m.body) }} />}
 
       {m.resources.length > 0 && (
         <div className="mt-6 rounded-2xl border border-ink/10 bg-cream/40 p-4">

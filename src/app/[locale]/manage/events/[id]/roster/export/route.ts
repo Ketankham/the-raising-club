@@ -23,9 +23,33 @@ export async function GET(
 
   const { data: ev } = await supabase
     .from("events")
-    .select("title, slug")
+    .select("title, slug, org_id")
     .eq("id", id)
     .maybeSingle();
+
+  if (!ev) return new NextResponse("Not found", { status: 404 });
+
+  // Explicit authorization check — don't rely on RLS alone for children's PII.
+  // Platform admins pass; org owners/admins of the event's org pass.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  const isPlatformAdmin = profile?.role === "admin";
+  if (!isPlatformAdmin && ev.org_id) {
+    const { data: membership } = await supabase
+      .from("organization_members")
+      .select("member_role")
+      .eq("org_id", ev.org_id)
+      .eq("user_id", user.id)
+      .in("member_role", ["owner", "admin"])
+      .eq("status", "active")
+      .maybeSingle();
+    if (!membership) return new NextResponse("Forbidden", { status: 403 });
+  } else if (!isPlatformAdmin) {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
 
   const { data: regs } = await supabase
     .from("event_registrations")
@@ -122,7 +146,8 @@ export async function GET(
 }
 
 function csvCell(value: string): string {
-  const v = value ?? "";
+  // Neutralize CSV formula injection (=, +, -, @ at the start of a cell).
+  let v = (value ?? "").replace(/^([=+\-@])/, "'$1");
   return /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
 }
 
