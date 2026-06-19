@@ -5,6 +5,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 /**
  * Grant course access after a successful one-time payment. Enrollment IS the
  * entitlement (course_enrollments row). Idempotent; runs under service-role.
+ * If the buyer belongs to an organization, all active org members are enrolled
+ * for free so the whole team can learn independently.
  */
 export async function fulfillCoursePurchase(admin: SupabaseClient, session: Stripe.Checkout.Session): Promise<void> {
   const md = session.metadata ?? {};
@@ -46,5 +48,66 @@ export async function fulfillCoursePurchase(admin: SupabaseClient, session: Stri
     });
   } catch (e) {
     console.error("[course fulfilment] notification failed", e);
+  }
+
+  // Org seat grant: if the buyer is a member of any organization, enroll all
+  // active members of those orgs at no charge (progress stays per-user).
+  await grantOrgCourseSeats(admin, userId, courseId, md.courseName as string | undefined, md.slug as string | undefined);
+}
+
+async function grantOrgCourseSeats(
+  admin: SupabaseClient,
+  buyerUserId: string,
+  courseId: string,
+  courseName: string | undefined,
+  courseSlug: string | undefined,
+): Promise<void> {
+  const { data: memberships } = await admin
+    .from("organization_members")
+    .select("org_id")
+    .eq("user_id", buyerUserId)
+    .eq("status", "active");
+
+  if (!memberships?.length) return;
+
+  const orgIds = memberships.map((m: { org_id: string }) => m.org_id);
+
+  const { data: peers } = await admin
+    .from("organization_members")
+    .select("user_id")
+    .in("org_id", orgIds)
+    .eq("status", "active")
+    .neq("user_id", buyerUserId);
+
+  if (!peers?.length) return;
+
+  const now = new Date().toISOString();
+  const rows = peers.map((p: { user_id: string }) => ({
+    user_id: p.user_id,
+    course_id: courseId,
+    status: "active",
+    paid_at: null,
+    amount_cents: 0,
+    cancelled_at: null,
+    refunded_amount_cents: 0,
+  }));
+
+  // Upsert all: if a member already has an active enrollment, leave it alone.
+  await admin
+    .from("course_enrollments")
+    .upsert(rows, { onConflict: "user_id,course_id", ignoreDuplicates: true });
+
+  // Notify each newly-enrolled peer.
+  for (const peer of peers) {
+    try {
+      await admin.rpc("create_notification", {
+        p_user_id: (peer as { user_id: string }).user_id,
+        p_type_key: "course.purchased",
+        p_vars: { courseName: courseName ?? "a course" },
+        p_link: courseSlug ? `/courses/${courseSlug}` : null,
+      });
+    } catch {
+      // Non-fatal — carry on.
+    }
   }
 }

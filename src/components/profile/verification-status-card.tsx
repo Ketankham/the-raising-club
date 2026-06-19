@@ -77,7 +77,7 @@ export function VerificationStatusCard({
     start(async () => {
       const res = await startVerification(needsDob ? dob : undefined);
       if (res.ok) {
-        window.location.href = res.url;
+        window.open(res.url, '_blank', 'noopener,noreferrer');
       } else {
         setError(res.error);
       }
