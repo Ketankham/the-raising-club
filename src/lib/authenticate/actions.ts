@@ -71,8 +71,11 @@ export async function startVerification(dob?: string): Promise<{ ok: true; url: 
     console.log('[authenticate] Medallion URL:', url?.slice(0, 80));
     return { ok: true, url };
   } catch (err) {
-    console.error('[authenticate] startVerification error:', err instanceof Error ? err.message : err);
-    return { ok: false, error: 'Could not start verification. Please try again.' };
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[authenticate] startVerification error:', msg);
+    // Expose raw error on staging so we can diagnose; generic message in production
+    const isDev = process.env.VERCEL_ENV !== 'production';
+    return { ok: false, error: isDev ? `Debug: ${msg}` : 'Could not start verification. Please try again.' };
   }
 }
 
