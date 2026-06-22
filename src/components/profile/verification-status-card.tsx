@@ -78,7 +78,7 @@ export function VerificationStatusCard({
       const res = await startVerification(needsDob ? dob : undefined);
       if (!res.ok) { setError(res.error); return; }
       // Webhook was missed but Authenticate already has the result — page reload shows verified badge
-      if ('synced' in res && res.synced) { window.location.reload(); return; }
+      if ('synced' in res) { window.location.reload(); return; }
       window.open(res.url, '_blank', 'noopener,noreferrer');
     });
   }

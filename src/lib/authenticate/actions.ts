@@ -8,7 +8,7 @@ import { createAuthenticateUser, getMedallionUrl, getTestResult, getFullTestResu
 
 /** Start or resume identity verification. Returns the Medallion™ hosted URL.
  *  dob is required on first call (DD-MM-YYYY); ignored on resume (code already exists). */
-export async function startVerification(dob?: string): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+export async function startVerification(dob?: string): Promise<{ ok: true; url: string } | { ok: true; synced: true } | { ok: false; error: string }> {
   try {
     const { user, profile } = await requireUserProfile();
     if (profile.role !== 'caregiver') return { ok: false, error: 'Not a caregiver account' };
