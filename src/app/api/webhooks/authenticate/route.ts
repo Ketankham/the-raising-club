@@ -12,11 +12,13 @@ export const dynamic = "force-dynamic";
  * regardless of locale — external services need a stable, prefix-free URL.
  */
 export async function POST(request: Request) {
-  // Authenticate sends the API key as the auth credential on webhook calls.
-  // Accept either AUTHENTICATE_WEBHOOK_SECRET (if set) or AUTHENTICATE_API_KEY as valid secrets.
+  // Auth: on production, validate against AUTHENTICATE_WEBHOOK_SECRET or AUTHENTICATE_API_KEY
+  // (Authenticate sends the API key as the Bearer credential on webhook calls).
+  // On non-production envs with no explicit secret set, skip auth to allow local testing.
   const webhookSecret = process.env.AUTHENTICATE_WEBHOOK_SECRET;
   const apiKey = process.env.AUTHENTICATE_API_KEY;
-  const validSecrets = [webhookSecret, apiKey].filter(Boolean) as string[];
+  const isProduction = process.env.VERCEL_ENV === "production";
+  const validSecrets = [webhookSecret, isProduction ? apiKey : null].filter(Boolean) as string[];
 
   if (validSecrets.length > 0) {
     const sig =
