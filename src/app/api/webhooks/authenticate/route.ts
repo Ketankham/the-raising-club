@@ -1,4 +1,5 @@
 import "server-only";
+import { after } from "next/server";
 import { handleAuthenticateWebhook } from "@/lib/authenticate/webhook-handlers";
 import type { AuthWebhookPayload } from "@/lib/authenticate/types";
 
@@ -44,9 +45,12 @@ export async function POST(request: Request) {
     return Response.json({ error: "Missing event or userCode" }, { status: 400 });
   }
 
-  // Acknowledge immediately; process async so Authenticate doesn't time out waiting
-  handleAuthenticateWebhook(payload).catch((err) =>
-    console.error("[authenticate webhook] handler threw:", err)
+  // Acknowledge immediately; use after() so Vercel keeps the function alive
+  // until the handler finishes writing to the DB (fire-and-forget gets killed).
+  after(
+    handleAuthenticateWebhook(payload).catch((err) =>
+      console.error("[authenticate webhook] handler threw:", err)
+    )
   );
 
   return Response.json({ ok: true });
