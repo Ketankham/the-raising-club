@@ -12,14 +12,18 @@ export const dynamic = "force-dynamic";
  * regardless of locale — external services need a stable, prefix-free URL.
  */
 export async function POST(request: Request) {
-  const secret = process.env.AUTHENTICATE_WEBHOOK_SECRET;
+  // Authenticate sends the API key as the auth credential on webhook calls.
+  // Accept either AUTHENTICATE_WEBHOOK_SECRET (if set) or AUTHENTICATE_API_KEY as valid secrets.
+  const webhookSecret = process.env.AUTHENTICATE_WEBHOOK_SECRET;
+  const apiKey = process.env.AUTHENTICATE_API_KEY;
+  const validSecrets = [webhookSecret, apiKey].filter(Boolean) as string[];
 
-  if (secret) {
+  if (validSecrets.length > 0) {
     const sig =
       request.headers.get("x-authenticate-signature") ??
       request.headers.get("x-webhook-secret") ??
       request.headers.get("authorization")?.replace("Bearer ", "");
-    if (!sig || sig !== secret) {
+    if (!sig || !validSecrets.includes(sig)) {
       console.warn("[authenticate webhook] signature mismatch — got:", sig?.slice(0, 8));
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
