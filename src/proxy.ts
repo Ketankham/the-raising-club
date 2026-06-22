@@ -23,10 +23,10 @@ const handleI18nRouting = createMiddleware(routing);
 const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/connect"];
 
 export async function proxy(request: NextRequest) {
-  // Bare /api/webhooks/ routes live outside [locale] and are called by external
-  // services at a fixed URL. Skip i18n rewriting so they aren't rewritten to
-  // /en/api/webhooks/... (which 404s). These routes have their own auth.
-  if (request.nextUrl.pathname.startsWith("/api/webhooks/")) {
+  // Routes under /api/ that live outside [locale] must bypass i18n rewriting —
+  // next-intl rewrites them to /en/api/... which 404s because no such file exists.
+  // API routes don't serve localized HTML so locale middleware adds no value here.
+  if (request.nextUrl.pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
 
