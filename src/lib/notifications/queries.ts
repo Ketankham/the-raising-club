@@ -104,6 +104,7 @@ export function groupByCategory(
   types: NotificationType[],
 ): Record<NotificationCategory, NotificationType[]> {
   const grouped: Record<NotificationCategory, NotificationType[]> = {
+    verification: [],
     courses: [],
     events: [],
     marketplace: [],

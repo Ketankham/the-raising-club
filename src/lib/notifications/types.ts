@@ -2,9 +2,10 @@
 // (see CLAUDE.md), so rows from `notifications` / `notification_types` are mapped
 // into these by queries.ts.
 
-export type NotificationCategory = "courses" | "events" | "marketplace" | "general";
+export type NotificationCategory = "courses" | "events" | "marketplace" | "verification" | "general";
 
 export const CATEGORY_ORDER: NotificationCategory[] = [
+  "verification",
   "courses",
   "events",
   "marketplace",
@@ -12,6 +13,7 @@ export const CATEGORY_ORDER: NotificationCategory[] = [
 ];
 
 export const CATEGORY_LABELS: Record<NotificationCategory, string> = {
+  verification: "Verification",
   courses: "Courses",
   events: "Events",
   marketplace: "Marketplace",
