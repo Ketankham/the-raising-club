@@ -46,12 +46,18 @@ export function VerificationStatusCard({
   hasAuthenticateUser,
   hasDob,
 }: {
-  verifications: { type: string; status: string }[];
+  verifications: { type: string; status: string; metadata?: Record<string, unknown> }[];
   hasAuthenticateUser: boolean;
   hasDob: boolean;
 }) {
   const idStatus = statusOf(verifications, "identity");
   const bgStatus = statusOf(verifications, "background_check");
+  const idMeta = verifications.find((v) => v.type === "identity")?.metadata;
+  const scanned = idMeta
+    ? ((idMeta.idDocument as Record<string, unknown> | undefined)
+        ?.verifyUI as Record<string, unknown> | undefined)
+        ?.scannedUser as Record<string, unknown> | undefined
+    : undefined;
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
@@ -110,6 +116,26 @@ export function VerificationStatusCard({
           </div>
           <StatusPill status={idStatus} />
         </div>
+
+        {/* Verified identity details — shown to caregiver when identity is verified */}
+        {idStatus === "verified" && scanned && (
+          <div className="rounded-xl border border-[#dcebc6] bg-[#f5fbee] px-3.5 py-3 text-xs">
+            <p className="mb-2 font-semibold text-[#4f6b15]">Your verified identity</p>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+              {[
+                ["Name", [scanned.first_name, scanned.last_name].filter(Boolean).join(" ") || null],
+                ["Date of birth", (scanned.dob as string) ?? null],
+                ["Document type", (scanned.id_type as string) ?? null],
+                ["Country", (scanned.country as string) ?? null],
+              ].filter(([, v]) => v).map(([label, value]) => (
+                <div key={label as string}>
+                  <span className="text-ink-soft">{label}</span>
+                  <p className="font-medium text-ink">{value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Background check */}
         <div className="flex items-center justify-between gap-3 rounded-xl bg-[#faf5ee] px-3.5 py-2.5">

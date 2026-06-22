@@ -26,7 +26,7 @@ export interface CaregiverProfileData {
   earnedSkills: { id: string; label: string; fromCourse: boolean }[];
   courseCredentials: { certificateId: string; courseTitle: string; courseSlug: string; issuedAt: string }[];
   reviews: { id: string; reviewer_name: string | null; relationship: string | null; rating: number | null; body: string | null }[];
-  verifications: { type: string; status: string }[];
+  verifications: { type: string; status: string; metadata?: Record<string, unknown> }[];
   hasAuthenticateUser: boolean;
   hasDob: boolean;
   backgroundCheckVerified: boolean;
@@ -117,7 +117,7 @@ export async function getCaregiverProfile(userId: string): Promise<CaregiverProf
     supabase.from("caregiver_education").select("*").eq("user_id", userId).maybeSingle(),
     supabase.from("caregiver_certifications").select("id, name").eq("user_id", userId),
     supabase.from("caregiver_reviews").select("id, reviewer_name, relationship, rating, body").eq("caregiver_user_id", userId).eq("is_published", true),
-    supabase.from("verifications").select("type, status").eq("user_id", userId),
+    supabase.from("verifications").select("type, status, metadata").eq("user_id", userId),
     supabase.from("caregiver_skill_selections").select("skill_id, proof, skills ( label )").eq("user_id", userId),
     supabase.from("certificates").select("certificate_id, course_title, issued_at, courses ( slug )").eq("user_id", userId).is("revoked_at", null).order("issued_at", { ascending: false }),
   ]);
