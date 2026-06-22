@@ -56,6 +56,11 @@ export async function getMedallionUrl(userAccessCode: string, redirectUrl?: stri
   });
   if (!res.ok) {
     const text = await res.text();
+    // Authenticate returns 400 when the user has already completed Medallion.
+    // Callers can catch this to sync the result instead of showing an error.
+    if (res.status === 400 && text.toLowerCase().includes('already completed')) {
+      throw Object.assign(new Error('already_verified'), { code: 'ALREADY_VERIFIED' });
+    }
     throw new Error(`Authenticate getMedallionUrl failed ${res.status}: ${text}`);
   }
   const data = await res.json();
