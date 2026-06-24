@@ -269,6 +269,7 @@ export interface DetailedApplicant extends JobApplicant {
   careSettings: string[];
   jobTitle: string;
   jobPostId: string;
+  caregiverIdVerified: boolean;
 }
 
 /** Applicants on a job the current user manages (RLS japps_manager_read).
@@ -349,6 +350,7 @@ export async function getDetailedApplicant(jobId: string, applicationId: string)
     ageGroups: p.ageGroups ?? [],
     careSettings: p.careSettings ?? [],
     jobTitle: (job?.title as string) ?? "",
+    caregiverIdVerified: !!p.idVerified,
   };
 }
 

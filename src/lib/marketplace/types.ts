@@ -228,4 +228,6 @@ export interface MarketplaceFilters {
   ageMax?: number;
   /** city or zip text match */
   where?: string;
+  verifiedOnly?: boolean;
+  backgroundCheckedOnly?: boolean;
 }

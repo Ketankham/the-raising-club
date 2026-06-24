@@ -59,10 +59,28 @@ export function CaregiverProfileDrawer({
             ) : (
               <div className="grid h-24 w-24 place-items-center rounded-2xl bg-primary/15 text-2xl font-bold text-primary">{name[0]}</div>
             )}
-            <div className="mt-3 flex items-center gap-1.5">
+            <div className="mt-3 flex flex-col items-center gap-2">
               <h2 className="font-display text-2xl font-bold text-ink">{name}</h2>
-              {c.idVerified && <BadgeCheck className="h-5 w-5 text-olive" aria-label="Verified" />}
-              {c.backgroundCheckVerified && <ShieldCheck className="h-5 w-5 text-[#4a6b9a]" aria-label="Background Checked" />}
+              {(c.idVerified || c.backgroundCheckVerified) && (
+                <div className="flex flex-wrap justify-center gap-1.5">
+                  {c.idVerified && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#dcebc6] px-2.5 py-1 text-xs font-semibold text-[#4f6b15]">
+                      <BadgeCheck className="h-3.5 w-3.5" /> Identity Verified
+                    </span>
+                  )}
+                  {c.backgroundCheckVerified && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#dce6f0] px-2.5 py-1 text-xs font-semibold text-[#2a4a7a]">
+                      <ShieldCheck className="h-3.5 w-3.5" /> Background Checked
+                    </span>
+                  )}
+                </div>
+              )}
+              {(c.idVerified || c.backgroundCheckVerified) && (
+                <p className="text-[10px] text-ink-soft/70">
+                  Verification data held by Authenticate, not The Raising Club ·{" "}
+                  <a href="/terms" className="underline hover:text-ink-soft">Learn more</a>
+                </p>
+              )}
             </div>
             {c.headline && <p className="mt-0.5 text-sm text-ink-soft">{c.headline}</p>}
             <div className="mt-3 flex items-center gap-5 text-sm">

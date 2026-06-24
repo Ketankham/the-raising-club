@@ -50,8 +50,8 @@ export function CaregiverCard({
         )}
         <div className="mt-3 flex items-center gap-1.5">
           <h3 className="font-display text-lg font-bold text-ink">{name}</h3>
-          {c.idVerified && <BadgeCheck className="h-4 w-4 text-olive" aria-label="Verified" />}
-          {c.backgroundCheckVerified && <ShieldCheck className="h-4 w-4 text-[#4a6b9a]" aria-label="Background Checked" />}
+          {c.idVerified && <span title="Identity verified by Authenticate"><BadgeCheck className="h-4 w-4 text-olive" aria-label="Identity verified" /></span>}
+          {c.backgroundCheckVerified && <span title="Background checked by Authenticate"><ShieldCheck className="h-4 w-4 text-[#4a6b9a]" aria-label="Background checked" /></span>}
         </div>
 
         <div className="mt-1 flex items-center gap-4 text-sm">

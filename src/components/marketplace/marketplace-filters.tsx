@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SlidersHorizontal, X, RotateCcw, MapPin } from "lucide-react";
+import { SlidersHorizontal, X, RotateCcw, MapPin, BadgeCheck, ShieldCheck } from "lucide-react";
 import { CARE_TYPE_LABELS, CARE_TYPES, type CareType } from "@/lib/marketplace/format";
 import { PlacesAutocomplete } from "@/components/ui/places-autocomplete";
 import type { MarketplaceFilters } from "@/lib/marketplace/types";
@@ -15,12 +15,14 @@ function monthsLabel(m: number): string {
   return `${Math.round(m / 12)} yrs`;
 }
 
-function buildQs(q: string | undefined, care: CareType[], ageMax: number, where: string): string {
+function buildQs(q: string | undefined, care: CareType[], ageMax: number, where: string, verified: boolean, bgcheck: boolean): string {
   const p = new URLSearchParams();
   if (q) p.set("q", q);
   if (care.length) p.set("care", care.join(","));
   if (ageMax < AGE_MAX) p.set("ageMax", String(ageMax));
   if (where.trim()) p.set("where", where.trim());
+  if (verified) p.set("verified", "1");
+  if (bgcheck) p.set("bgcheck", "1");
   return p.toString();
 }
 
@@ -36,42 +38,58 @@ export function MarketplaceFilters({
   const [care, setCare] = useState<CareType[]>(initial.careTypes ?? []);
   const [ageMax, setAgeMax] = useState(initial.ageMax ?? AGE_MAX);
   const [where, setWhere] = useState(initial.where ?? "");
+  const [verified, setVerified] = useState(!!initial.verifiedOnly);
+  const [bgcheck, setBgcheck] = useState(!!initial.backgroundCheckedOnly);
   const sliderCommitRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Auto-push when care chips change
   function toggleCare(t: CareType) {
     const next = care.includes(t) ? care.filter((x) => x !== t) : [...care, t];
     setCare(next);
-    push(next, ageMax, where);
+    push(next, ageMax, where, verified, bgcheck);
   }
 
   // Debounce slider so we don't push on every pixel
   function handleSliderChange(v: number) {
     setAgeMax(v);
     if (sliderCommitRef.current) clearTimeout(sliderCommitRef.current);
-    sliderCommitRef.current = setTimeout(() => push(care, v, where), 400);
+    sliderCommitRef.current = setTimeout(() => push(care, v, where, verified, bgcheck), 400);
   }
 
-  function push(c: CareType[], age: number, w: string) {
-    const qs = buildQs(initial.q, c, age, w);
+  function push(c: CareType[], age: number, w: string, v: boolean, bg: boolean) {
+    const qs = buildQs(initial.q, c, age, w, v, bg);
     router.push(qs ? `${basePath}?${qs}` : basePath);
   }
 
   function applyWhere(w: string) {
     setWhere(w);
-    push(care, ageMax, w);
+    push(care, ageMax, w, verified, bgcheck);
     setOpen(false);
+  }
+
+  function toggleVerified() {
+    const next = !verified;
+    setVerified(next);
+    push(care, ageMax, where, next, bgcheck);
+  }
+
+  function toggleBgcheck() {
+    const next = !bgcheck;
+    setBgcheck(next);
+    push(care, ageMax, where, verified, next);
   }
 
   function clearAll() {
     setCare([]);
     setAgeMax(AGE_MAX);
     setWhere("");
+    setVerified(false);
+    setBgcheck(false);
     router.push(basePath);
     setOpen(false);
   }
 
-  const hasActive = care.length > 0 || ageMax < AGE_MAX || !!where;
+  const hasActive = care.length > 0 || ageMax < AGE_MAX || !!where || verified || bgcheck;
 
   const form = (
     <div className="space-y-6">
@@ -152,6 +170,41 @@ export function MarketplaceFilters({
         </div>
         {where && <p className="mt-1 text-xs text-olive">Filtering by: {where}</p>}
       </fieldset>
+
+      {/* Trust & Safety */}
+      <fieldset>
+        <legend className="mb-2.5 text-sm font-semibold text-ink">Trust &amp; Safety</legend>
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={toggleVerified}
+            className={`flex items-center gap-2 self-start rounded-full border px-4 py-2 text-sm font-medium transition ${
+              verified
+                ? "border-olive bg-olive/15 text-ink"
+                : "border-ink/15 bg-white text-ink-soft hover:border-olive/50 hover:text-ink"
+            }`}
+          >
+            <BadgeCheck className="h-4 w-4 text-olive" />
+            Identity Verified
+          </button>
+          <button
+            type="button"
+            onClick={toggleBgcheck}
+            className={`flex items-center gap-2 self-start rounded-full border px-4 py-2 text-sm font-medium transition ${
+              bgcheck
+                ? "border-[#4a6b9a] bg-[#4a6b9a]/10 text-ink"
+                : "border-ink/15 bg-white text-ink-soft hover:border-[#4a6b9a]/50 hover:text-ink"
+            }`}
+          >
+            <ShieldCheck className="h-4 w-4 text-[#4a6b9a]" />
+            Background Checked
+          </button>
+        </div>
+        <p className="mt-2.5 text-[11px] leading-relaxed text-ink-soft">
+          Verification is processed by Authenticate.{" "}
+          <a href="/terms" className="underline hover:text-ink">Terms</a>
+        </p>
+      </fieldset>
     </div>
   );
 
@@ -171,7 +224,7 @@ export function MarketplaceFilters({
         }`}
       >
         <SlidersHorizontal size={16} />
-        Filters{hasActive ? ` (${care.length + (ageMax < AGE_MAX ? 1 : 0) + (where ? 1 : 0)})` : ""}
+        Filters{hasActive ? ` (${care.length + (ageMax < AGE_MAX ? 1 : 0) + (where ? 1 : 0) + (verified ? 1 : 0) + (bgcheck ? 1 : 0)})` : ""}
       </button>
 
       {open && (
