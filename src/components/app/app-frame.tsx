@@ -7,7 +7,7 @@ import { AppSidebar, type SidebarRole } from "./app-sidebar";
 // Routes that manage their own chrome (no global sidebar). /admin renders its
 // own AdminShell. /manage is intentionally absent: org event-managers keep the
 // normal app sidebar there (admins, not a SIDEBAR_ROLE, get AdminShell instead).
-const NO_SIDEBAR = ["/onboarding", "/sign-in", "/review", "/deactivated", "/admin", "/auth"];
+const NO_SIDEBAR = ["/onboarding", "/sign-in", "/review", "/deactivated", "/admin", "/auth", "/terms", "/privacy"];
 
 const SIDEBAR_ROLES: SidebarRole[] = ["parent", "caregiver", "organization"];
 

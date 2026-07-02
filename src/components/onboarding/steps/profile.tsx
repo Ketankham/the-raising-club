@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { createAccount, completeStep } from "@/lib/onboarding/actions";
 import { StepHeading, ErrorText, Field, inputClass } from "./ui";
 import { PlacesAutocomplete } from "@/components/ui/places-autocomplete";
@@ -39,6 +40,7 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
     lng: number | null;
   }>({ zip_code: "", lat: null, lng: null });
   const [agreed, setAgreed] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -123,7 +125,24 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
           <input type="email" className={inputClass} value={form.email} onChange={set("email")} />
         </Field>
         <Field label="Password" hint="At least 8 characters.">
-          <input type="password" className={inputClass} value={form.password} onChange={set("password")} />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              className={inputClass}
+              style={{ paddingRight: "2.75rem" }}
+              value={form.password}
+              onChange={set("password")}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              onMouseDown={(e) => e.preventDefault()}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute inset-y-0 right-4 flex items-center text-ink-soft transition hover:text-ink"
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-2">
