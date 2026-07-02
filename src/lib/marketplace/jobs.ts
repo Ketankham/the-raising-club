@@ -132,12 +132,13 @@ export async function getJobById(id: string): Promise<JobCard | null> {
 /** All job posts for the admin marketplace panel (no owner filter). */
 export async function listAllJobPosts(): Promise<(JobCard & { ownerName: string | null; orgName: string | null })[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("job_posts")
     .select(`${JOB_SELECT}, job_applications ( id ),
-             profiles ( first_name, last_name, preferred_name ),
+             profiles!job_posts_owner_user_id_fkey ( first_name, last_name, preferred_name ),
              organizations ( name )`)
     .order("created_at", { ascending: false });
+  if (error) console.error("[listAllJobPosts] query failed:", error.message);
 
   return (data ?? []).map((j: any) => {
     const p = j.profiles;

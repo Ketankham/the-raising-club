@@ -33,7 +33,7 @@ export async function listManagedEvents(opts: {
        event_sessions ( starts_at ),
        event_registrations ( id, status ),
        organizations ( name ),
-       profiles ( first_name, last_name, preferred_name )`,
+       profiles!events_created_by_fkey ( first_name, last_name, preferred_name )`,
     );
 
   if (!opts.isAdmin) {
@@ -43,7 +43,8 @@ export async function listManagedEvents(opts: {
     );
   }
 
-  const { data } = await query;
+  const { data, error } = await query;
+  if (error) console.error("[listManagedEvents] query failed:", error.message);
   if (!data) return [];
 
   return data
