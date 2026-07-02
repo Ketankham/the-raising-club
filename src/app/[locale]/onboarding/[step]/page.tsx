@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getOnboardingState } from "@/lib/onboarding/actions";
 import { toFlowContext } from "@/lib/onboarding/state";
-import { getStep, getProgress, stepRequiresAccount } from "@/lib/onboarding/flow";
+import { getStep, getPrevStep, getProgress, stepRequiresAccount } from "@/lib/onboarding/flow";
 import { StepProgress } from "@/components/onboarding/progress-bar";
 import { renderStep, isKnownStep } from "@/components/onboarding/steps/registry";
 
@@ -26,7 +26,7 @@ export default async function OnboardingStepPage({
   if (step === "role-select") {
     return (
       <div>
-        <StepProgress index={1} total={5} />
+        <StepProgress index={1} total={5} prevHref="/" />
         {renderStep("role-select", state)}
       </div>
     );
@@ -51,9 +51,18 @@ export default async function OnboardingStepPage({
 
   const { index, total } = getProgress(ctx, step);
 
+  // Explicit previous-step target for the back arrow (history is unreliable).
+  // Hidden on completion screens and right after account creation — going
+  // back to the Create Account form with an existing account makes no sense.
+  const prev = getPrevStep(ctx, step);
+  const prevHref =
+    stepDef.isComplete || !prev || (prev.isAccountStep && state.completedSteps.includes("profile"))
+      ? null
+      : `/onboarding/${prev.slug}`;
+
   return (
     <div>
-      <StepProgress index={index} total={total} />
+      <StepProgress index={index} total={total} prevHref={prevHref} />
       {renderStep(step, state)}
     </div>
   );

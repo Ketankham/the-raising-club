@@ -1,11 +1,20 @@
 import { BackButton } from "./back-button";
 
 /** Presentational progress header — back arrow + "Step X of N" + a green bar. */
-export function StepProgress({ index, total }: { index: number; total: number }) {
+export function StepProgress({
+  index,
+  total,
+  prevHref,
+}: {
+  index: number;
+  total: number;
+  /** Previous step to navigate to; `null` hides the back arrow. */
+  prevHref?: string | null;
+}) {
   const percent = total > 0 ? Math.round((index / total) * 100) : 0;
   return (
     <div className="mb-10 flex items-center gap-4">
-      <BackButton />
+      <BackButton href={prevHref} />
       <div className="flex-1">
         <p className="mb-2 text-sm font-semibold text-ink">
           Step {index} of {total}
