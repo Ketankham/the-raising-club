@@ -23,6 +23,13 @@ const handleI18nRouting = createMiddleware(routing);
 const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/connect"];
 
 export async function proxy(request: NextRequest) {
+  // Routes under /api/ that live outside [locale] must bypass i18n rewriting —
+  // next-intl rewrites them to /en/api/... which 404s because no such file exists.
+  // API routes don't serve localized HTML so locale middleware adds no value here.
+  if (request.nextUrl.pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   // 1. Run i18n routing first (handles locale prefix, adds locale cookie)
   const i18nResponse = handleI18nRouting(request);
 

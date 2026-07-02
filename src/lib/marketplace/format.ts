@@ -139,5 +139,7 @@ export function parseMarketplaceFilters(sp: Record<string, string | string[] | u
     ageMin: num(sp.ageMin),
     ageMax: num(sp.ageMax),
     where: one(sp.where) || undefined,
+    verifiedOnly: one(sp.verified) === "1" || undefined,
+    backgroundCheckedOnly: one(sp.bgcheck) === "1" || undefined,
   };
 }

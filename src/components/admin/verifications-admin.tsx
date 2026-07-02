@@ -25,32 +25,43 @@ function fmtDate(s: string) {
   return new Date(s).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
-/** Pick a value from a metadata object trying multiple common field-name variants. */
-function pick(obj: Record<string, unknown>, ...keys: string[]): string | null {
-  for (const k of keys) {
-    const v = obj[k];
-    if (v && typeof v === "string") return v;
-  }
-  return null;
-}
-
 function IdDocumentPanel({ doc }: { doc: Record<string, unknown> }) {
+  // Authenticate nests extracted document fields at verifyUI.scannedUser
+  const scanned = (doc.verifyUI as Record<string, unknown> | undefined)?.scannedUser as Record<string, unknown> | undefined;
+  if (!scanned) return null;
+
+  const liveness = scanned.liveness_result as { score?: number; livenessAssessment?: string } | undefined;
+  const fullName = [scanned.first_name, scanned.last_name].filter(Boolean).join(" ") || null;
+
   const fields: [string, string | null][] = [
-    ["Verified name", [pick(doc, "firstName", "first_name", "givenNames", "given_names"), pick(doc, "lastName", "last_name", "surname", "familyName")].filter(Boolean).join(" ") || pick(doc, "fullName", "full_name", "name")],
-    ["Date of birth", pick(doc, "dateOfBirth", "date_of_birth", "dob", "birthDate")],
-    ["Nationality", pick(doc, "nationality", "nationalityCode", "country_of_origin", "issuingCountry", "issuing_country", "countryCode")],
-    ["Gender", pick(doc, "gender", "sex")],
-    ["Document type", pick(doc, "documentType", "document_type", "idType", "id_type", "type")],
-    ["Document number", pick(doc, "documentNumber", "document_number", "idNumber", "id_number", "number")],
-    ["Expiry", pick(doc, "expiryDate", "expiry_date", "expiry", "documentExpiry", "dateOfExpiry")],
-    ["Country of issue", pick(doc, "issuingCountry", "issuing_country", "country", "countryCode", "nationality")],
+    ["Verified name", fullName],
+    ["Date of birth", (scanned.dob as string) ?? null],
+    ["Gender", (scanned.gender as string) ?? null],
+    ["ID type", (scanned.id_type as string) ?? null],
+    ["ID number", (scanned.id_number as string) ?? null],
+    ["Country", (scanned.country as string) ?? null],
+    ["Issued", (scanned.id_issued_date as string) ?? null],
+    ["Expires", (scanned.id_expiration_date as string) ?? null],
+    ["Liveness", liveness ? `${liveness.score ?? "?"}% — ${liveness.livenessAssessment ?? ""}` : null],
+    ["Face match", scanned.face_match_score != null ? `${scanned.face_match_score}%` : null],
+    ["Confidence", scanned.confidence_rating != null ? `${scanned.confidence_rating}%` : null],
+    ["Attempts", scanned.attempts != null ? String(scanned.attempts) : null],
   ];
   const visible = fields.filter(([, v]) => v);
-  if (!visible.length) return null;
+
+  const docLinks: [string, string][] = (
+    [
+      ["ID Front", scanned.id_front as string],
+      ["ID Back", scanned.id_back as string],
+      ["Face image", scanned.face_image as string],
+      ["Selfie", scanned.selfie_image as string],
+    ] as [string, string][]
+  ).filter(([, url]) => url);
+
   return (
     <div className="mt-3 rounded-xl border border-[#dcebc6] bg-[#f5fbee] p-3">
       <p className="mb-2 text-xs font-semibold text-[#4f6b15]">ID Document — extracted by Authenticate</p>
-      <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 sm:grid-cols-3 text-xs">
         {visible.map(([label, value]) => (
           <div key={label}>
             <span className="text-ink-soft">{label}</span>
@@ -58,6 +69,17 @@ function IdDocumentPanel({ doc }: { doc: Record<string, unknown> }) {
           </div>
         ))}
       </div>
+      {docLinks.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <span className="text-[10px] text-ink-soft">Images (admin only):</span>
+          {docLinks.map(([label, url]) => (
+            <a key={label} href={url} target="_blank" rel="noopener noreferrer"
+               className="rounded-full bg-ink/8 px-2.5 py-0.5 text-[10px] font-medium text-ink hover:bg-ink/15">
+              {label} ↗
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

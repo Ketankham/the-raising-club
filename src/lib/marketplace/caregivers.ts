@@ -46,6 +46,8 @@ function matches(c: CaregiverCard, f: MarketplaceFilters): boolean {
     const w = f.where.toLowerCase();
     if (!`${c.zip ?? ""}`.toLowerCase().includes(w)) return false;
   }
+  if (f.verifiedOnly && !c.idVerified) return false;
+  if (f.backgroundCheckedOnly && !c.backgroundCheckVerified) return false;
   return true;
 }
 

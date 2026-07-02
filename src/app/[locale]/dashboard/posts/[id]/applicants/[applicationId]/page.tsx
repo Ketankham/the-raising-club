@@ -192,7 +192,13 @@ export default async function ApplicantProfilePage({
           </div>
 
           {/* Actions */}
-          <ApplicantActions applicationId={applicationId} jobId={jobId} status={applicant.status} />
+          <ApplicantActions
+            applicationId={applicationId}
+            jobId={jobId}
+            status={applicant.status}
+            caregiverIdVerified={applicant.caregiverIdVerified}
+            caregiverUserId={applicant.caregiverUserId}
+          />
 
           {/* Message Button */}
           <a

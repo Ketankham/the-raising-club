@@ -271,3 +271,124 @@ git push origin main
 - [ ] Use `npm run build` before committing to catch missing imports (though local files may mask the issue)
 - [ ] A good CI check: `git ls-files | grep -c .` and `find . -type f -name "*.tsx" | wc -l` 
   should be similar (files on disk ≈ tracked files, allowing for .gitignore)
+
+---
+
+## 11. External webhook routes must live outside `[locale]`
+
+**Symptom**
+- Webhook receiver appears to work (200 response in theory), but no data ever arrives — admin panel stays empty, no DB rows created.
+
+**Root cause**
+- Route was at `src/app/[locale]/api/webhooks/authenticate/route.ts`, making its live URL `/en/api/webhooks/authenticate`.
+- Authenticate (and Stripe, etc.) POST to `/api/webhooks/authenticate` — no locale prefix → **404** → Authenticate retries, gets 404 again, stops → no data.
+
+**Fix**
+- Moved to `src/app/api/webhooks/authenticate/route.ts` (outside `[locale]`).
+- Stripe webhook was already correctly at `src/app/api/stripe/webhook/route.ts`.
+
+**Rule:** Any route called by an external service (webhook, OAuth callback, payment provider) → `src/app/api/<path>/route.ts`. Never inside `[locale]`.
+
+---
+
+## 12. Authenticate webhook URL must be registered in their dashboard
+
+**Symptom**
+- Webhook route is correct, AUTHENTICATE_WEBHOOK_SECRET matches, but still no events arrive.
+
+**Root cause**
+- Authenticate doesn't know your URL. You must register it in the Authenticate dashboard → Webhooks section.
+
+**URLs to register:**
+- Staging: `https://the-raising-club-staging.vercel.app/api/webhooks/authenticate`
+- Production: `https://theraisingclub.com/api/webhooks/authenticate`
+
+Set `AUTHENTICATE_WEBHOOK_SECRET` to match the secret shown in the Authenticate dashboard. If the env var is unset, the route accepts all requests (useful for initial testing, but set it for production).
+
+---
+
+## 13. Authenticate `/user/create` requires DOB in DD-MM-YYYY
+
+**Symptom**
+- `startVerification` fails with "Could not start verification" — underlying Authenticate API error: "dob required" or 400.
+
+**Root cause**
+- Authenticate `/user/create` requires `dob` in **DD-MM-YYYY** format. HTML date inputs and Postgres `date` columns store **YYYY-MM-DD**.
+
+**Fix**
+```ts
+const toApiFormat = (d: string) => {
+  const [y, m, day] = d.split('-');
+  return `${day}-${m}-${y}`;
+};
+```
+DOB is stored in `caregiver_profiles.date_of_birth` as a proper `date` (ISO), converted only at call time. Saved on first attempt so retries don't re-ask the user.
+
+---
+
+## 14. Authenticate Medallion — correct endpoint is `POST /user/jwt`, not `/user/medallion/link`
+
+**Symptom**
+- `getMedallionUrl` throws 404.
+
+**Fix**
+- Call `POST /user/jwt` with `{ userAccessCode }` → returns `{ token, jwt }`.
+- Redirect URL: `https://verify.authenticating.com/?token=${token}`.
+- `/user/medallion/link` is documented in some older guides but returns 404.
+
+---
+
+## 15. PostgREST PGRST201 — two FKs from the same table to the same target
+
+**Symptom**
+- `listVerifications` query returns 0 rows; Vercel logs show `PGRST201 Could not embed because more than one relationship was found`.
+
+**Root cause**
+- Migration 0043 added `reviewed_by uuid references profiles(id)` alongside the existing `user_id uuid references profiles(id)`. PostgREST can't decide which FK to use for a bare `profiles!inner(...)` join.
+
+**Fix**
+```ts
+.select('..., profiles!verifications_user_id_fkey!inner(...)')
+```
+Always name the FK explicitly when a table has multiple FKs to the same target. FK names follow the pattern `{table}_{column}_fkey`.
+
+---
+
+## 16. `SUPABASE_SERVICE_ROLE_KEY` is encrypted — cannot be pulled locally
+
+**Symptom**
+- `vercel env pull` runs, `.env.local` is updated, but `process.env.SUPABASE_SERVICE_ROLE_KEY` is empty string.
+- Admin client queries (`createAdminClient()`) return null locally.
+
+**Root cause**
+- Vercel marks this secret as encrypted/sensitive. `env pull` returns empty string for encrypted vars.
+
+**Workaround**
+- Test anything requiring service-role against deployed staging only. Add `createAdminClient()!` (non-null assertion) in server-only code where the key is guaranteed to exist on Vercel.
+- Never import `src/lib/supabase/admin.ts` into client bundles — it's `server-only`.
+
+---
+
+## 17. Test verification rows from the seed script have no metadata or reference
+
+The 3 verification rows for `mkt-demo-maya`, `mkt-demo-aiko`, `mkt-demo-camille` were inserted directly by `scripts/record-verify-flow.mjs` with `reference = null` and `metadata = null`. They are **not real webhook results**.
+
+Real results (from actual Authenticate webhooks) will have:
+- `reference = userAccessCode`
+- `metadata.idDocument` — extracted doc fields (name, DOB, nationality, gender, doc type)
+- `metadata.rawStatus` and `metadata.rawResult`
+
+Do not use the demo rows to validate the admin panel's data display — use the QA caregiver account and a real Medallion flow.
+
+---
+
+## 18. Always apply migrations before deploying code that uses their new columns
+
+If code references a new column (e.g. `risk_score`) but the migration hasn't been applied, DB queries fail silently or return wrong data.
+
+```bash
+# Apply pending migrations before or immediately after deploying
+node --env-file=.env.local scripts/apply-migrations.mjs 0046
+# Then reload PostgREST schema cache:
+node --env-file=.env.local scripts/reload-schema.mjs
+```

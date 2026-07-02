@@ -4,11 +4,11 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireUserProfile } from '@/lib/guards';
-import { createAuthenticateUser, getMedallionUrl, getTestResult, getFullTestResult, initiatePdfReport, retrievePdfReport, runRiskScore } from './client';
+import { createAuthenticateUser, getMedallionUrl, getTestResult, getFullTestResult, initiatePdfReport, retrievePdfReport, runRiskScore, triggerBackgroundChecks } from './client';
 
 /** Start or resume identity verification. Returns the Medallion™ hosted URL.
  *  dob is required on first call (DD-MM-YYYY); ignored on resume (code already exists). */
-export async function startVerification(dob?: string): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+export async function startVerification(dob?: string): Promise<{ ok: true; url: string } | { ok: true; synced: true } | { ok: false; error: string }> {
   try {
     const { user, profile } = await requireUserProfile();
     if (profile.role !== 'caregiver') return { ok: false, error: 'Not a caregiver account' };
@@ -67,12 +67,58 @@ export async function startVerification(dob?: string): Promise<{ ok: true; url: 
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://theraisingclub.com');
-    const url = await getMedallionUrl(userCode!, `${siteUrl}/profile`);
-    console.log('[authenticate] Medallion URL:', url?.slice(0, 80));
-    return { ok: true, url };
+    try {
+      const url = await getMedallionUrl(userCode!, `${siteUrl}/profile`);
+      console.log('[authenticate] Medallion URL:', url?.slice(0, 80));
+      return { ok: true, url };
+    } catch (medallionErr) {
+      // Authenticate says user already verified — webhook was missed. Sync now.
+      if ((medallionErr as NodeJS.ErrnoException).code === 'ALREADY_VERIFIED') {
+        return syncVerifiedStatus(user.id, userCode!);
+      }
+      throw medallionErr;
+    }
   } catch (err) {
-    console.error('[authenticate] startVerification error:', err instanceof Error ? err.message : err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[authenticate] startVerification error:', msg);
     return { ok: false, error: 'Could not start verification. Please try again.' };
+  }
+}
+
+/** Fetch the real result from Authenticate and write it to our DB.
+ *  Called when Medallion says "already completed" — the webhook was missed. */
+async function syncVerifiedStatus(
+  userId: string,
+  userCode: string,
+): Promise<{ ok: true; synced: true } | { ok: false; error: string }> {
+  try {
+    const admin = createAdminClient();
+    if (!admin) return { ok: false, error: 'Server configuration error' };
+
+    const fullResult = await getFullTestResult(userCode);
+    const rawStatus = fullResult ? String((fullResult as Record<string, unknown>).status ?? '').toLowerCase() : '';
+    const status: 'verified' | 'failed' | 'pending' =
+      rawStatus === 'verified' ? 'verified' : rawStatus === 'failed' || rawStatus === 'not verified' ? 'failed' : 'pending';
+
+    const metadata: Record<string, unknown> = {};
+    if (status === 'verified' && fullResult) metadata.idDocument = fullResult;
+
+    await admin.from('verifications').upsert(
+      { user_id: userId, type: 'identity', status, provider: 'authenticate', reference: userCode, metadata, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id,type' },
+    );
+
+    if (status === 'verified') {
+      triggerBackgroundChecks(userCode).catch(() => {});
+    }
+
+    revalidatePath('/profile');
+    revalidatePath('/admin/verifications');
+    console.log('[authenticate] synced missed verification:', status, 'for user', userId);
+    return { ok: true, synced: true };
+  } catch (err) {
+    console.error('[authenticate] syncVerifiedStatus error:', err instanceof Error ? err.message : err);
+    return { ok: false, error: 'Could not sync verification status. Please try again.' };
   }
 }
 
