@@ -43,7 +43,11 @@ export async function getOnboardingState(): Promise<OnboardingState | null> {
 
   const [{ data: progress }, { data: profile }] = await Promise.all([
     supabase.from("onboarding_progress").select("*").eq("user_id", user.id).maybeSingle(),
-    supabase.from("profiles").select("role, onboarding_completed_at").eq("id", user.id).maybeSingle(),
+    supabase
+      .from("profiles")
+      .select("role, onboarding_completed_at, first_name, last_name, preferred_name, phone, zip_code, email, registered_at")
+      .eq("id", user.id)
+      .maybeSingle(),
   ]);
 
   if (!progress) return null;
@@ -58,6 +62,15 @@ export async function getOnboardingState(): Promise<OnboardingState | null> {
     status: progress.status,
     answers: (progress.answers as OnboardingAnswers) ?? {},
     onboardingCompletedAt: profile?.onboarding_completed_at ?? null,
+    profileDetails: {
+      firstName: profile?.first_name ?? null,
+      lastName: profile?.last_name ?? null,
+      preferredName: profile?.preferred_name ?? null,
+      phone: profile?.phone ?? null,
+      zipCode: profile?.zip_code ?? null,
+      email: profile?.email ?? null,
+      registeredAt: profile?.registered_at ?? null,
+    },
   };
 }
 
@@ -211,6 +224,30 @@ export async function createAccount(input: {
     .eq("id", user.id);
   if (profileError) return { ok: false, error: profileError.message };
 
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+// Update profile details on a revisit of the profile step (account exists).
+// No auth changes — email/password stay as they are.
+// ---------------------------------------------------------------------------
+export async function updateProfileDetails(profile: {
+  first_name?: string;
+  last_name?: string;
+  preferred_name?: string;
+  phone?: string;
+  zip_code?: string;
+  lat?: number;
+  lng?: number;
+}): Promise<ActionResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "No session" };
+
+  const { error } = await supabase.from("profiles").update(profile).eq("id", user.id);
+  if (error) return { ok: false, error: error.message };
   return { ok: true };
 }
 

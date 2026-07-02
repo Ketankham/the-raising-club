@@ -52,13 +52,11 @@ export default async function OnboardingStepPage({
   const { index, total } = getProgress(ctx, step);
 
   // Explicit previous-step target for the back arrow (history is unreliable).
-  // Hidden on completion screens and right after account creation — going
-  // back to the Create Account form with an existing account makes no sense.
+  // Every step is revisitable: the profile step renders an editable summary
+  // once the account exists, and answers prefill from the staging bag, so
+  // users can move back and forth freely until the flow is promoted.
   const prev = getPrevStep(ctx, step);
-  const prevHref =
-    stepDef.isComplete || !prev || (prev.isAccountStep && state.completedSteps.includes("profile"))
-      ? null
-      : `/onboarding/${prev.slug}`;
+  const prevHref = prev ? `/onboarding/${prev.slug}` : null;
 
   return (
     <div>

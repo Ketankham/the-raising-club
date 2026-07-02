@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { createAccount, completeStep } from "@/lib/onboarding/actions";
+import { createAccount, updateProfileDetails, completeStep } from "@/lib/onboarding/actions";
 import { StepHeading, ErrorText, Field, inputClass } from "./ui";
 import { PlacesAutocomplete } from "@/components/ui/places-autocomplete";
 import type { OnboardingState } from "@/lib/onboarding/state";
@@ -18,27 +18,31 @@ const ROLE_TITLES = [
 
 export function ProfileStep({ state }: { state: OnboardingState }) {
   const role = state.role ?? "parent";
+  // Revisit after the account was created (back navigation): the form becomes
+  // an editable summary — no email/password/terms, and Continue just saves.
+  const registered = state.completedSteps.includes("profile");
+  const details = state.profileDetails;
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
-    first_name: "",
-    last_name: "",
-    preferred_name: "",
-    org_name: "",
-    contactRoleTitle: "director",
-    contactRoleOther: "",
+    first_name: details.firstName ?? "",
+    last_name: details.lastName ?? "",
+    preferred_name: details.preferredName ?? "",
+    org_name: (state.answers.org_name as string | undefined) ?? "",
+    contactRoleTitle: (state.answers.contactRoleTitle as string | undefined) ?? "director",
+    contactRoleOther: (state.answers.contactRoleOther as string | undefined) ?? "",
     email: "",
     password: "",
-    phone: "",
-    child_term: "",
+    phone: details.phone ?? "",
+    child_term: (state.answers.child_term as string | undefined) ?? "",
   });
   const [location, setLocation] = useState<{
     zip_code: string;
     lat: number | null;
     lng: number | null;
-  }>({ zip_code: "", lat: null, lng: null });
+  }>({ zip_code: details.zipCode ?? "", lat: null, lng: null });
   const [agreed, setAgreed] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -46,25 +50,27 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
 
   function submit() {
     setError(null);
-    if (!form.email || !form.password) return setError("Email and password are required.");
-    if (form.password.length < 8) return setError("Password must be at least 8 characters.");
+    if (!registered) {
+      if (!form.email || !form.password) return setError("Email and password are required.");
+      if (form.password.length < 8) return setError("Password must be at least 8 characters.");
+      if (!agreed) return setError("Please agree to the Terms & Conditions to continue.");
+    }
     if (role === "organization" && !form.org_name) return setError("Organization name is required.");
-    if (!agreed) return setError("Please agree to the Terms & Conditions to continue.");
 
     start(async () => {
-      const account = await createAccount({
-        email: form.email,
-        password: form.password,
-        profile: {
-          first_name: form.first_name || undefined,
-          last_name: form.last_name || undefined,
-          preferred_name: form.preferred_name || undefined,
-          phone: form.phone || undefined,
-          zip_code: location.zip_code || undefined,
-          lat: location.lat ?? undefined,
-          lng: location.lng ?? undefined,
-        },
-      });
+      const profile = {
+        first_name: form.first_name || undefined,
+        last_name: form.last_name || undefined,
+        preferred_name: form.preferred_name || undefined,
+        phone: form.phone || undefined,
+        zip_code: location.zip_code || undefined,
+        lat: location.lat ?? undefined,
+        lng: location.lng ?? undefined,
+      };
+
+      const account = registered
+        ? await updateProfileDetails(profile)
+        : await createAccount({ email: form.email, password: form.password, profile });
       if (!account.ok) {
         setError(
           /already|registered|exists/i.test(account.error)
@@ -89,7 +95,7 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
 
   return (
     <div>
-      <StepHeading title="Set up your profile" />
+      <StepHeading title={registered ? "Your profile" : "Set up your profile"} />
       <div className="grid gap-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={role === "caregiver" ? "First name" : "First name or nickname"}>
@@ -121,29 +127,37 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
           </div>
         )}
 
-        <Field label="Email">
-          <input type="email" className={inputClass} value={form.email} onChange={set("email")} />
-        </Field>
-        <Field label="Password" hint="At least 8 characters.">
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              className={inputClass}
-              style={{ paddingRight: "2.75rem" }}
-              value={form.password}
-              onChange={set("password")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((s) => !s)}
-              onMouseDown={(e) => e.preventDefault()}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute inset-y-0 right-4 flex items-center text-ink-soft transition hover:text-ink"
-            >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
-          </div>
-        </Field>
+        {registered ? (
+          <Field label="Email">
+            <input type="email" className={inputClass} value={details.email ?? ""} disabled readOnly />
+          </Field>
+        ) : (
+          <>
+            <Field label="Email">
+              <input type="email" className={inputClass} value={form.email} onChange={set("email")} />
+            </Field>
+            <Field label="Password" hint="At least 8 characters.">
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className={inputClass}
+                  style={{ paddingRight: "2.75rem" }}
+                  value={form.password}
+                  onChange={set("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  onMouseDown={(e) => e.preventDefault()}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-4 flex items-center text-ink-soft transition hover:text-ink"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </Field>
+          </>
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field
@@ -153,6 +167,7 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
             <PlacesAutocomplete
               placeholder={role === "organization" ? "e.g. Brooklyn, NY" : "e.g. Chicago, IL or 60601"}
               types={["geocode"]}
+              initialValue={location.zip_code}
               className={inputClass}
               onPlace={(p) =>
                 setLocation({
@@ -174,17 +189,19 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
           </Field>
         )}
 
-        <label className="flex items-center gap-2 text-sm text-ink-soft">
-          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-          I agree to the{" "}
-          <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
-            Terms &amp; Conditions
-          </a>{" "}
-          and{" "}
-          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
-            Privacy Policy
-          </a>.
-        </label>
+        {!registered && (
+          <label className="flex items-center gap-2 text-sm text-ink-soft">
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+            I agree to the{" "}
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
+              Terms &amp; Conditions
+            </a>{" "}
+            and{" "}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
+              Privacy Policy
+            </a>.
+          </label>
+        )}
       </div>
 
       <ErrorText>{error}</ErrorText>
@@ -196,7 +213,7 @@ export function ProfileStep({ state }: { state: OnboardingState }) {
           disabled={pending}
           className="rounded-lg bg-primary px-8 py-3 font-display font-semibold text-white transition hover:bg-primary-hover disabled:opacity-50"
         >
-          {pending ? "Creating account…" : "Create Account"}
+          {pending ? (registered ? "Saving…" : "Creating account…") : registered ? "Continue" : "Create Account"}
         </button>
       </div>
     </div>
