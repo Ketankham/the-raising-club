@@ -139,6 +139,7 @@ export interface EventDetail extends EventListItem {
 export interface MyRegistration {
   id: string;
   status: string;
+  checkedInAt: string | null;
 }
 
 /** Full registration for the "Your registration" / "Payments" tabs (Detail B). */

@@ -427,6 +427,64 @@ export async function cancelRegistration(registrationId: string): Promise<Cancel
   return { ok: true };
 }
 
+export type CheckInResult =
+  | { ok: true; alreadyCheckedIn: boolean; checkedInAt: string }
+  | {
+      ok: false;
+      reason: "unauthenticated" | "not_registered" | "not_confirmed" | "error";
+      message?: string;
+    };
+
+/**
+ * Self check-in: the registrant scans the event's QR code (or follows its
+ * link), lands on /events/[slug]/check-in, and confirms they're present. No
+ * rewards — this only marks attendance. RLS (`event_reg_owner`) already
+ * scopes the update to the caller's own registration row, so ownership is
+ * enforced by the query filter + RLS together, matching this file's other
+ * actions. Idempotent: re-confirming an already-checked-in registration is a
+ * no-op that returns the original timestamp.
+ */
+export async function checkInMyRegistration(eventId: string, slug: string): Promise<CheckInResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  const { data: reg } = await supabase
+    .from("event_registrations")
+    .select("id, status, checked_in_at")
+    .eq("event_id", eventId)
+    .eq("registrant_user_id", user.id)
+    .not("status", "in", "(cancelled,denied)")
+    .maybeSingle();
+  if (!reg) return { ok: false, reason: "not_registered" };
+  if (reg.status !== "confirmed") return { ok: false, reason: "not_confirmed" };
+
+  if (reg.checked_in_at) {
+    return { ok: true, alreadyCheckedIn: true, checkedInAt: reg.checked_in_at };
+  }
+
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from("event_registrations")
+    .update({ checked_in_at: now })
+    .eq("id", reg.id);
+  if (error) return { ok: false, reason: "error", message: error.message };
+
+  // Best-effort: reflect it on the roster's per-child attendance too (only
+  // rows still "registered" — leaves organizer-set no_show/cancelled alone).
+  await supabase
+    .from("event_registration_children")
+    .update({ attendance_status: "attended", checked_in_at: now })
+    .eq("registration_id", reg.id)
+    .eq("attendance_status", "registered");
+
+  revalidatePath(`/events/${slug}/check-in`);
+  revalidatePath("/events/my");
+  return { ok: true, alreadyCheckedIn: false, checkedInAt: now };
+}
+
 export type MessageResult = { ok: true } | { ok: false; reason: "unauthenticated" | "error" };
 
 /**

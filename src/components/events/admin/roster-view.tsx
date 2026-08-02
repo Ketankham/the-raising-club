@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Check, Mail, Phone, X } from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, Mail, Phone, X } from "lucide-react";
 import { adminCancelRegistration, setAttendanceStatus, setRegistrationStatus } from "@/lib/events/admin-actions";
 import { SUPPORT_NEED_LABELS, type SupportNeed } from "@/lib/events/types";
 import type { RosterEntry, RosterPayment } from "@/lib/events/admin";
@@ -161,6 +161,11 @@ function RegistrationCard({ entry, eventId }: { entry: RosterEntry; eventId: str
             </>
           )}
           {entry.payment && <PaymentChip payment={entry.payment} />}
+          {entry.checkedInAt && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#eef6e3] px-2.5 py-0.5 text-xs font-semibold text-[#5f8a36]">
+              <CheckCircle2 size={12} /> Checked in
+            </span>
+          )}
           {!isCancelled && (
             <button
               type="button"
