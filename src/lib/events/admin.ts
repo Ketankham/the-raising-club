@@ -202,6 +202,8 @@ export interface RosterEntry {
   contactEmail: string | null;
   contactPhone: string | null;
   registeredAt: string;
+  /** Set once the registrant self-confirms via the event QR check-in link. */
+  checkedInAt: string | null;
   children: RosterChild[];
   emergencyContacts: { name: string; phone: string }[];
   pickups: { name: string; phone: string }[];
@@ -214,7 +216,7 @@ export async function getRoster(eventId: string): Promise<RosterEntry[]> {
   const { data } = await supabase
     .from("event_registrations")
     .select(
-      `id, status, adult_count, contact_email, contact_phone, registered_at,
+      `id, status, adult_count, contact_email, contact_phone, registered_at, checked_in_at,
        event_registration_children ( id, display_pet_name, birth_month, birth_year, support_needs, support_note, attendance_status ),
        emergency_contacts ( name, phone ),
        authorized_pickups ( name, phone ),
@@ -232,6 +234,7 @@ export async function getRoster(eventId: string): Promise<RosterEntry[]> {
     contactEmail: r.contact_email,
     contactPhone: r.contact_phone,
     registeredAt: r.registered_at,
+    checkedInAt: r.checked_in_at,
     payment: pay
       ? {
           status: pay.status,

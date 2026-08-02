@@ -273,13 +273,13 @@ export async function getMyRegistration(eventId: string): Promise<MyRegistration
 
   const { data } = await supabase
     .from("event_registrations")
-    .select("id, status")
+    .select("id, status, checked_in_at")
     .eq("event_id", eventId)
     .eq("registrant_user_id", user.id)
     .not("status", "in", "(cancelled,denied)")
     .maybeSingle();
 
-  return data ? { id: data.id, status: data.status } : null;
+  return data ? { id: data.id, status: data.status, checkedInAt: data.checked_in_at } : null;
 }
 
 /** Full details of the current user's registration for an event (Detail B tabs). */
